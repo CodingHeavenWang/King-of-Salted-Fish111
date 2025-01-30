@@ -24,20 +24,18 @@
 }
 
 /* 游戏容器样式 */
+/* 游戏容器样式 */
 #gameContainer {
   position: relative;
-  width: 400px;
-  height: 600px;
-  margin: 0 auto;
+  width: 400px;  /* 竖屏宽度 */
+  height: 600px; /* 竖屏高度 */
+  background: url("Wallpaper/BankStash.png") no-repeat center/cover; /* 游戏背景 */
   border: 2px solid #333;
   overflow: hidden;
-
-  /* 使用 jpg5.png 作为背景，可自行替换实际路径 */
-  background-image: url("Wallpaper/jpg5.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
 }
+
+
+
 
 /* 主角样式 */
 .hero {
