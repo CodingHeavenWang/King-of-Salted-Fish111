@@ -56,6 +56,8 @@ let rightPressed = false;
 let isGameOver = false;
 let frameId = null;
 
+let isWeaponChanged = false; // 是否已更换武器贴图
+
 // 新增计分相关
 let score = 0;
 const scoreElement = document.getElementById('scoreBoard'); // 确保 HTML 已添加对应元素
@@ -77,9 +79,16 @@ function initHero() {
 function spawnBullet() {
   const bulletDiv = document.createElement('div');
   bulletDiv.className = 'bullet';
+  
+  // 根据武器状态选择贴图
+  const bulletImg = isWeaponChanged 
+    ? 'Bullet/icefire.png' 
+    : 'Bullet/shot_fireball.png'; // [!code ++]
+  
+  bulletDiv.style.backgroundImage = `url('${bulletImg}')`; // [!code ++]
 
   // 子弹初始位置：主角正中上方
-  const bulletX = hero.x + hero.width / 2 - 5; // 5 是子弹宽的一半
+  const bulletX = hero.x + hero.width / 2 - 5;
   const bulletY = hero.y - 15;
 
   const bulletObj = {
@@ -252,7 +261,7 @@ function updateDoors() {
 }
 
 /********************
- * 应用门增益效果
+ * 统一门效果处理逻辑
  ********************/
 function applyDoorEffect(effect) {
   if (!effect) return;
@@ -262,6 +271,16 @@ function applyDoorEffect(effect) {
       break;
     case 'speed':
       hero.speed += effect.value;
+      break;
+    case 'weapon': // [!code focus]
+      bulletDamage = 50; // 新武器伤害
+      isWeaponChanged = true;
+      bullets.forEach(bullet => {
+        bullet.element.style.backgroundImage = 'url("Bullet/icefire.png")';
+      });
+      break;
+    case 'bullet': // [!code focus]
+      bulletSpawnRate = Math.max(2, bulletSpawnRate - effect.value); 
       break;
   }
 }
@@ -298,35 +317,23 @@ function gameLoop() {
  * 每帧更新
  ********************/
 function updateAll() {
-  
-  // 新增：关卡时间统计
-  levelTimer += 1 / 60; // 按60帧/秒递增时间
-
-  // 每30秒升级关卡
-  if (levelTimer >= 30 && currentLevel === 1) {
-    currentLevel = 2;
-    levelElement.textContent = `关卡: ${currentLevel}`;
-    levelTimer = 0; // 重置计时器
-
-    // 第二关增强
-    monsterHP = 300;    // 怪物基础血量提升到300
-    monsterSpawnRate = 100; // 怪物生成加快（原为120）
-  }
-
-  // 门计数器
+  // 合并门生成逻辑
   doorSpawnCounter++;
+  door10sCounter++;
+
+  // 常规门（15秒）
   if (doorSpawnCounter >= doorSpawnRate) {
     spawnDoor();
     doorSpawnCounter = 0;
   }
 
-  updateHero();
-  updateBullets();
-  updateMonstersAll();
-  updatePowerups();
-  updateDoors();
+  // 特殊门（10秒）
+  if (door10sCounter >= 600 && !door10sSpawned) { 
+    spawn10sDoor();
+    door10sCounter = 0;       // [!code ++] 重置计数器
+    door10sSpawned = true;    // [!code ++]
+  }
 }
-
 /********************
  * 更新主角
  ********************/
@@ -536,6 +543,8 @@ function startGame() {
   // 显示游戏容器
   gameContainer.style.display = 'block';
 
+  preloadWeaponAssets();
+
   // 重置游戏状态
   isGameOver = false;
   hero.isAlive = true;
@@ -571,3 +580,104 @@ function startGame() {
  * 监听开始按钮
  ********************/
 document.getElementById('startButton').addEventListener('click', startGame);
+
+//第10s的特殊门
+let door10sCounter = 0; // 计时器，用于跟踪时间
+let door10sSpawned = false; // 用来防止门多次生成
+
+function spawn10sDoor() {
+  // 创建新的门容器
+  const doorRowDiv = document.createElement('div');
+  doorRowDiv.className = 'doorRow';
+
+  // 创建门的选项
+  const leftOptionDiv = document.createElement('div');
+  leftOptionDiv.className = 'doorOption';
+  leftOptionDiv.textContent = '换武器';
+
+  const rightOptionDiv = document.createElement('div');
+  rightOptionDiv.className = 'doorOption';
+  rightOptionDiv.textContent = '加子弹';
+
+  // 将选项放入门容器
+  doorRowDiv.appendChild(leftOptionDiv);
+  doorRowDiv.appendChild(rightOptionDiv);
+
+  // “门”对象：整个一行
+  const groupId = Date.now(); // 使用时间戳作为组ID
+  const doorObjLeft = {
+    element: leftOptionDiv,
+    x: 0,
+    y: -60,   // 从上方出现
+    width: 200,
+    height: 60,
+    effect: { type: 'weapon', value: 'newWeapon' }, // 换武器
+    groupId: groupId,
+    parent: doorRowDiv
+  };
+  const doorObjRight = {
+    element: rightOptionDiv,
+    x: 200,
+    y: -60,
+    width: 200,
+    height: 60,
+    effect: { type: 'bullet', value: 10 }, // 加子弹
+    groupId: groupId,
+    parent: doorRowDiv
+  };
+
+  // 更新门容器的样式
+  doorRowDiv.style.left = '0px';
+  doorRowDiv.style.top = '-60px';
+  doorRowDiv.style.width = '400px';  // 占满整行
+  doorRowDiv.style.height = '60px';
+  gameContainer.appendChild(doorRowDiv);
+
+  // 加入 doors 数组
+  doors.push(doorObjLeft, doorObjRight);
+}
+
+/********************
+ * 修改游戏循环，添加 10秒计时的门
+ ********************/
+function updateAll() {
+  levelTimer += 1 / 60; // 每秒60帧
+
+  // 每30秒升级关卡
+  if (levelTimer >= 30 && currentLevel === 1) {
+    currentLevel = 2;
+    levelElement.textContent = `关卡: ${currentLevel}`;
+    levelTimer = 0; // 重置计时器
+
+    // 第二关增强
+    monsterHP = 300;
+    monsterSpawnRate = 100;
+  }
+
+  // 每10秒生成一次门
+  door10sCounter++;
+  if (door10sCounter >= 600 && !door10sSpawned) {  // 10秒 = 600帧 (假设60帧/秒)
+    spawn10sDoor();
+    door10sSpawned = true;  // 防止重复生成
+  }
+
+  doorSpawnCounter++;
+  if (doorSpawnCounter >= doorSpawnRate) {
+    spawnDoor();
+    doorSpawnCounter = 0;
+  }
+
+  updateHero();
+  updateBullets();
+  updateMonstersAll();
+  updatePowerups();
+  updateDoors();
+}
+
+
+/********************
+ * 新增：预加载贴图（在游戏开始时调用）
+ ********************/
+function preloadWeaponAssets() {
+  new Image().src = 'Bullet/icefire.png'; // [!code ++]
+}
