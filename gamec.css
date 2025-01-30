@@ -29,49 +29,85 @@
   width: 400px;
   height: 600px;
   margin: 0 auto;
-  background-color: #f0f0f0;
   border: 2px solid #333;
   overflow: hidden;
+  
+  /* 使用 jpg5 作为背景，注意自行替换实际文件路径 */
+  background-image: url("jpg5.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 /* 主角样式 */
 .hero {
   width: 50px;
-    height: 50px;
-    position: absolute;
-    background-image: url("jpg2.png"); /* 主角图 */
-    background-size: cover;
-    background-repeat: no-repeat;
+  height: 50px;
+  position: absolute;
+  background-image: url("jpg2.png"); /* 主角图 */
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 /* 子弹样式 */
 .bullet {
   width: 10px;
-    height: 15px;
-    position: absolute;
-    background-image: url("jpg4.png"); /* 怪物图 */
-    background-size: cover;
-    background-repeat: no-repeat; /* 或者可换成子弹图片 */
+  height: 15px;
+  position: absolute;
+  background-image: url("jpg4.png"); /* 子弹图 */
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 /* 怪物样式 */
 .monster {
   width: 50px;
-    height: 50px;
-    position: absolute;
-    background-image: url("jpg1.png"); /* 怪物图 */
-    background-size: cover;
-    background-repeat: no-repeat;
-  }
+  height: 50px;
+  position: absolute;
+  background-image: url("jpg1.png"); /* 怪物图 */
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* 怪物血量文字样式 */
+.monsterHP {
+  position: absolute;
+  color: red;
+  font-weight: bold;
+  font-size: 14px;
+  text-align: center;
+  width: 50px;   /* 与怪物宽度一致 */
+  pointer-events: none; /* 避免干扰点击或碰撞 */
+}
 
 /* 增益样式 */
 .powerup {
   width: 20px;
-    height: 20px;
-    position: absolute;
-    background-image: url("jpg3.png"); /* 增益图 */
-    background-size: cover;
-    background-repeat: no-repeat;
+  height: 20px;
+  position: absolute;
+  background-image: url("jpg3.png"); /* 增益图 */
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* “门”选项（2 个增益）样式 */
+.doorOption {
+  width: 60px;
+  height: 60px;
+  position: absolute;
+  background-size: cover;
+  background-repeat: no-repeat;
+  
+  /* 这里只是用颜色示例，可自行换为门的图片 */
+  background-color: #ffcc00;
+  
+  border: 2px solid #999;
+  border-radius: 10px;
+  
+  text-align: center;
+  font-size: 16px;
+  line-height: 60px; /* 文字居中 */
+  cursor: default;
 }
 
 /* 游戏结束样式 */
@@ -82,4 +118,5 @@
   transform: translate(-50%, -50%);
   font-size: 36px;
   color: red;
+  text-align: center;
 }
