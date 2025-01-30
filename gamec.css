@@ -95,11 +95,14 @@
   width: 400px;
   height: 60px;
   position: absolute;
-  /* 若有门的背景，可在此设置，这里用浅黄演示 */
+  background-image: url("Lasergate.png");
   background-color: #fff099;
   border: 2px solid #999;
-  display: flex;          /* 左右两部分并排 */
+  display: flex;
   flex-direction: row;
+  background-repeat: no-repeat; /* 禁止重复 */
+  background-size: cover;       /* 图片覆盖整个容器 */
+  background-position: center;  /* 图片居中显示 */
 }
 
 /* 门的左半 / 右半选项 */

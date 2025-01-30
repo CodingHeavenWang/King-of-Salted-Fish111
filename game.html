@@ -11,6 +11,7 @@
   <div id="mainMenu">
     <h1>简易射击小游戏</h1>
     <button id="startButton">开始游戏</button>
+    <p style="color: #666; font-size: 12px;">（首次游玩需要点击此按钮启动音频）</p>
   </div>
 
   <!-- 游戏主容器 -->
@@ -20,6 +21,12 @@
 
   <!-- 音效 (子弹命中怪物) -->
   <audio id="hitSound" src="bullet.mp3" preload="auto"></audio>
+
+   <!-- 背景音乐（关键修改） -->
+   <audio id="bgm" loop>
+    <source src="battleThemeA.mp3" type="audio/mpeg">
+    <!-- 如果提供其他格式（如ogg）可以添加更多source -->
+  </audio>
 
   <!-- 引入外部 JS -->
   <script src="Saltedfish.js"></script>
