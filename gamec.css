@@ -31,8 +31,8 @@
   margin: 0 auto;
   border: 2px solid #333;
   overflow: hidden;
-  
-  /* 使用 jpg5 作为背景，注意自行替换实际文件路径 */
+
+  /* 使用 jpg5.png 作为背景，可自行替换实际路径 */
   background-image: url("jpg5.png");
   background-size: cover;
   background-position: center;
@@ -69,14 +69,14 @@
   background-repeat: no-repeat;
 }
 
-/* 怪物血量文字样式 */
+/* 怪物血量文字样式：显示在怪物顶部 */
 .monsterHP {
   position: absolute;
   color: red;
   font-weight: bold;
   font-size: 14px;
   text-align: center;
-  width: 50px;   /* 与怪物宽度一致 */
+  width: 50px;    /* 与怪物宽度一致 */
   pointer-events: none; /* 避免干扰点击或碰撞 */
 }
 
@@ -90,24 +90,31 @@
   background-repeat: no-repeat;
 }
 
-/* “门”选项（2 个增益）样式 */
-.doorOption {
-  width: 60px;
+/* “门”整行容器：占据 400px 宽 */
+.doorRow {
+  width: 400px;
   height: 60px;
   position: absolute;
-  background-size: cover;
-  background-repeat: no-repeat;
-  
-  /* 这里只是用颜色示例，可自行换为门的图片 */
-  background-color: #ffcc00;
-  
+  /* 若有门的背景，可在此设置，这里用浅黄演示 */
+  background-color: #fff099;
   border: 2px solid #999;
-  border-radius: 10px;
-  
-  text-align: center;
+  display: flex;          /* 左右两部分并排 */
+  flex-direction: row;
+}
+
+/* 门的左半 / 右半选项 */
+.doorOption {
+  flex: 1;                /* 两侧平均分 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 16px;
-  line-height: 60px; /* 文字居中 */
+  color: #000;
   cursor: default;
+  border-right: 1px solid #999; /* 中间加个分隔线 */
+}
+.doorOption:last-child {
+  border-right: none; /* 最右侧不再画右边线 */
 }
 
 /* 游戏结束样式 */
