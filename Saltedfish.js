@@ -32,7 +32,7 @@ const monsterWidth = 50;
 const monsterHeight = 50;
 const monsterSpeed = 1.5;
 const monsterHP = 200;
-let monsterSpawnRate = 60;    // 怪物生成频率(帧)
+let monsterSpawnRate = 120;    // 怪物生成频率(帧)
 let monsterSpawnCounter = 0;  // 用于计数帧
 
 // 增益
