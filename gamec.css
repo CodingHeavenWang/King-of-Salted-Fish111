@@ -130,3 +130,16 @@
   color: red;
   text-align: center;
 }
+
+
+/* 新增计分板样式 */
+#scoreBoard {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  text-shadow: 2px 2px 2px black;
+  z-index: 1000;
+}
