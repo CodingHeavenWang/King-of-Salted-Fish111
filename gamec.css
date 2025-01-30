@@ -36,34 +36,43 @@
 
 /* 主角样式 */
 .hero {
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  background-color: blue;
+  width: 50px;
+    height: 50px;
+    position: absolute;
+    background-image: url("jpg2.png"); /* 主角图 */
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
 /* 子弹样式 */
 .bullet {
-  position: absolute;
-  width: 5px;
-  height: 10px;
-  background-color: red;
+  width: 10px;
+    height: 15px;
+    position: absolute;
+    background-image: url("jpg4.png"); /* 怪物图 */
+    background-size: cover;
+    background-repeat: no-repeat; /* 或者可换成子弹图片 */
 }
 
 /* 怪物样式 */
 .monster {
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  background-color: green;
+  width: 50px;
+    height: 50px;
+    position: absolute;
+    background-image: url("jpg1.png"); /* 怪物图 */
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
 }
 
 /* 增益样式 */
 .powerup {
-  position: absolute;
   width: 20px;
-  height: 20px;
-  background-color: yellow;
+    height: 20px;
+    position: absolute;
+    background-image: url("jpg3.png"); /* 增益图 */
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
 /* 游戏结束样式 */
