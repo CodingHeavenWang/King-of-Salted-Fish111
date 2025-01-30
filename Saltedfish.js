@@ -5,6 +5,9 @@ const gameContainer = document.getElementById('gameContainer');
 const containerWidth = 400;
 const containerHeight = 600;
 
+// 音效
+const hitSound = document.getElementById('hitSound'); // 直接获取音频标签
+
 // 主角
 const hero = {
   element: null,
@@ -239,6 +242,10 @@ function checkBulletMonsterCollision() {
     for (let j = 0; j < monsters.length; j++) {
       const m = monsters[j];
       if (isCollision(b, m)) {
+        // 播放音效（关键代码！）
+        hitSound.currentTime = 0; // 重置音频到开头，确保快速重复播放
+        hitSound.play();
+
         // 子弹造成伤害
         m.hp -= bulletDamage;
         // 移除子弹
@@ -252,7 +259,7 @@ function checkBulletMonsterCollision() {
           // 移除怪物
           removeGameObject(monsters, j);
         }
-        break; // 一颗子弹只击中一个怪物后就消失
+        break;
       }
     }
   }
