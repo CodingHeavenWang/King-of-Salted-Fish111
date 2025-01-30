@@ -10,6 +10,7 @@ const bgm = document.getElementById('bgm'); // 背景音乐
 // 音效
 const hitSound = document.getElementById('hitSound'); // 从 HTML 中获取音频标签
 
+let timecount = 0;
 // 主角
 const hero = {
   element: null,
@@ -641,19 +642,57 @@ function spawn10sDoor() {
  * 修改游戏循环，添加 10秒计时的门
  ********************/
 function updateAll() {
-  levelTimer += 1 / 60; // 每秒60帧
+  timecount++;
+
 
   // 每30秒升级关卡
-  if (levelTimer >= 30 && currentLevel === 1) {
-    currentLevel = 2;
-    levelElement.textContent = `关卡: ${currentLevel}`;
-    levelTimer = 0; // 重置计时器
+  //if (levelTimer >= 30 && currentLevel === 1) {
+  //  currentLevel = 2;
+   // levelElement.textContent = `关卡: ${currentLevel}`;
+  // levelTimer = 0; // 重置计时器
 
     // 第二关增强
-    monsterHP = 300;
-    monsterSpawnRate = 100;
-  }
+  //  monsterHP = 300;
+   // monsterSpawnRate = 100;
+  //}
 
+  if (timecount <= 15000) {
+    switch (timecount) {
+      case 1:
+        monsterSpawnRate = 750;
+        monsterHP = 100;   // 例：怪物血量变为 200
+        break;
+      case 2500:
+        monsterSpawnRate = 700;
+        monsterHP = 150;   // 例：怪物血量变为 250
+        monsterHP = 150;
+        currentLevel++;   // 例：怪物血量变为 250
+        break;
+      case 5000:
+        monsterSpawnRate = 650;
+        monsterHP = 250;   // 例：怪物血量变为 300
+        monsterHP = 250;
+        currentLevel++;    // 例：怪物血量变为 300
+        break;
+      case 7500:
+        monsterSpawnRate = 600;
+        monsterHP = 375;   // 例：怪物血量变为 400
+        monsterHP = 375; 
+        currentLevel++;   // 例：怪物血量变为 400
+        break;
+      case 10000:
+        monsterSpawnRate = 550;
+        monsterHP = 475;   // 例：怪物血量变为 500
+        monsterHP = 475; 
+        currentLevel++;   // 例：怪物血量变为 500
+        break;
+      
+    }
+  } else {
+    currentLevel++; 
+    monsterSpawnRate = 400;
+    monsterHP = 500 + Math.floor(Math.random() * 50) + timecount*0.002;
+  }
   // 每10秒生成一次门
   door10sCounter++;
   if (door10sCounter >= 600 && !door10sSpawned) {  // 10秒 = 600帧 (假设60帧/秒)
