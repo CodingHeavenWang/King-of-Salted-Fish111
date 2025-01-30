@@ -6,46 +6,51 @@ const containerWidth = 400;
 const containerHeight = 600;
 
 const bgm = document.getElementById('bgm'); // 背景音乐
+const hitSound = document.getElementById('hitSound'); // 音效
+const scoreElement = document.getElementById('scoreBoard'); // 计分板（HTML 中应有 <div id="scoreBoard"></div>）
 
-// 音效
-const hitSound = document.getElementById('hitSound'); // 从 HTML 中获取音频标签
+// timecount：用于控制怪物生成频率和血量等随时间变化
+let timecount = 0;
 
 // 主角
 const hero = {
   element: null,
   x: containerWidth / 2 - 25, // 初始居中 (50px 宽的一半)
   y: containerHeight - 70,    // 在底部
-  width: 50,
-  height: 50,
-  speed: 5,
+  width: 25,
+  height: 25,
+  speed: 3,
   isAlive: true
 };
 
+// 分数
+let score = 0;
+
 // 子弹
 const bullets = [];
-let bulletSpeed = 3;        // 子弹向上移动速度
-let bulletDamage = 30;      // 子弹伤害
-let bulletSpawnRate = 30;   // 子弹发射频率(越小越快)，单位：帧
-let bulletSpawnCounter = 0; // 用于统计当前帧距离上次子弹发射
+let bulletSpeed = 3;       // 子弹向上移动速度
+let bulletDamage = 25;     // 子弹伤害
+let bulletSpawnRate = 125;  // 子弹发射频率(帧数间隔越小越快)
+let bulletSpawnCounter = 0;
 
 // 怪物
 const monsters = [];
-const monsterWidth = 50;
-const monsterHeight = 50;
-const monsterSpeed = 1.5;
-const monsterHP = 200;
-let monsterSpawnRate = 120;    // 怪物生成频率(帧)
-let monsterSpawnCounter = 0;  // 用于计数帧
+const monsterWidth = 40;
+const monsterHeight = 40;
+const monsterSpeed = 1;
+let monsterHP = 200;          // 怪物基础生命
+let monsterSpawnRate = 750;   // 初始怪物生成频率(帧)
+let monsterSpawnCounter = 0;
 
 // 增益
 const powerups = [];
-const powerupSpeed = 2;       // 增益下落速度
+const powerupSpeed = 1;       // 增益下落速度
 
 // “门”功能：每隔 15 秒生成，占据整行 (400px)，左右两个选项
 const doors = [];
-const doorSpeed = 2;          // 门下落速度
-let doorSpawnRate = 900;      // 约 15s（60帧/秒）
-let doorSpawnCounter = 0;     // 帧计数
+const doorSpeed = 1;          // 门下落速度
+let doorSpawnRate = 2500;      // 约15秒(60帧/秒)
+let doorSpawnCounter = 0;     
 
 // 游戏控制
 let leftPressed = false;
@@ -53,9 +58,17 @@ let rightPressed = false;
 let isGameOver = false;
 let frameId = null;
 
-// 新增计分相关
-let score = 0;
-const scoreElement = document.getElementById('scoreBoard'); // 确保 HTML 已添加对应元素
+/********************
+ * 可选的门增益选项
+ ********************/
+const possibleDoorEffects = [
+  { label: 'Damage +10',    effect: { type: 'damage', value: 10 } },
+  { label: 'Player Speed +0.5',  effect: { type: 'speed', value: 0.5 } },
+  { label: 'Shoot frequency + 2', effect: { type: 'freq',  value: -2 } },
+  { label: 'Damage +5',     effect: { type: 'damage', value: 5 } },
+  { label: 'Shoot frequency + 1', effect: { type: 'freq',  value: -1 } },
+  { label: 'Player Speed +0.25', effect: { type: 'speed', value: 0.25 } }
+];
 
 /********************
  * 初始化主角
@@ -76,7 +89,7 @@ function spawnBullet() {
   bulletDiv.className = 'bullet';
 
   // 子弹初始位置：主角正中上方
-  const bulletX = hero.x + hero.width / 2 - 5; // 5 是子弹宽的一半
+  const bulletX = hero.x + hero.width / 2 - 5;
   const bulletY = hero.y - 15;
 
   const bulletObj = {
@@ -92,33 +105,32 @@ function spawnBullet() {
 }
 
 /********************
- * 生成怪物 (含血量条)
+ * 生成怪物
  ********************/
 function spawnMonster() {
   const monsterDiv = document.createElement('div');
   monsterDiv.className = 'monster';
 
-  // 创建血量文字
+  // 血量文字
   const monsterHPDiv = document.createElement('div');
   monsterHPDiv.className = 'monsterHP';
 
-  // 怪物随机 X 坐标
+  // 随机 X 坐标
   const randomX = Math.random() * (containerWidth - monsterWidth);
 
   const monsterObj = {
     element: monsterDiv,
     hpElement: monsterHPDiv,
     x: randomX,
-    y: -monsterHeight, // 从画面上方出现
+    y: -monsterHeight,
     width: monsterWidth,
     height: monsterHeight,
-    hp: monsterHP
+    hp: monsterHP  // 根据 timecount 可能提升后的怪物血量
   };
 
   monsters.push(monsterObj);
   gameContainer.appendChild(monsterDiv);
   gameContainer.appendChild(monsterHPDiv);
-
   updateMonster(monsterObj);
 }
 
@@ -127,7 +139,6 @@ function spawnMonster() {
  ********************/
 function updateMonster(m) {
   updatePosition(m);
-  // 更新血量文字位置(在怪物上方)
   if (m.hpElement) {
     m.hpElement.style.left = m.x + 'px';
     m.hpElement.style.top = (m.y - 18) + 'px';
@@ -142,7 +153,7 @@ function spawnPowerup(x, y) {
   const powerupDiv = document.createElement('div');
   powerupDiv.className = 'powerup';
 
-  // 随机决定增益类型
+  // 这里也可随机决定增益类型
   const type = Math.random() < 0.5 ? 'freq' : 'damage';
 
   const powerupObj = {
@@ -159,38 +170,42 @@ function spawnPowerup(x, y) {
 }
 
 /********************
- * 生成“门” (整宽 400px)，里面两个选项
+ * 生成“门”，随机抽取两种增益
  ********************/
 function spawnDoor() {
   // 整个门容器
   const doorRowDiv = document.createElement('div');
   doorRowDiv.className = 'doorRow';
 
-  // 两侧选项
+  // 随机抽取两种不同的增益选项
+  const indices = pickTwoDistinctIndices(possibleDoorEffects.length);
+  const leftChoice = possibleDoorEffects[indices[0]];
+  const rightChoice = possibleDoorEffects[indices[1]];
+
+  // 创建左、右选项
   const leftOptionDiv = document.createElement('div');
   leftOptionDiv.className = 'doorOption';
-  leftOptionDiv.textContent = '+10 子弹伤害';
+  leftOptionDiv.textContent = leftChoice.label;
 
   const rightOptionDiv = document.createElement('div');
   rightOptionDiv.className = 'doorOption';
-  rightOptionDiv.textContent = '+2 移动速度';
+  rightOptionDiv.textContent = rightChoice.label;
 
   // 将选项放入门容器
   doorRowDiv.appendChild(leftOptionDiv);
   doorRowDiv.appendChild(rightOptionDiv);
 
-  // “门”对象：整个一行
-  // 为了碰撞检测，我们将把左右选项当作两个碰撞区
-  const groupId = Date.now(); // 用时间戳识别它们是一组
+  // groupId 用于一次性移除
+  const groupId = Date.now();
   const doorObjLeft = {
     element: leftOptionDiv,
     x: 0,
-    y: -60,   // 从上方出现
+    y: -60,
     width: 200,
     height: 60,
-    effect: { type: 'damage', value: 10 },
+    effect: leftChoice.effect,
     groupId: groupId,
-    parent: doorRowDiv  // 父容器
+    parent: doorRowDiv
   };
   const doorObjRight = {
     element: rightOptionDiv,
@@ -198,20 +213,32 @@ function spawnDoor() {
     y: -60,
     width: 200,
     height: 60,
-    effect: { type: 'speed', value: 2 },
+    effect: rightChoice.effect,
     groupId: groupId,
     parent: doorRowDiv
   };
 
-  // 同时要让 doorRowDiv 自身也具有坐标（0, -60），宽 400，高 60
   doorRowDiv.style.left = '0px';
   doorRowDiv.style.top = '-60px';
-  doorRowDiv.style.width = '400px';  // 占满整行
+  doorRowDiv.style.width = '400px';
   doorRowDiv.style.height = '60px';
   gameContainer.appendChild(doorRowDiv);
 
-  // 加入 doors 数组
   doors.push(doorObjLeft, doorObjRight);
+}
+
+/********************
+ * 从 n 个选项里随机选取 2 个不重复的索引
+ ********************/
+function pickTwoDistinctIndices(n) {
+  // 若 n < 2，应自行处理
+  if (n < 2) return [0, 0];
+  let i1 = Math.floor(Math.random() * n);
+  let i2 = Math.floor(Math.random() * n);
+  while (i2 === i1) {
+    i2 = Math.floor(Math.random() * n);
+  }
+  return [i1, i2];
 }
 
 /********************
@@ -220,28 +247,29 @@ function spawnDoor() {
 function updateDoors() {
   for (let i = 0; i < doors.length; i++) {
     const d = doors[i];
-    // 下落
+    // 门下落
     d.y += doorSpeed;
-    // 更新位置
+
+    // 更新门选项位置
     d.element.style.left = d.x + 'px';
     d.element.style.top = d.y + 'px';
 
-    // 同时更新父容器的位置 (整行门)
+    // 如果有父容器（整行门DIV），一起移动
     if (d.parent) {
       d.parent.style.top = d.y + 'px';
     }
 
-    // 超出底部则移除
+    // 超出画面则移除
     if (d.y > containerHeight) {
       removeDoorGroup(d.groupId);
       break;
     }
 
-    // 检测主角是否碰到该门选项
+    // 检测主角碰撞
     if (isCollision(hero, d)) {
-      // 应用增益
+      // 应用门增益
       applyDoorEffect(d.effect);
-      // 一次性移除两侧选项(同组ID)
+      // 移除同组
       removeDoorGroup(d.groupId);
       break;
     }
@@ -260,16 +288,20 @@ function applyDoorEffect(effect) {
     case 'speed':
       hero.speed += effect.value;
       break;
+    case 'freq':
+      // freq 的 value 为负数 => 减少发射间隔
+      // 确保最小是 10
+      bulletSpawnRate = Math.max(10, bulletSpawnRate + effect.value);
+      break;
   }
 }
 
 /********************
- * 移除同组门 (左右选项一起)
+ * 移除同组的门选项
  ********************/
 function removeDoorGroup(groupId) {
   for (let i = doors.length - 1; i >= 0; i--) {
     if (doors[i].groupId === groupId) {
-      // 移除父容器（只需要一次，但我们循环也没问题）
       if (doors[i].parent && doors[i].parent.parentNode) {
         doors[i].parent.parentNode.removeChild(doors[i].parent);
       }
@@ -295,13 +327,47 @@ function gameLoop() {
  * 每帧更新
  ********************/
 function updateAll() {
-  // 门计数器
-  doorSpawnCounter++;
+  timecount++;         // 时间计数（帧数）
+  doorSpawnCounter++;  // 门生成计数
+  monsterSpawnCounter++;
+  // 到达门生成时机
   if (doorSpawnCounter >= doorSpawnRate) {
     spawnDoor();
     doorSpawnCounter = 0;
   }
-
+  if (monsterSpawnCounter >= monsterSpawnRate) {
+    spawnMonster();
+    monsterSpawnCounter = 0;
+  }
+  // 根据 timecount 动态调整怪物生成、怪物血量
+  if (timecount <= 15000) {
+    switch (timecount) {
+      case 1:
+        monsterSpawnRate = 750;
+        monsterHP = 100;   // 例：怪物血量变为 200
+        break;
+      case 2500:
+        monsterSpawnRate = 700;
+        monsterHP = 150;   // 例：怪物血量变为 250
+        break;
+      case 5000:
+        monsterSpawnRate = 650;
+        monsterHP = 250;   // 例：怪物血量变为 300
+        break;
+      case 7500:
+        monsterSpawnRate = 600;
+        monsterHP = 375;   // 例：怪物血量变为 400
+        break;
+      case 10000:
+        monsterSpawnRate = 550;
+        monsterHP = 475;   // 例：怪物血量变为 500
+        break;
+      
+    }
+  } else {
+    monsterSpawnRate = 400;
+    monsterHP = 500 + Math.floor(Math.random() * 50) + timecount*0.002;
+  }
   updateHero();
   updateBullets();
   updateMonstersAll();
@@ -326,7 +392,7 @@ function updateHero() {
   }
   updatePosition(hero);
 
-  // 子弹发射（根据 bulletSpawnRate）
+  // 子弹发射
   bulletSpawnCounter++;
   if (bulletSpawnCounter >= bulletSpawnRate) {
     spawnBullet();
@@ -338,25 +404,29 @@ function updateHero() {
  * 更新怪物
  ********************/
 function updateMonstersAll() {
-  monsterSpawnCounter++;
-  if (monsterSpawnCounter >= monsterSpawnRate) {
-    spawnMonster();
-    monsterSpawnCounter = 0;
-  }
+  //monsterSpawnCounter++;
+  // 满足条件则生成怪物
+  //if (monsterSpawnCounter >= monsterSpawnRate) {
+  //  spawnMonster();
+  //  monsterSpawnCounter = 0;
+  //}
 
+  // 移动怪物
   for (let i = 0; i < monsters.length; i++) {
     const m = monsters[i];
-    m.y += monsterSpeed*Math.random();
+    // 给怪物加一点随机性
+    m.y += monsterSpeed * Math.random();
+
     updateMonster(m);
 
-    // 越出屏幕
+    // 离开屏幕
     if (m.y > containerHeight) {
       removeMonster(monsters, i);
       i--;
       continue;
     }
 
-    // 怪物与主角碰撞
+    // 碰撞主角
     if (isCollision(hero, m)) {
       isGameOver = true;
       break;
@@ -373,34 +443,32 @@ function updateBullets() {
     b.y -= bulletSpeed;
     updatePosition(b);
 
-    // 超出屏幕
+    // 离开屏幕
     if (b.y + b.height < 0) {
       removeGameObject(bullets, i);
       i--;
       continue;
     }
 
-    // 检测子弹与怪物碰撞
+    // 检测子弹和怪物碰撞
     for (let j = 0; j < monsters.length; j++) {
       const m = monsters[j];
       if (isCollision(b, m)) {
-        // 播放命中音效
-        hitSound.currentTime = 0; 
+        // 命中音效
+        hitSound.currentTime = 0;
         hitSound.play();
 
-        // 子弹伤害
         m.hp -= bulletDamage;
-        // 移除子弹
         removeGameObject(bullets, i);
         i--;
 
-        // 怪物死亡？
+        // 击杀怪物
         if (m.hp <= 0) {
-        score += 5;  // 新增：击杀加5分
-        scoreElement.textContent = `Score: ${score}`; // 新增：更新显示
-        spawnPowerup(m.x + m.width / 2, m.y + m.height / 2);
-        removeMonster(monsters, j);
-      }
+          score += 5;  // 击杀加分
+          scoreElement.textContent = `Score: ${score}`;
+          spawnPowerup(m.x + m.width / 2, m.y + m.height / 2);
+          removeMonster(monsters, j);
+        }
         break;
       }
     }
@@ -416,19 +484,20 @@ function updatePowerups() {
     p.y += powerupSpeed;
     updatePosition(p);
 
-    // 越出屏幕
+    // 离开屏幕
     if (p.y > containerHeight) {
       removeGameObject(powerups, i);
       i--;
       continue;
     }
 
-    // 检测主角拾取增益
+    // 主角拾取增益
     if (isCollision(hero, p)) {
       if (p.type === 'freq') {
-        bulletSpawnRate = Math.max(2, bulletSpawnRate - 3);
+        // 每次 -1 或 -2，保证最小10
+        bulletSpawnRate = Math.max(10, bulletSpawnRate - 1);
       } else if (p.type === 'damage') {
-        bulletDamage += 10;
+        bulletDamage += 5;
       }
       removeGameObject(powerups, i);
       i--;
@@ -437,7 +506,7 @@ function updatePowerups() {
 }
 
 /********************
- * 移除怪物(含血量文字)
+ * 移除怪物 (包括血量文本)
  ********************/
 function removeMonster(arr, index) {
   if (arr[index].hpElement && arr[index].hpElement.parentNode) {
@@ -468,7 +537,7 @@ function updatePosition(obj) {
 }
 
 /********************
- * 从数组中移除并删DOM
+ * 从数组中移除并删除DOM
  ********************/
 function removeGameObject(arr, index) {
   if (arr[index].element && arr[index].element.parentNode) {
@@ -500,7 +569,6 @@ document.addEventListener('keydown', (e) => {
     rightPressed = true;
   }
 });
-
 document.addEventListener('keyup', (e) => {
   if (e.key === 'ArrowLeft') {
     leftPressed = false;
@@ -529,18 +597,23 @@ function startGame() {
   powerups.length = 0;
   doors.length = 0;
 
-   // 新增：重置分数
-   score = 0;
-   scoreElement.textContent = `Score: 0`;
-
   // 重置计数器
+  timecount = 0;
   bulletSpawnCounter = 0;
   monsterSpawnCounter = 0;
   doorSpawnCounter = 0;
 
-    // 启动背景音乐（需用户点击后触发）
-    bgm.currentTime = 0;
-    bgm.play().catch(e => console.log("音乐播放需要用户交互"));
+  // 重置分数
+  score = 0;
+  scoreElement.textContent = 'Score: 0';
+
+  // 重置怪物血量和出生频率
+  monsterHP = 200;
+  monsterSpawnRate = 210;
+
+  // 启动背景音乐
+  bgm.currentTime = 0;
+  bgm.play().catch(e => console.log("音乐播放需要用户交互"));
 
   // 初始化主角
   initHero();
@@ -550,6 +623,6 @@ function startGame() {
 }
 
 /********************
- * 监听开始按钮
+ * 监听“开始游戏”按钮
  ********************/
 document.getElementById('startButton').addEventListener('click', startGame);
