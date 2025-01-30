@@ -24,16 +24,26 @@
 }
 
 /* 游戏容器样式 */
+<<<<<<< Updated upstream
 /* 游戏容器样式 */
 #gameContainer {
   position: relative;
   width: 400px;  /* 竖屏宽度 */
   height: 600px; /* 竖屏高度 */
   background: url("Wallpaper/BankStash.png") no-repeat center/cover; /* 游戏背景 */
+=======
+#gameContainer {
+  position: relative;
+  width: 400px;
+  height: 600px;
+  margin: 0 auto;
+  background-color: #f0f0f0;
+>>>>>>> Stashed changes
   border: 2px solid #333;
   overflow: hidden;
 }
 
+<<<<<<< Updated upstream
 
 #startButton {
   background: none;  /* 去除背景 */
@@ -73,20 +83,36 @@
   background-image: url("Character/wizard.png"); /* 主角图 */
   background-size: cover;
   background-repeat: no-repeat;
+=======
+/* 主角样式 */
+.hero {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background-color: blue;
+>>>>>>> Stashed changes
 }
 
 /* 子弹样式 */
 .bullet {
+<<<<<<< Updated upstream
   width: 20px;
   height: 20px;
   position: absolute;
   background-image: url("Bullet/shot_fireball.png"); /* 子弹图 */
   background-size: cover;
   background-repeat: no-repeat;
+=======
+  position: absolute;
+  width: 5px;
+  height: 10px;
+  background-color: red;
+>>>>>>> Stashed changes
 }
 
 /* 怪物样式 */
 .monster {
+<<<<<<< Updated upstream
   width: 50px;
   height: 50px;
   position: absolute;
@@ -104,10 +130,17 @@
   text-align: center;
   width: 50px;    /* 与怪物宽度一致 */
   pointer-events: none; /* 避免干扰点击或碰撞 */
+=======
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background-color: green;
+>>>>>>> Stashed changes
 }
 
 /* 增益样式 */
 .powerup {
+<<<<<<< Updated upstream
   width: 20px;
   height: 20px;
   position: absolute;
@@ -144,6 +177,12 @@
 }
 .doorOption:last-child {
   border-right: none; /* 最右侧不再画右边线 */
+=======
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: yellow;
+>>>>>>> Stashed changes
 }
 
 /* 游戏结束样式 */
@@ -154,6 +193,7 @@
   transform: translate(-50%, -50%);
   font-size: 36px;
   color: red;
+<<<<<<< Updated upstream
   text-align: center;
 }
 
@@ -180,4 +220,6 @@
   font-weight: bold;
   text-shadow: 2px 2px 2px black;
   z-index: 1000;
+=======
+>>>>>>> Stashed changes
 }
