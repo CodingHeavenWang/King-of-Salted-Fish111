@@ -9,16 +9,18 @@
     html, body {
       height: 100%;
       margin: 0;
+      padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
+      background: url("Wallpaper/DesertForest.png") no-repeat center/cover;  /* 横屏背景 */
+      background-size: cover;
     }
-    
+
     #mainMenu {
       width: 100vw;
       height: 100vh;
       text-align: center;
-      background: url('Wallpaper/parallax-mountain-bg.png') no-repeat center/cover; /* 添加菜单背景 */
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* 增加阴影 */
@@ -39,7 +41,6 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(255, 255, 255, 0.5);
       border-radius: 10px;
       z-index: 0;
     }
@@ -48,20 +49,33 @@
       position: relative;
       z-index: 1;
     }
+
+    /* 为title.png设置样式 */
+    #titleImage {
+      max-width: 20%; /* 使图片响应式 */
+      height: auto;
+      margin-bottom: 20px; /* 给图片和其他内容之间添加间距 */
+      margin-top: -250px; /* 向上移动图片 */
+    }
   </style>
 </head>
 <body>
-  <!-- 主界面 -->
-  <div id="mainMenu">
-    <h1>King of Salted Fish</h1>
-    <button id="startButton">Start Game</button>
-    <p style="color: #666; font-size: 12px;">（首次游玩需要点击此按钮启动音频）</p>
-  </div>
+
+<!-- 主界面 -->
+<div id="mainMenu">
+  <img id="titleImage" src="Others/Title.png" alt="Game Title">
+  <button id="startButton">
+    <img src="Others/button.png" alt="Start Game">
+    <span>Start</span>
+  </button>  
+</div>
 
   <!-- 游戏主容器 -->
   <div id="gameContainer" style="display: none;">
       <!-- 新增计分板 -->
   <div id="scoreBoard">分数: 0</div>
+  <!-- 新增关卡显示 -->
+  <div id="levelBoard">关卡: 1</div>
     <!-- 这里的内容（主角、怪物、子弹、增益、门）会通过 JS 动态创建 -->
   </div>
 

@@ -24,20 +24,46 @@
 }
 
 /* 游戏容器样式 */
+/* 游戏容器样式 */
 #gameContainer {
   position: relative;
-  width: 400px;
-  height: 600px;
-  margin: 0 auto;
+  width: 400px;  /* 竖屏宽度 */
+  height: 600px; /* 竖屏高度 */
+  background: url("Wallpaper/BankStash.png") no-repeat center/cover; /* 游戏背景 */
   border: 2px solid #333;
   overflow: hidden;
-
-  /* 使用 jpg5.png 作为背景，可自行替换实际路径 */
-  background-image: url("Wallpaper/jpg5.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
 }
+
+
+#startButton {
+  background: none;  /* 去除背景 */
+  border: none;      /* 去除边框 */
+  padding: 0;        /* 去除内边距 */
+  cursor: pointer;   /* 设置鼠标悬停时为指针 */
+  position: relative; /* 用于定位内部元素 */
+}
+
+#startButton:hover {
+  background: none;  /* 去除悬停时的背景 */
+  outline: none;      /* 去除悬停时的边框 */
+}
+
+#startButton img {
+  width: 100%;       /* 使图片自适应按钮大小 */
+  height: auto;      /* 保持图片比例 */
+}
+
+#startButton span {
+  position: absolute; /* 使文本定位 */
+  top: 50%;           /* 垂直居中 */
+  left: 50%;          /* 水平居中 */
+  transform: translate(-50%, -55%); /* 精确居中 */
+  font-size: 30px;    /* 设置文本大小 */
+  color: white;       /* 设置文本颜色 */
+  font-weight: bold;  /* 设置文本为加粗 */
+}
+
+
 
 /* 主角样式 */
 .hero {
@@ -136,6 +162,18 @@
 #scoreBoard {
   position: absolute;
   top: 10px;
+  left: 10px;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  text-shadow: 2px 2px 2px black;
+  z-index: 1000;
+}
+
+/* 新增关卡显示样式 */
+#levelBoard {
+  position: absolute;
+  top: 50px;      /* 在计分板下方留出空间 */
   left: 10px;
   color: white;
   font-size: 24px;

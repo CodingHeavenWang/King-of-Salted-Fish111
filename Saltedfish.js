@@ -35,12 +35,16 @@ let bulletSpawnCounter = 0;
 
 // 怪物
 const monsters = [];
+
 const monsterWidth = 40;
 const monsterHeight = 40;
 const monsterSpeed = 1;
-let monsterHP = 200;          // 怪物基础生命
-let monsterSpawnRate = 750;   // 初始怪物生成频率(帧)
-let monsterSpawnCounter = 0;
+let monsterHP = 200;
+let monsterSpawnRate = 750;    // 怪物生成频率(帧)
+let monsterSpawnCounter = 0;  // 用于计数帧
+let currentLevel = 1;
+let levelTimer = 0;
+const levelElement = document.getElementById('levelBoard');
 
 // 增益
 const powerups = [];
@@ -330,7 +334,10 @@ function updateAll() {
   timecount++;         // 时间计数（帧数）
   doorSpawnCounter++;  // 门生成计数
   monsterSpawnCounter++;
-  // 到达门生成时机
+
+  // 门计数器
+  doorSpawnCounter++;
+
   if (doorSpawnCounter >= doorSpawnRate) {
     spawnDoor();
     doorSpawnCounter = 0;
