@@ -53,6 +53,10 @@ let rightPressed = false;
 let isGameOver = false;
 let frameId = null;
 
+// 新增计分相关
+let score = 0;
+const scoreElement = document.getElementById('scoreBoard'); // 确保 HTML 已添加对应元素
+
 /********************
  * 初始化主角
  ********************/
@@ -392,9 +396,11 @@ function updateBullets() {
 
         // 怪物死亡？
         if (m.hp <= 0) {
-          spawnPowerup(m.x + m.width / 2, m.y + m.height / 2);
-          removeMonster(monsters, j);
-        }
+        score += 5;  // 新增：击杀加5分
+        scoreElement.textContent = `Score: ${score}`; // 新增：更新显示
+        spawnPowerup(m.x + m.width / 2, m.y + m.height / 2);
+        removeMonster(monsters, j);
+      }
         break;
       }
     }
@@ -522,6 +528,10 @@ function startGame() {
   monsters.length = 0;
   powerups.length = 0;
   doors.length = 0;
+
+   // 新增：重置分数
+   score = 0;
+   scoreElement.textContent = `Score: 0`;
 
   // 重置计数器
   bulletSpawnCounter = 0;
