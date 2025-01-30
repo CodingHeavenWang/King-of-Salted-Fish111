@@ -55,31 +55,13 @@ let leftPressed = false;
 let rightPressed = false;
 let isGameOver = false;
 let frameId = null;
-javascript
-复制
-/********************
- * 启动游戏
- ********************/
 
-<<<<<<< Updated upstream
 let isWeaponChanged = false; // 是否已更换武器贴图
 
 // 新增计分相关
 let score = 0;
 const scoreElement = document.getElementById('scoreBoard'); // 确保 HTML 已添加对应元素
 
-=======
-function startGame() {
-  // 隐藏主界面
-  document.getElementById('mainMenu').style.display = 'none';
-  // 显示游戏容器
-  document.getElementById('gameContainer').style.display = 'block';
-
-  // 初始化游戏
-  initHero();
-  frameId = requestAnimationFrame(gameLoop);
-}
->>>>>>> Stashed changes
 /********************
  * 初始化主角
  ********************/
