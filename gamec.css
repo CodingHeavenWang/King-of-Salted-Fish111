@@ -35,6 +35,34 @@
 }
 
 
+#startButton {
+  background: none;  /* 去除背景 */
+  border: none;      /* 去除边框 */
+  padding: 0;        /* 去除内边距 */
+  cursor: pointer;   /* 设置鼠标悬停时为指针 */
+  position: relative; /* 用于定位内部元素 */
+}
+
+#startButton:hover {
+  background: none;  /* 去除悬停时的背景 */
+  outline: none;      /* 去除悬停时的边框 */
+}
+
+#startButton img {
+  width: 100%;       /* 使图片自适应按钮大小 */
+  height: auto;      /* 保持图片比例 */
+}
+
+#startButton span {
+  position: absolute; /* 使文本定位 */
+  top: 50%;           /* 垂直居中 */
+  left: 50%;          /* 水平居中 */
+  transform: translate(-50%, -55%); /* 精确居中 */
+  font-size: 30px;    /* 设置文本大小 */
+  color: white;       /* 设置文本颜色 */
+  font-weight: bold;  /* 设置文本为加粗 */
+}
+
 
 
 /* 主角样式 */
