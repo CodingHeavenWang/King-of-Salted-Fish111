@@ -29,9 +29,14 @@
   width: 400px;
   height: 600px;
   margin: 0 auto;
-  background-color: #f0f0f0;
   border: 2px solid #333;
   overflow: hidden;
+  
+  /* 使用 jpg5 作为背景，注意自行替换实际文件路径 */
+  background-image: url("jpg5.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 /* 主角样式 */
@@ -49,7 +54,7 @@
   width: 10px;
   height: 15px;
   position: absolute;
-  background-image: url("jpg4.png"); /* 子弹图，也可以改成别的 */
+  background-image: url("jpg4.png"); /* 子弹图 */
   background-size: cover;
   background-repeat: no-repeat;
 }
@@ -85,16 +90,20 @@
   background-repeat: no-repeat;
 }
 
-/* “选择门”选项（两个增益）样式 */
+/* “门”选项（2 个增益）样式 */
 .doorOption {
   width: 60px;
   height: 60px;
   position: absolute;
   background-size: cover;
   background-repeat: no-repeat;
-  background-color: #ffcc00; /* 仅作示意，可换门的图片或图标 */
+  
+  /* 这里只是用颜色示例，可自行换为门的图片 */
+  background-color: #ffcc00;
+  
   border: 2px solid #999;
   border-radius: 10px;
+  
   text-align: center;
   font-size: 16px;
   line-height: 60px; /* 文字居中 */
