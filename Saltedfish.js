@@ -18,20 +18,19 @@ const hero = {
 
 // 子弹
 const bullets = [];
-let bulletSpeed = 3;
+let bulletSpeed = 6;
 let bulletDamage = 30;        // 子弹伤害
-let bulletSpawnRate = 30;     // 子弹发射频率(数值越小越快，指帧数间隔)
+let bulletSpawnRate = 10;     // 子弹发射频率(数值越小越快，指帧数间隔)
 let bulletSpawnCounter = 0;   // 用于统计当前帧距离上次子弹发射经过了多少帧
 
 // 怪物
 const monsters = [];
 const monsterWidth = 30;
 const monsterHeight = 30;
-const monsterSpeed = 1;
-const monsterHP = 300;
+const monsterSpeed = 2;
+const monsterHP = 200;
 let monsterSpawnRate = 60;    // 怪物生成频率(帧)
-// 用于计数帧
-let monsterSpawnCounter = 0;
+let monsterSpawnCounter = 0;  // 用于计数帧
 
 // 增益
 const powerups = [];
@@ -44,22 +43,7 @@ let isGameOver = false;
 
 // 帧循环
 let frameId = null;
-/********************
- * 启动游戏
- ********************/
-function startGame() {
-  // 隐藏主界面
-  document.getElementById('mainMenu').style.display = 'none';
-  // 显示游戏容器
-  document.getElementById('gameContainer').style.display = 'block';
 
-  // 初始化游戏
-  initHero();
-  frameId = requestAnimationFrame(gameLoop);
-}
-
-// 监听开始按钮点击事件
-document.getElementById('startButton').addEventListener('click', startGame);
 /********************
  * 初始化主角
  ********************/
@@ -218,7 +202,7 @@ function updateMonsters() {
   // 移动怪物
   for (let i = 0; i < monsters.length; i++) {
     const m = monsters[i];
-    m.y += 1.5*Math.random();
+    m.y += monsterSpeed;
     updatePosition(m);
 
     // 怪物超出画面，则移除
@@ -373,9 +357,26 @@ document.addEventListener('keyup', (e) => {
  * 启动游戏
  ********************/
 function startGame() {
+  // 隐藏主界面
+  document.getElementById('mainMenu').style.display = 'none';
+  // 显示游戏容器
+  gameContainer.style.display = 'block';
+
+  // 重置游戏状态
+  isGameOver = false;
+  hero.isAlive = true;
+  bullets.length = 0;
+  monsters.length = 0;
+  powerups.length = 0;
+
+  // 初始化主角
   initHero();
+
+  // 启动游戏循环
   frameId = requestAnimationFrame(gameLoop);
 }
 
-// 开始游戏
-startGame();
+/********************
+ * 监听开始按钮点击事件
+ ********************/
+document.getElementById('startButton').addEventListener('click', startGame);
