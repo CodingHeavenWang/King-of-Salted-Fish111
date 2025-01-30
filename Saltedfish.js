@@ -361,23 +361,28 @@ function updateAll() {
         break;
       case 2500:
         monsterSpawnRate = 700;
-        monsterHP = 150;   // 例：怪物血量变为 250
+        monsterHP = 150;
+        currentLevel++;   // 例：怪物血量变为 250
         break;
       case 5000:
         monsterSpawnRate = 650;
-        monsterHP = 250;   // 例：怪物血量变为 300
+        monsterHP = 250;
+        currentLevel++;    // 例：怪物血量变为 300
         break;
       case 7500:
         monsterSpawnRate = 600;
-        monsterHP = 375;   // 例：怪物血量变为 400
+        monsterHP = 375; 
+        currentLevel++;   // 例：怪物血量变为 400
         break;
       case 10000:
         monsterSpawnRate = 550;
-        monsterHP = 475;   // 例：怪物血量变为 500
+        monsterHP = 475; 
+        currentLevel++;   // 例：怪物血量变为 500
         break;
       
     }
   } else {
+    currentLevel++; 
     monsterSpawnRate = 400;
     monsterHP = 500 + Math.floor(Math.random() * 50) + timecount*0.002;
   }

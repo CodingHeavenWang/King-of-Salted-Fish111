@@ -101,7 +101,24 @@
 
 /* 第二关怪物图片 */
 .monster.level2 {
+  background-image: url("Monster/jpg1.png"); /* 替换为你的新图片路径 */
+  border: 2px solid #f70707;
+}
+
+.monster.level3 {
   background-image: url("Monster/jpg2.png"); /* 替换为你的新图片路径 */
+}
+
+.monster.level4 {
+  background-image: url("Monster/jpg2.png"); /* 替换为你的新图片路径 */
+  border: 2px solid #f70707;
+}
+.monster.level5 {
+  background-image: url("Monster/jpg3.png"); /* 替换为你的新图片路径 */
+}
+.monster.level6 {
+  background-image: url("Monster/jpg3.png"); /* 替换为你的新图片路径 */
+  border: 2px solid #f70707;
 }
 
 /* 怪物血量文字样式：显示在怪物顶部 */
