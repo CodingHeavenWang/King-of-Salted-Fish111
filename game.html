@@ -5,6 +5,50 @@
   <title>King of Salted Fish</title>
   <!-- 引入外部 CSS -->
   <link rel="stylesheet" href="gamec.css">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    #mainMenu {
+      width: 100vw;
+      height: 100vh;
+      text-align: center;
+      background: url('parallax-mountain-bg.png') no-repeat center/cover; /* 添加菜单背景 */
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* 增加阴影 */
+      min-width: 300px;
+      min-height: 250px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    /* 半透明背景确保文字清晰 */
+    #mainMenu::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 10px;
+      z-index: 0;
+    }
+
+    #mainMenu h1, #mainMenu button, #mainMenu p {
+      position: relative;
+      z-index: 1;
+    }
+  </style>
 </head>
 <body>
   <!-- 主界面 -->
@@ -25,7 +69,6 @@
   <!-- 背景音乐 -->
   <audio id="bgm" loop>
     <source src="battleThemeA.mp3" type="audio/mpeg">
-    <!-- 如果提供其他格式（如ogg）可以添加更多source -->
   </audio>
 
   <!-- 引入外部 JS -->
