@@ -5,6 +5,8 @@ const gameContainer = document.getElementById('gameContainer');
 const containerWidth = 400;
 const containerHeight = 600;
 
+const bgm = document.getElementById('bgm'); // 背景音乐
+
 // 音效
 const hitSound = document.getElementById('hitSound'); // 从 HTML 中获取音频标签
 
@@ -477,6 +479,9 @@ function showGameOver() {
   gameoverDiv.className = 'gameover';
   gameoverDiv.innerText = '游戏结束';
   gameContainer.appendChild(gameoverDiv);
+
+  // 停止背景音乐
+  bgm.pause();
 }
 
 /********************
@@ -522,6 +527,10 @@ function startGame() {
   bulletSpawnCounter = 0;
   monsterSpawnCounter = 0;
   doorSpawnCounter = 0;
+
+    // 启动背景音乐（需用户点击后触发）
+    bgm.currentTime = 0;
+    bgm.play().catch(e => console.log("音乐播放需要用户交互"));
 
   // 初始化主角
   initHero();
