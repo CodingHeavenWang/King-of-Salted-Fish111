@@ -169,3 +169,15 @@
   text-shadow: 2px 2px 2px black;
   z-index: 1000;
 }
+
+/* 新增关卡显示样式 */
+#levelBoard {
+  position: absolute;
+  top: 50px;      /* 在计分板下方留出空间 */
+  left: 10px;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  text-shadow: 2px 2px 2px black;
+  z-index: 1000;
+}

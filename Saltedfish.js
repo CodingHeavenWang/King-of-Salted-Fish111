@@ -33,9 +33,12 @@ const monsters = [];
 const monsterWidth = 50;
 const monsterHeight = 50;
 const monsterSpeed = 1.5;
-const monsterHP = 200;
+let monsterHP = 200;
 let monsterSpawnRate = 120;    // 怪物生成频率(帧)
 let monsterSpawnCounter = 0;  // 用于计数帧
+let currentLevel = 1;
+let levelTimer = 0;
+const levelElement = document.getElementById('levelBoard');
 
 // 增益
 const powerups = [];
@@ -295,6 +298,21 @@ function gameLoop() {
  * 每帧更新
  ********************/
 function updateAll() {
+  
+  // 新增：关卡时间统计
+  levelTimer += 1 / 60; // 按60帧/秒递增时间
+
+  // 每30秒升级关卡
+  if (levelTimer >= 30 && currentLevel === 1) {
+    currentLevel = 2;
+    levelElement.textContent = `关卡: ${currentLevel}`;
+    levelTimer = 0; // 重置计时器
+
+    // 第二关增强
+    monsterHP = 300;    // 怪物基础血量提升到300
+    monsterSpawnRate = 100; // 怪物生成加快（原为120）
+  }
+
   // 门计数器
   doorSpawnCounter++;
   if (doorSpawnCounter >= doorSpawnRate) {
