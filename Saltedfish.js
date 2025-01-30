@@ -18,17 +18,17 @@ const hero = {
 
 // 子弹
 const bullets = [];
-let bulletSpeed = 6;
+let bulletSpeed = 3;
 let bulletDamage = 30;        // 子弹伤害
-let bulletSpawnRate = 10;     // 子弹发射频率(数值越小越快，指帧数间隔)
+let bulletSpawnRate = 30;     // 子弹发射频率(数值越小越快，指帧数间隔)
 let bulletSpawnCounter = 0;   // 用于统计当前帧距离上次子弹发射经过了多少帧
 
 // 怪物
 const monsters = [];
 const monsterWidth = 30;
 const monsterHeight = 30;
-const monsterSpeed = 2;
-const monsterHP = 200;
+const monsterSpeed = 1;
+const monsterHP = 300;
 let monsterSpawnRate = 60;    // 怪物生成频率(帧)
 // 用于计数帧
 let monsterSpawnCounter = 0;
@@ -203,7 +203,7 @@ function updateMonsters() {
   // 移动怪物
   for (let i = 0; i < monsters.length; i++) {
     const m = monsters[i];
-    m.y += monsterSpeed;
+    m.y += 1.5*Math.random();
     updatePosition(m);
 
     // 怪物超出画面，则移除
