@@ -90,9 +90,18 @@
   width: 50px;
   height: 50px;
   position: absolute;
-  background-image: url("Monster/jpg1.png"); /* 怪物图 */
   background-size: cover;
   background-repeat: no-repeat;
+}
+
+/* 第一关怪物图片 */
+.monster.level1 {
+  background-image: url("Monster/jpg1.png");
+}
+
+/* 第二关怪物图片 */
+.monster.level2 {
+  background-image: url("Monster/jpg2.png"); /* 替换为你的新图片路径 */
 }
 
 /* 怪物血量文字样式：显示在怪物顶部 */
@@ -180,4 +189,13 @@
   font-weight: bold;
   text-shadow: 2px 2px 2px black;
   z-index: 1000;
+}
+
+#skillCooldownDisplay {
+  position: absolute;
+  bottom: 20px;
+  left: 10px;
+  color: white;
+  font-size: 20px;
+  z-index: 1000; /* 确保它在最上层 */
 }
