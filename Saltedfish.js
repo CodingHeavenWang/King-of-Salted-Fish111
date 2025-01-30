@@ -44,7 +44,22 @@ let isGameOver = false;
 
 // 帧循环
 let frameId = null;
+/********************
+ * 启动游戏
+ ********************/
+function startGame() {
+  // 隐藏主界面
+  document.getElementById('mainMenu').style.display = 'none';
+  // 显示游戏容器
+  document.getElementById('gameContainer').style.display = 'block';
 
+  // 初始化游戏
+  initHero();
+  frameId = requestAnimationFrame(gameLoop);
+}
+
+// 监听开始按钮点击事件
+document.getElementById('startButton').addEventListener('click', startGame);
 /********************
  * 初始化主角
  ********************/
