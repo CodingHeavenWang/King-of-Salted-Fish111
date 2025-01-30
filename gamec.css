@@ -33,7 +33,7 @@
   overflow: hidden;
 
   /* 使用 jpg5.png 作为背景，可自行替换实际路径 */
-  background-image: url("jpg5.png");
+  background-image: url("Wallpaper/jpg5.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -44,17 +44,17 @@
   width: 50px;
   height: 50px;
   position: absolute;
-  background-image: url("jpg2.png"); /* 主角图 */
+  background-image: url("Character/wizard.png"); /* 主角图 */
   background-size: cover;
   background-repeat: no-repeat;
 }
 
 /* 子弹样式 */
 .bullet {
-  width: 10px;
-  height: 15px;
+  width: 20px;
+  height: 20px;
   position: absolute;
-  background-image: url("jpg4.png"); /* 子弹图 */
+  background-image: url("Bullet/shot_fireball.png"); /* 子弹图 */
   background-size: cover;
   background-repeat: no-repeat;
 }
@@ -64,7 +64,7 @@
   width: 50px;
   height: 50px;
   position: absolute;
-  background-image: url("jpg1.png"); /* 怪物图 */
+  background-image: url("Monster/jpg1.png"); /* 怪物图 */
   background-size: cover;
   background-repeat: no-repeat;
 }
@@ -85,7 +85,7 @@
   width: 20px;
   height: 20px;
   position: absolute;
-  background-image: url("jpg3.png"); /* 增益图 */
+  background-image: url("Others/jpg3.png"); /* 增益图 */
   background-size: cover;
   background-repeat: no-repeat;
 }
@@ -95,7 +95,7 @@
   width: 400px;
   height: 60px;
   position: absolute;
-  background-image: url("Lasergate.png");
+  background-image: url("Others/Lasergate.png");
   background-color: #fff099;
   border: 2px solid #999;
   display: flex;
