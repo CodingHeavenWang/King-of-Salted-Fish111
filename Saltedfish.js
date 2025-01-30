@@ -11,6 +11,10 @@ const scoreElement = document.getElementById('scoreBoard'); // 计分板（HTML 
 
 // timecount：用于控制怪物生成频率和血量等随时间变化
 let timecount = 0;
+// 新增技能相关变量
+let isSkillActive = false; // 技能是否激活
+let skillCooldown = 10000; // 技能冷却时间（10秒）
+let lastSkillTime = 0; // 上次使用技能的时间
 
 // 主角
 const hero = {
@@ -113,7 +117,8 @@ function spawnBullet() {
  ********************/
 function spawnMonster() {
   const monsterDiv = document.createElement('div');
-  monsterDiv.className = 'monster';
+  // 动态绑定关卡类名，例如 level1 或 level2
+  monsterDiv.className = `monster level${currentLevel}`;
 
   // 血量文字
   const monsterHPDiv = document.createElement('div');
@@ -129,7 +134,8 @@ function spawnMonster() {
     y: -monsterHeight,
     width: monsterWidth,
     height: monsterHeight,
-    hp: monsterHP  // 根据 timecount 可能提升后的怪物血量
+    hp: monsterHP,
+    isFrozen: false // 初始状态为未冻结
   };
 
   monsters.push(monsterObj);
@@ -410,6 +416,9 @@ function updateHero() {
 /********************
  * 更新怪物
  ********************/
+/********************
+ * 更新怪物
+ ********************/
 function updateMonstersAll() {
   //monsterSpawnCounter++;
   // 满足条件则生成怪物
@@ -421,10 +430,12 @@ function updateMonstersAll() {
   // 移动怪物
   for (let i = 0; i < monsters.length; i++) {
     const m = monsters[i];
-    // 给怪物加一点随机性
-    m.y += monsterSpeed * Math.random();
 
-    updateMonster(m);
+    // 如果怪物没有被冻结，则更新位置
+    if (!m.isFrozen) {
+      m.y += monsterSpeed * Math.random();
+      updateMonster(m);
+    }
 
     // 离开屏幕
     if (m.y > containerHeight) {
@@ -565,6 +576,69 @@ function showGameOver() {
   // 停止背景音乐
   bgm.pause();
 }
+
+// 暂停所有怪物的移动
+function freezeMonsters() {
+  for (let i = 0; i < monsters.length; i++) {
+    monsters[i].isFrozen = true; // 标记怪物为冻结状态
+  }
+}
+
+// 恢复所有怪物的移动
+function unfreezeMonsters() {
+  for (let i = 0; i < monsters.length; i++) {
+    monsters[i].isFrozen = false; // 取消怪物的冻结状态
+  }
+}
+
+// 使用技能
+function useSkill() {
+  const currentTime = Date.now();
+  if (currentTime - lastSkillTime < skillCooldown) {
+    console.log("技能还在冷却中");
+    return;
+  }
+
+  // 激活技能
+  isSkillActive = true;
+  lastSkillTime = currentTime;
+
+  // 冻结怪物
+  freezeMonsters();
+
+  // 更新冷却时间显示
+  updateCooldownDisplay();
+
+  // 2秒后恢复怪物移动
+  setTimeout(() => {
+    unfreezeMonsters();
+    isSkillActive = false;
+  }, 2000);
+}
+
+// 更新冷却时间显示
+function updateCooldownDisplay() {
+  const cooldownDisplay = document.getElementById('skillCooldownDisplay');
+  let remainingCooldown = skillCooldown / 1000;
+
+  const interval = setInterval(() => {
+    remainingCooldown -= 1;
+    if (remainingCooldown <= 0) {
+      clearInterval(interval);
+      cooldownDisplay.textContent = "Stop!:ready";
+    } else {
+      cooldownDisplay.textContent = `Stop!: ${remainingCooldown}s`;
+    }
+  }, 1000);
+}
+
+// 监听键盘事件（按 Q 触发技能）
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'q' || e.key === 'Q') {
+    useSkill();
+  }
+});
+
 
 /********************
  * 键盘事件监听
