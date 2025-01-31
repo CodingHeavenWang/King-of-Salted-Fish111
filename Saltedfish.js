@@ -8,6 +8,11 @@ const containerHeight = 600;
 
 const bgm = document.getElementById('bgm'); // 背景音乐
 const hitSound = document.getElementById('hitSound'); // 音效
+const hitSounds = {
+  default: new Audio('Sound_Effect/fire_effect.MP3'),
+  ice: new Audio('Sound_Effect/LedasLuzta.ogg'),
+  // 添加更多音效...
+};
 const scoreElement = document.getElementById('scoreBoard'); // 计分板（HTML 中应有 <div id="scoreBoard"></div>）
 //在全局变量中添加Boss战斗音乐
 const bossBgm = new Audio('BGM/jiangjun.mp3'); // 假设Boss战斗音乐路径
@@ -139,9 +144,12 @@ function initHero() {
 function spawnBullet() {
   const bulletDiv = document.createElement('div');
   bulletDiv.className = 'bullet';
+
   let bulletimg='Bullet/shot_fireball.png';
+
     if(weapontype==1){
         bulletimg = 'Bullet/icefire.png';
+
     }
 
     bulletDiv.style.backgroundImage = `url('${bulletimg}')`;
@@ -657,9 +665,16 @@ function updateBullets() {
       const m = monsters[j];
       if (isCollision(b, m)) {
         // 命中音效
-        hitSound.currentTime = 0;
-        hitSound.play();
-
+        if (weapontype == 0)
+        {
+          hitSounds.default.currentTime = 0;
+          hitSounds.default.play();
+        }
+        else if (weapontype == 1)
+        {
+          hitSounds.ice.currentTime = 0;
+          hitSounds.ice.play();
+        }
         m.hp -= bulletDamage;
         removeGameObject(bullets, i);
         i--;
