@@ -30,8 +30,8 @@ const hero = {
   element: null,
   x: containerWidth / 2 - 25, // 初始居中 (50px 宽的一半)
   y: containerHeight - 70,    // 在底部
-  width: 25,
-  height: 25,
+  width: 50,
+  height: 50,
   speed: 3,
   isAlive: true
 };
@@ -76,8 +76,8 @@ const boss = {
   y: 50,                      // 在顶部
   width: 100,
   height: 100,
-  hp: 1000,                   // Boss的血量
-  initialhp:1000,
+  hp: 50000,                   // Boss的血量
+  initialhp:50000,
   isAlive: false,             // Boss是否存活
   bulletSpawnRate: 60,        // Boss发射弹幕的频率
   bulletSpawnCounter: 0       // Boss弹幕发射计数器
@@ -120,9 +120,9 @@ let frameId = null;
 const possibleDoorEffects = [
   { label: 'Damage +10',    effect: { type: 'damage', value: 10 } },
   { label: 'Player Speed +0.5',  effect: { type: 'speed', value: 0.5 } },
-  { label: 'Shoot frequency + 2', effect: { type: 'freq',  value: -2 } },
+  { label: 'Shoot frequency + 5', effect: { type: 'freq',  value: -5 } },
   { label: 'Damage +5',     effect: { type: 'damage', value: 5 } },
-  { label: 'Shoot frequency + 1', effect: { type: 'freq',  value: -1 } },
+  { label: 'Shoot frequency + 10', effect: { type: 'freq',  value: -10 } },
   { label: 'Player Speed +0.25', effect: { type: 'speed', value: 0.25 } },
   { label:'Change weapon',effect:{type:'weapon',value:1}}
 ];
@@ -161,8 +161,8 @@ function spawnBullet() {
     element: bulletDiv,
     x: bulletX,
     y: bulletY,
-    width: 10,
-    height: 15
+    width: 25,
+    height: 25
   };
   bullets.push(bulletObj);
   gameContainer.appendChild(bulletDiv);
@@ -227,8 +227,8 @@ function spawnPowerup(x, y) {
     element: powerupDiv,
     x: x,
     y: y,
-    width: 20,
-    height: 20,
+    width: 30,
+    height: 30,
     type: type
   };
   powerups.push(powerupObj);
@@ -522,7 +522,7 @@ function updateAll() {
   // 门计数器
   doorSpawnCounter++;
 
-  if (doorSpawnCounter >= 500 && !boss.isAlive) {
+  if (doorSpawnCounter >= doorSpawnRate && !boss.isAlive) {
     spawnDoor();
     doorSpawnCounter = 0;
   }
@@ -534,31 +534,27 @@ function updateAll() {
   if (timecount <= 15000) {
     switch (timecount) {
       case 1:
-        monsterSpawnRate = 750;
-        monsterHP = 100;   // 例：怪物血量变为 200
+        monsterSpawnRate = 500;
+        monsterHP = 50;   // 例：怪物血量变为 200
         break;
       case 2500:
-        monsterSpawnRate = 700;
-        monsterHP = 150;   // 例：怪物血量变为 250
-        monsterHP = 150;
+        monsterSpawnRate = 500;
+        monsterHP = 100;   // 例：怪物血量变为 250
         currentLevel++;   // 例：怪物血量变为 250
         break;
       case 5000:
-        monsterSpawnRate = 650;
-        monsterHP = 250;   // 例：怪物血量变为 300
-        monsterHP = 250;
+        monsterSpawnRate = 450;
+        monsterHP = 200;   // 例：怪物血量变为 300
         currentLevel++;    // 例：怪物血量变为 300
         break;
       case 7500:
-        monsterSpawnRate = 600;
-        monsterHP = 375;   // 例：怪物血量变为 400
-        monsterHP = 375; 
+        monsterSpawnRate = 450;
+        monsterHP = 350;   // 例：怪物血量变为 400
         currentLevel++;   // 例：怪物血量变为 400
         break;
       case 10000:
-        monsterSpawnRate = 550;
+        monsterSpawnRate = 400;
         monsterHP = 475;   // 例：怪物血量变为 500
-        monsterHP = 475; 
         currentLevel++;   // 例：怪物血量变为 500
         break;
       
@@ -566,11 +562,16 @@ function updateAll() {
   } else {
     currentLevel++; 
     monsterSpawnRate = 400;
-    monsterHP = 500 + Math.floor(Math.random() * 50) + timecount*0.002;
+    monsterHP = Math.floor(500 + Math.floor(Math.random() * 50) + timecount*0.005);
   }
-  if (score >= 10 && !boss.isAlive) {
+  if (timecount==25000&&!boss.isAlive) {
     initBoss();
   }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'o' || e.key === 'O') {
+      initBoss();
+    }
+  });
   updateHero();
   updateBullets();
   updateMonstersAll();

@@ -77,8 +77,8 @@
 
 /* 子弹样式 */
 .bullet {
-  width: 20px;
-  height: 20px;
+  width: 25px;
+  height: 25px;
   position: absolute;
   background-image: url("Bullet/shot_fireball.png"); /* 子弹图 */
   background-size: cover;
@@ -135,8 +135,8 @@
 
 /* 增益样式 */
 .powerup {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
   position: absolute;
   background-image: url("Others/jpg3.png"); /* 增益图 */
   background-size: cover;
