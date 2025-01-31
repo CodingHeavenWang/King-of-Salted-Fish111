@@ -229,35 +229,43 @@
 
 /* 螺旋弹幕样式 */
 .spiral {
-  width: 40px;
-  height: 20px;
-  background-image: url("Bullet/cry.jpg"); /* 假设有螺旋弹幕的图片 */
+  width: 42px;
+  height: 14px;
+  background-image: url("Bullet/cry.png"); /* 假设有螺旋弹幕的图片 */
   position: absolute;
   background-size: cover;
 }
 
 /* 追踪弹幕样式 */
 .homing {
-  width: 40px;
-  height: 20px;
-  background-image: url("Bullet/cry.jpg"); /* 假设有追踪弹幕的图片 */
+  width: 42px;
+  height: 14px;
+  background-image: url("Bullet/cry.png"); /* 假设有追踪弹幕的图片 */
   position: absolute;
   background-size: cover;
 }
 
-/* Boss血条样式 */
+/* 新增Boss血条样式 */
 #bossHP {
   position: absolute;
   top: 10px;
-  left: 10px;
-  width: 200px;
-  height: 20px;
+  left: 50%;
+  transform: translateX(-50%); /* 居中 */
+  width: 300px;  /* 血条宽度 */
+  height: 20px;  /* 血条高度 */
   background-color: #444; /* 血条背景色 */
   border: 2px solid #000; /* 血条边框 */
   border-radius: 10px; /* 圆角边框 */
   overflow: hidden; /* 隐藏超出部分 */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* 添加阴影 */
   z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white; /* 文字颜色 */
+  font-size: 14px; /* 文字大小 */
+  font-weight: bold; /* 文字加粗 */
+  text-shadow: 1px 1px 2px black; /* 文字阴影 */
 }
 
 #bossHP::after {
@@ -267,17 +275,28 @@
   width: var(--hp-width, 100%); /* 动态宽度 */
   background: linear-gradient(to right, #00ff00, #ff0000); /* 渐变色：从绿到红 */
   transition: width 0.3s ease; /* 平滑过渡效果 */
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1; /* 确保背景在文字下方 */
 }
 
-#bossHP::before {
-  content: attr(data-hp); /* 显示血量百分比 */
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%); /* 居中显示 */
-  color: white;
-  font-size: 14px;
-  font-weight: bold;
-  text-shadow: 1px 1px 2px black; /* 文字阴影 */
-  z-index: 1;
+/* Boss转阶段动画 */
+@keyframes bossPhaseTransition {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.boss-phase-transition {
+  animation: bossPhaseTransition 1s ease-in-out;
 }

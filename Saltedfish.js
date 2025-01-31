@@ -423,8 +423,8 @@ function spawnBossBulletSpiral(angle, speed = bossBulletSpeed) {
     element: bulletDiv,
     x: boss.x + boss.width / 2 - 10, // 从Boss中心发射
     y: boss.y + boss.height / 2 - 10,
-    width: 20,
-    height: 20,
+    width: 42,
+    height: 14,
     angle: angle, // 弹幕的角度
     speed: speed // 弹幕的速度
   };
@@ -442,8 +442,8 @@ function spawnBossBulletHoming(angle, speed = bossBulletSpeed) {
     element: bulletDiv,
     x: boss.x + boss.width / 2 - 10, // 从Boss中心发射
     y: boss.y + boss.height / 2 - 10,
-    width: 20,
-    height: 20,
+    width: 42,
+    height: 14,
     angle: angle, // 弹幕的角度
     speed: speed // 弹幕的速度
   };
@@ -560,7 +560,7 @@ function updateAll() {
     monsterSpawnRate = 400;
     monsterHP = 500 + Math.floor(Math.random() * 50) + timecount*0.002;
   }
-  if (score >= 10 && !boss.isAlive) {
+  if (score >= 0 && !boss.isAlive) {
     initBoss();
   }
   updateHero();
@@ -736,14 +736,22 @@ function updateBoss() {
   updateBossHP();
 
   // 根据Boss血量切换阶段
-  if (boss.hp <= 0.8*boss.initialhp && bossPhase === 1) {
+  if (boss.hp <= 0.8 * boss.initialhp && bossPhase === 1) {
     bossPhase = 2;
     console.log("Boss进入第二阶段");
     boss.element.style.backgroundImage = 'url("monster/secondsun.jpg")'; // 更换Boss外观
-  } else if (boss.hp <= 0.5*boss.initialhp && bossPhase === 2) {
+    boss.element.classList.add('boss-phase-transition'); // 添加转阶段动画
+    setTimeout(() => {
+      boss.element.classList.remove('boss-phase-transition'); // 动画结束后移除类
+    }, 1000); // 动画持续1秒
+  } else if (boss.hp <= 0.5 * boss.initialhp && bossPhase === 2) {
     bossPhase = 3;
     console.log("Boss进入第三阶段");
     boss.element.style.backgroundImage = 'url("monster/thirdsun.jpg")'; // 更换Boss外观
+    boss.element.classList.add('boss-phase-transition'); // 添加转阶段动画
+    setTimeout(() => {
+      boss.element.classList.remove('boss-phase-transition'); // 动画结束后移除类
+    }, 1000); // 动画持续1秒
   }
 
   // Boss发射弹幕
@@ -816,6 +824,10 @@ function updateBossBullets() {
 function updateBossHP() {
   const hpPercentage = (boss.hp / boss.initialhp) * 100; // 计算血量百分比
   bossHPElement.style.width = `${hpPercentage}%`; // 根据血量百分比调整血条宽度
+  bossHPElement.setAttribute('data-hp', `${Math.round(hpPercentage)}%`); // 更新血量百分比显示
+
+  // 在血条上显示具体的血量数值
+  bossHPElement.textContent = `${boss.hp} / ${boss.initialhp}`;
 }
 
 /********************
