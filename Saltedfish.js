@@ -33,7 +33,10 @@ const hero = {
   width: 25,
   height: 25,
   speed: 3,
-  isAlive: true
+  isAlive: true,
+  element: document.createElement('div'),
+  isFlipped: false,
+  lastDirection: 'right' // 初始默认方向
 };
 
 // 分数
@@ -584,17 +587,34 @@ function updateAll() {
  * 更新主角
  ********************/
 function updateHero() {
-  // 左右移动
-  if (leftPressed) {
+  // 检测当前移动方向
+  let currentDirection = '';
+  if (leftPressed && !rightPressed) {
+    currentDirection = 'left';
     hero.x -= hero.speed;
     if (hero.x < 0) hero.x = 0;
-  }
-  if (rightPressed) {
+  } else if (rightPressed && !leftPressed) {
+    currentDirection = 'right';
     hero.x += hero.speed;
     if (hero.x + hero.width > containerWidth) {
       hero.x = containerWidth - hero.width;
     }
   }
+
+  // 方向改变时执行翻转
+  if (currentDirection && currentDirection !== hero.lastDirection) {
+    // 使用CSS transform实现平滑翻转
+    hero.element.style.transform = `scaleX(${currentDirection === 'left' ? -1 : 1})`;
+    
+    // 如果需要保持元素位置不变，添加偏移修正
+    const flipOffset = currentDirection === 'left' ? hero.width : 0;
+    hero.element.style.transform += ` translateX(${flipOffset}px)`;
+    
+    // 更新状态记录
+    hero.isFlipped = currentDirection === 'left';
+    hero.lastDirection = currentDirection;
+  }
+
   updatePosition(hero);
 
   // 子弹发射
