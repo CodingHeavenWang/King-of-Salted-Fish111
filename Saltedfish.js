@@ -571,7 +571,7 @@ function updateAll() {
     monsterSpawnRate = 400;
     monsterHP = 500 + Math.floor(Math.random() * 50) + timecount*0.002;
   }
-  if (score >= 10 && !boss.isAlive) {
+  if (score >= 80 && !boss.isAlive) {
     initBoss();
   }
   updateHero();
