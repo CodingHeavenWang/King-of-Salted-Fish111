@@ -208,3 +208,76 @@
   text-shadow: 2px 2px 2px black;
   z-index: 1000;
 }
+
+/* Boss样式 */
+.boss {
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  background-size: cover;
+}
+
+
+/* Boss弹幕样式 */
+.bossBullet {
+  width: 20px;
+  height: 20px;
+  background-image: url("Bullet/sun.png");
+  position: absolute;
+  background-size: cover;
+}
+
+/* 螺旋弹幕样式 */
+.spiral {
+  width: 40px;
+  height: 20px;
+  background-image: url("Bullet/cry.jpg"); /* 假设有螺旋弹幕的图片 */
+  position: absolute;
+  background-size: cover;
+}
+
+/* 追踪弹幕样式 */
+.homing {
+  width: 40px;
+  height: 20px;
+  background-image: url("Bullet/cry.jpg"); /* 假设有追踪弹幕的图片 */
+  position: absolute;
+  background-size: cover;
+}
+
+/* Boss血条样式 */
+#bossHP {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 200px;
+  height: 20px;
+  background-color: #444; /* 血条背景色 */
+  border: 2px solid #000; /* 血条边框 */
+  border-radius: 10px; /* 圆角边框 */
+  overflow: hidden; /* 隐藏超出部分 */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* 添加阴影 */
+  z-index: 1000;
+}
+
+#bossHP::after {
+  content: '';
+  display: block;
+  height: 100%;
+  width: var(--hp-width, 100%); /* 动态宽度 */
+  background: linear-gradient(to right, #00ff00, #ff0000); /* 渐变色：从绿到红 */
+  transition: width 0.3s ease; /* 平滑过渡效果 */
+}
+
+#bossHP::before {
+  content: attr(data-hp); /* 显示血量百分比 */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 居中显示 */
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px black; /* 文字阴影 */
+  z-index: 1;
+}

@@ -9,6 +9,9 @@ const containerHeight = 600;
 const bgm = document.getElementById('bgm'); // 背景音乐
 const hitSound = document.getElementById('hitSound'); // 音效
 const scoreElement = document.getElementById('scoreBoard'); // 计分板（HTML 中应有 <div id="scoreBoard"></div>）
+//在全局变量中添加Boss战斗音乐
+const bossBgm = new Audio('BGM/jiangjun.mp3'); // 假设Boss战斗音乐路径
+bossBgm.loop = true;
 
 // timecount：用于控制怪物生成频率和血量等随时间变化
 let timecount = 0;
@@ -60,6 +63,45 @@ const doors = [];
 const doorSpeed = 1;          // 门下落速度
 let doorSpawnRate = 2500;      // 约15秒(60帧/秒)
 let doorSpawnCounter = 0;     
+
+// Boss
+const boss = {
+  element: null,
+  x: containerWidth / 2 - 50, // 居中
+  y: 50,                      // 在顶部
+  width: 100,
+  height: 100,
+  hp: 1000,                   // Boss的血量
+  initialhp:1000,
+  isAlive: false,             // Boss是否存活
+  bulletSpawnRate: 60,        // Boss发射弹幕的频率
+  bulletSpawnCounter: 0       // Boss弹幕发射计数器
+};
+let bossPhase = 1; // 1: 第一阶段, 2: 第二阶段, 3: 第三阶段
+//boss 血量
+const bossHPElement = document.createElement('div');
+bossHPElement.style.position = 'absolute';
+bossHPElement.style.top = '10px';
+bossHPElement.style.left = '10px';
+bossHPElement.style.width = '200px'; // 血条总宽度
+bossHPElement.style.height = '20px';
+bossHPElement.style.backgroundColor = 'red';
+bossHPElement.style.border = '2px solid black';
+
+// 玩家血量
+let playerHP = 2000;
+const playerHPElement = document.createElement('div'); // 显示玩家血量的元素
+playerHPElement.style.position = 'absolute';
+playerHPElement.style.top = '10px';
+playerHPElement.style.right = '10px';
+playerHPElement.style.color = 'white';
+playerHPElement.style.fontSize = '24px';
+playerHPElement.style.textShadow = '2px 2px 2px black';
+gameContainer.appendChild(playerHPElement);
+
+// Boss弹幕
+const bossBullets = [];
+const bossBulletSpeed = 3; // Boss弹幕速度
 
 // 游戏控制
 let leftPressed = false;
@@ -334,6 +376,120 @@ function removeDoorGroup(groupId) {
   }
 }
 
+function initBoss() {
+  bgm.pause();
+  bossBgm.currentTime = 0;
+  bossBgm.play();
+gameContainer.appendChild(bossHPElement);
+  const bossDiv = document.createElement('div');
+  bossDiv.className = 'boss';
+  bossDiv.style.backgroundImage = 'url("monster/bigsun.jpg")'; // 假设Boss图片路径
+  bossDiv.style.backgroundSize = 'cover';
+  gameContainer.appendChild(bossDiv);
+  boss.element = bossDiv;
+  updatePosition(boss);
+  boss.isAlive = true;
+
+  // 显示Boss血条
+  bossHPElement.style.display = 'block';
+  updateBossHP(); // 初始化血条
+}
+
+function spawnBossBullet(angle, speed = bossBulletSpeed) {
+  const bulletDiv = document.createElement('div');
+  bulletDiv.className = 'bossBullet';
+  bulletDiv.style.backgroundSize = 'cover';
+
+  const bulletObj = {
+    element: bulletDiv,
+    x: boss.x + boss.width / 2 - 10, // 从Boss中心发射
+    y: boss.y + boss.height / 2 - 10,
+    width: 20,
+    height: 20,
+    angle: angle, // 弹幕的角度
+    speed: speed // 弹幕的速度
+  };
+  bossBullets.push(bulletObj);
+  gameContainer.appendChild(bulletDiv);
+  updatePosition(bulletObj);
+}
+
+function spawnBossBulletSpiral(angle, speed = bossBulletSpeed) {
+  const bulletDiv = document.createElement('div');
+  bulletDiv.className = 'spiral';
+  bulletDiv.style.backgroundSize = 'cover';
+
+  const bulletObj = {
+    element: bulletDiv,
+    x: boss.x + boss.width / 2 - 10, // 从Boss中心发射
+    y: boss.y + boss.height / 2 - 10,
+    width: 20,
+    height: 20,
+    angle: angle, // 弹幕的角度
+    speed: speed // 弹幕的速度
+  };
+  bossBullets.push(bulletObj);
+  gameContainer.appendChild(bulletDiv);
+  updatePosition(bulletObj);
+}
+
+function spawnBossBulletHoming(angle, speed = bossBulletSpeed) {
+  const bulletDiv = document.createElement('div');
+  bulletDiv.className = 'homing';
+  bulletDiv.style.backgroundSize = 'cover';
+
+  const bulletObj = {
+    element: bulletDiv,
+    x: boss.x + boss.width / 2 - 10, // 从Boss中心发射
+    y: boss.y + boss.height / 2 - 10,
+    width: 20,
+    height: 20,
+    angle: angle, // 弹幕的角度
+    speed: speed // 弹幕的速度
+  };
+  bossBullets.push(bulletObj);
+  gameContainer.appendChild(bulletDiv);
+  updatePosition(bulletObj);
+}
+
+// 第一阶段弹幕：简单的放射状弹幕
+function spawnBossBulletsPhase1() {
+  for (let i = 0; i < 8; i++) {
+    spawnBossBullet((Math.PI * 2 / 8) * i); // 8个方向的弹幕
+  }
+}
+
+// 第二阶段弹幕：螺旋弹幕 + 追踪弹幕
+function spawnBossBulletsPhase2() {
+  // 螺旋弹幕
+  for (let i = 0; i < 12; i++) {
+    const angle = (Math.PI * 2 / 12) * i + (boss.bulletSpawnCounter * 0.1); // 角度随时间变化
+    spawnBossBulletSpiral(angle, 2); // 速度稍快
+  }
+
+  // 追踪弹幕
+  const angleToHero = Math.atan2(hero.y - boss.y, hero.x - boss.x);
+  spawnBossBulletHoming(angleToHero, 3); // 速度更快
+}
+
+// 第三阶段弹幕：更复杂的弹幕炼狱
+function spawnBossBulletsPhase3() {
+  // 放射状弹幕
+  for (let i = 0; i < 16; i++) {
+    spawnBossBullet((Math.PI * 2 / 16) * i); // 16个方向的弹幕
+  }
+
+  // 螺旋弹幕
+  for (let i = 0; i < 24; i++) {
+    const angle = (Math.PI * 2 / 24) * i + (boss.bulletSpawnCounter * 0.2); // 角度随时间变化
+    spawnBossBulletSpiral(angle, 3); // 速度更快
+  }
+
+  // 追踪弹幕
+  const angleToHero = Math.atan2(hero.y - boss.y, hero.x - boss.x);
+  spawnBossBulletHoming(angleToHero, 4); // 速度更快
+}
+
 /********************
  * 游戏循环
  ********************/
@@ -358,11 +514,11 @@ function updateAll() {
   // 门计数器
   doorSpawnCounter++;
 
-  if (doorSpawnCounter >= 500) {
+  if (doorSpawnCounter >= 500 && !boss.isAlive) {
     spawnDoor();
     doorSpawnCounter = 0;
   }
-  if (monsterSpawnCounter >= monsterSpawnRate) {
+  if (monsterSpawnCounter >= monsterSpawnRate && !boss.isAlive) {
     spawnMonster();
     monsterSpawnCounter = 0;
   }
@@ -404,11 +560,16 @@ function updateAll() {
     monsterSpawnRate = 400;
     monsterHP = 500 + Math.floor(Math.random() * 50) + timecount*0.002;
   }
+  if (score >= 10 && !boss.isAlive) {
+    initBoss();
+  }
   updateHero();
   updateBullets();
   updateMonstersAll();
   updatePowerups();
   updateDoors();
+  updateBoss();
+  updateBossBullets();
 }
 
 /********************
@@ -566,6 +727,95 @@ function isCollision(a, b) {
     a.y + a.height < b.y ||
     a.y > b.y + b.height
   );
+}
+
+function updateBoss() {
+  if (!boss.isAlive) return;
+
+  // 更新Boss血条
+  updateBossHP();
+
+  // 根据Boss血量切换阶段
+  if (boss.hp <= 0.8*boss.initialhp && bossPhase === 1) {
+    bossPhase = 2;
+    console.log("Boss进入第二阶段");
+    boss.element.style.backgroundImage = 'url("monster/secondsun.jpg")'; // 更换Boss外观
+  } else if (boss.hp <= 0.5*boss.initialhp && bossPhase === 2) {
+    bossPhase = 3;
+    console.log("Boss进入第三阶段");
+    boss.element.style.backgroundImage = 'url("monster/thirdsun.jpg")'; // 更换Boss外观
+  }
+
+  // Boss发射弹幕
+  boss.bulletSpawnCounter++;
+  if (boss.bulletSpawnCounter >= boss.bulletSpawnRate) {
+    switch (bossPhase) {
+      case 1:
+        spawnBossBulletsPhase1(); // 第一阶段弹幕
+        break;
+      case 2:
+        spawnBossBulletsPhase2(); // 第二阶段弹幕
+        break;
+      case 3:
+        spawnBossBulletsPhase3(); // 第三阶段弹幕
+        break;
+    }
+    boss.bulletSpawnCounter = 0;
+  }
+
+  // 检测玩家子弹与Boss碰撞
+  for (let i = 0; i < bullets.length; i++) {
+    const b = bullets[i];
+    if (isCollision(b, boss)) {
+      boss.hp -= bulletDamage;
+      removeGameObject(bullets, i);
+      i--;
+      if (boss.hp <= 0) {
+        boss.isAlive = false;
+        removeGameObject([boss], 0); // 移除Boss
+        score += 100; // 击败Boss加100分
+        scoreElement.textContent = `Score: ${score}`;
+        isGameOver = true;
+
+        // 隐藏Boss血条
+        bossHPElement.style.display = 'none';
+      }
+    }
+  }
+}
+
+function updateBossBullets() {
+  for (let i = 0; i < bossBullets.length; i++) {
+    const b = bossBullets[i];
+    // 根据角度移动弹幕
+    b.x += b.speed * Math.cos(b.angle);
+    b.y += b.speed * Math.sin(b.angle);
+    updatePosition(b);
+
+    // 超出屏幕则移除
+    if (b.x < 0 || b.x > containerWidth || b.y < 0 || b.y > containerHeight) {
+      removeGameObject(bossBullets, i);
+      i--;
+      continue;
+    }
+
+    // 检测弹幕与玩家碰撞
+    if (isCollision(hero, b)) {
+      playerHP -= 10; // 玩家扣血
+      playerHPElement.textContent = `HP: ${playerHP}`;
+      if (playerHP <= 0) {
+        isGameOver = true;
+      }
+      removeGameObject(bossBullets, i);
+      i--;
+    }
+  }
+}
+
+// 更新Boss血条
+function updateBossHP() {
+  const hpPercentage = (boss.hp / boss.initialhp) * 100; // 计算血量百分比
+  bossHPElement.style.width = `${hpPercentage}%`; // 根据血量百分比调整血条宽度
 }
 
 /********************
