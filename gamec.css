@@ -77,8 +77,8 @@
 
 /* 子弹样式 */
 .bullet {
-  width: 20px;
-  height: 20px;
+  width: 25px;
+  height: 25px;
   position: absolute;
   background-image: url("Bullet/shot_fireball.png"); /* 子弹图 */
   background-size: cover;
@@ -135,8 +135,8 @@
 
 /* 增益样式 */
 .powerup {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
   position: absolute;
   background-image: url("Others/jpg3.png"); /* 增益图 */
   background-size: cover;
@@ -281,6 +281,7 @@
   z-index: -1; /* 确保背景在文字下方 */
 }
 
+<<<<<<< HEAD
 /* Boss转阶段动画 */
 @keyframes bossPhaseTransition {
   0% {
@@ -299,4 +300,34 @@
 
 .boss-phase-transition {
   animation: bossPhaseTransition 1s ease-in-out;
+=======
+#bossHP::before {
+  content: attr(data-hp); /* 显示血量百分比 */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 居中显示 */
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px black; /* 文字阴影 */
+  z-index: 1;
+}
+
+/* 角色基础样式 */
+#hero {
+  transition: transform 0.2s ease-in-out; /* 平滑翻转动画 */
+  transform-origin: center; /* 确保以中心为翻转轴 */
+  will-change: transform; /* 优化渲染性能 */
+}
+
+/* 移动时添加动画效果 */
+.hero-moving {
+  animation: walkCycle 0.6s steps(4) infinite;
+}
+
+@keyframes walkCycle {
+  from { background-position: 0 0; }
+  to { background-position: -400% 0; }
+>>>>>>> 4c9d5d0ba0bdfdddc2a73a185b4d6d5ed37bdfa8
 }

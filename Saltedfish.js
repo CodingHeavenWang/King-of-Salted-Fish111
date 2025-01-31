@@ -8,6 +8,11 @@ const containerHeight = 600;
 
 const bgm = document.getElementById('bgm'); // 背景音乐
 const hitSound = document.getElementById('hitSound'); // 音效
+const hitSounds = {
+  default: new Audio('Sound_Effect/fire_effect.MP3'),
+  ice: new Audio('Sound_Effect/LedasLuzta.ogg'),
+  // 添加更多音效...
+};
 const scoreElement = document.getElementById('scoreBoard'); // 计分板（HTML 中应有 <div id="scoreBoard"></div>）
 //在全局变量中添加Boss战斗音乐
 const bossBgm = new Audio('BGM/jiangjun.mp3'); // 假设Boss战斗音乐路径
@@ -25,10 +30,13 @@ const hero = {
   element: null,
   x: containerWidth / 2 - 25, // 初始居中 (50px 宽的一半)
   y: containerHeight - 70,    // 在底部
-  width: 25,
-  height: 25,
+  width: 50,
+  height: 50,
   speed: 3,
-  isAlive: true
+  isAlive: true,
+  element: document.createElement('div'),
+  isFlipped: false,
+  lastDirection: 'right' // 初始默认方向
 };
 
 // 分数
@@ -71,8 +79,8 @@ const boss = {
   y: 50,                      // 在顶部
   width: 100,
   height: 100,
-  hp: 1000,                   // Boss的血量
-  initialhp:1000,
+  hp: 50000,                   // Boss的血量
+  initialhp:50000,
   isAlive: false,             // Boss是否存活
   bulletSpawnRate: 60,        // Boss发射弹幕的频率
   bulletSpawnCounter: 0       // Boss弹幕发射计数器
@@ -115,9 +123,9 @@ let frameId = null;
 const possibleDoorEffects = [
   { label: 'Damage +10',    effect: { type: 'damage', value: 10 } },
   { label: 'Player Speed +0.5',  effect: { type: 'speed', value: 0.5 } },
-  { label: 'Shoot frequency + 2', effect: { type: 'freq',  value: -2 } },
+  { label: 'Shoot frequency + 5', effect: { type: 'freq',  value: -5 } },
   { label: 'Damage +5',     effect: { type: 'damage', value: 5 } },
-  { label: 'Shoot frequency + 1', effect: { type: 'freq',  value: -1 } },
+  { label: 'Shoot frequency + 10', effect: { type: 'freq',  value: -10 } },
   { label: 'Player Speed +0.25', effect: { type: 'speed', value: 0.25 } },
   { label:'Change weapon',effect:{type:'weapon',value:1}}
 ];
@@ -139,9 +147,12 @@ function initHero() {
 function spawnBullet() {
   const bulletDiv = document.createElement('div');
   bulletDiv.className = 'bullet';
+
   let bulletimg='Bullet/shot_fireball.png';
+
     if(weapontype==1){
         bulletimg = 'Bullet/icefire.png';
+
     }
 
     bulletDiv.style.backgroundImage = `url('${bulletimg}')`;
@@ -153,8 +164,8 @@ function spawnBullet() {
     element: bulletDiv,
     x: bulletX,
     y: bulletY,
-    width: 10,
-    height: 15
+    width: 25,
+    height: 25
   };
   bullets.push(bulletObj);
   gameContainer.appendChild(bulletDiv);
@@ -219,8 +230,8 @@ function spawnPowerup(x, y) {
     element: powerupDiv,
     x: x,
     y: y,
-    width: 20,
-    height: 20,
+    width: 30,
+    height: 30,
     type: type
   };
   powerups.push(powerupObj);
@@ -514,7 +525,7 @@ function updateAll() {
   // 门计数器
   doorSpawnCounter++;
 
-  if (doorSpawnCounter >= 500 && !boss.isAlive) {
+  if (doorSpawnCounter >= doorSpawnRate && !boss.isAlive) {
     spawnDoor();
     doorSpawnCounter = 0;
   }
@@ -526,31 +537,27 @@ function updateAll() {
   if (timecount <= 15000) {
     switch (timecount) {
       case 1:
-        monsterSpawnRate = 750;
-        monsterHP = 100;   // 例：怪物血量变为 200
+        monsterSpawnRate = 500;
+        monsterHP = 50;   // 例：怪物血量变为 200
         break;
       case 2500:
-        monsterSpawnRate = 700;
-        monsterHP = 150;   // 例：怪物血量变为 250
-        monsterHP = 150;
+        monsterSpawnRate = 500;
+        monsterHP = 100;   // 例：怪物血量变为 250
         currentLevel++;   // 例：怪物血量变为 250
         break;
       case 5000:
-        monsterSpawnRate = 650;
-        monsterHP = 250;   // 例：怪物血量变为 300
-        monsterHP = 250;
+        monsterSpawnRate = 450;
+        monsterHP = 200;   // 例：怪物血量变为 300
         currentLevel++;    // 例：怪物血量变为 300
         break;
       case 7500:
-        monsterSpawnRate = 600;
-        monsterHP = 375;   // 例：怪物血量变为 400
-        monsterHP = 375; 
+        monsterSpawnRate = 450;
+        monsterHP = 350;   // 例：怪物血量变为 400
         currentLevel++;   // 例：怪物血量变为 400
         break;
       case 10000:
-        monsterSpawnRate = 550;
+        monsterSpawnRate = 400;
         monsterHP = 475;   // 例：怪物血量变为 500
-        monsterHP = 475; 
         currentLevel++;   // 例：怪物血量变为 500
         break;
       
@@ -558,11 +565,20 @@ function updateAll() {
   } else {
     currentLevel++; 
     monsterSpawnRate = 400;
-    monsterHP = 500 + Math.floor(Math.random() * 50) + timecount*0.002;
+    monsterHP = Math.floor(500 + Math.floor(Math.random() * 50) + timecount*0.005);
   }
+<<<<<<< HEAD
   if (score >= 0 && !boss.isAlive) {
+=======
+  if (timecount==25000&&!boss.isAlive) {
+>>>>>>> 4c9d5d0ba0bdfdddc2a73a185b4d6d5ed37bdfa8
     initBoss();
   }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'o' || e.key === 'O') {
+      initBoss();
+    }
+  });
   updateHero();
   updateBullets();
   updateMonstersAll();
@@ -576,17 +592,34 @@ function updateAll() {
  * 更新主角
  ********************/
 function updateHero() {
-  // 左右移动
-  if (leftPressed) {
+  // 检测当前移动方向
+  let currentDirection = '';
+  if (leftPressed && !rightPressed) {
+    currentDirection = 'left';
     hero.x -= hero.speed;
     if (hero.x < 0) hero.x = 0;
-  }
-  if (rightPressed) {
+  } else if (rightPressed && !leftPressed) {
+    currentDirection = 'right';
     hero.x += hero.speed;
     if (hero.x + hero.width > containerWidth) {
       hero.x = containerWidth - hero.width;
     }
   }
+
+  // 方向改变时执行翻转
+  if (currentDirection && currentDirection !== hero.lastDirection) {
+    // 使用CSS transform实现平滑翻转
+    hero.element.style.transform = `scaleX(${currentDirection === 'left' ? -1 : 1})`;
+    
+    // 如果需要保持元素位置不变，添加偏移修正
+    const flipOffset = currentDirection === 'left' ? hero.width : 0;
+    hero.element.style.transform += ` translateX(${flipOffset}px)`;
+    
+    // 更新状态记录
+    hero.isFlipped = currentDirection === 'left';
+    hero.lastDirection = currentDirection;
+  }
+
   updatePosition(hero);
 
   // 子弹发射
@@ -657,9 +690,16 @@ function updateBullets() {
       const m = monsters[j];
       if (isCollision(b, m)) {
         // 命中音效
-        hitSound.currentTime = 0;
-        hitSound.play();
-
+        if (weapontype == 0)
+        {
+          hitSounds.default.currentTime = 0;
+          hitSounds.default.play();
+        }
+        else if (weapontype == 1)
+        {
+          hitSounds.ice.currentTime = 0;
+          hitSounds.ice.play();
+        }
         m.hp -= bulletDamage;
         removeGameObject(bullets, i);
         i--;
