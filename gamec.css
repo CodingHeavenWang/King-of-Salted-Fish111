@@ -281,3 +281,20 @@
   text-shadow: 1px 1px 2px black; /* 文字阴影 */
   z-index: 1;
 }
+
+/* 角色基础样式 */
+#hero {
+  transition: transform 0.2s ease-in-out; /* 平滑翻转动画 */
+  transform-origin: center; /* 确保以中心为翻转轴 */
+  will-change: transform; /* 优化渲染性能 */
+}
+
+/* 移动时添加动画效果 */
+.hero-moving {
+  animation: walkCycle 0.6s steps(4) infinite;
+}
+
+@keyframes walkCycle {
+  from { background-position: 0 0; }
+  to { background-position: -400% 0; }
+}
