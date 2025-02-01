@@ -31,9 +31,9 @@ const hero = {
   element: null,
   x: containerWidth / 2 - 25, // 初始居中 (50px 宽的一半)
   y: containerHeight - 70,    // 在底部
-  width: 50,
-  height: 50,
-  speed: 3,
+  width: 30,
+  height: 30,
+  speed: 1.5,
   isAlive: true,
   element: document.createElement('div'),
   isFlipped: false,
@@ -105,7 +105,7 @@ gameContainer.appendChild(playerHPElement);
 
 // Boss弹幕
 const bossBullets = [];
-const bossBulletSpeed = 3; // Boss弹幕速度
+const bossBulletSpeed = 5; // Boss弹幕速度
 
 // 游戏控制
 let leftPressed = false;
@@ -153,7 +153,7 @@ function spawnBullet() {
 
     bulletDiv.style.backgroundImage = `url('${bulletimg}')`;
   // 子弹初始位置：主角正中上方
-  const bulletX = hero.x + (hero.width / 2) - (30/2);
+  const bulletX = hero.x;
   const bulletY = hero.y - 15;
 
   const bulletObj = {
