@@ -32,7 +32,7 @@ const hero = {
   x: containerWidth / 2 - 25, // 初始居中 (50px 宽的一半)
   y: containerHeight - 70,    // 在底部
   width: 30,
-  height: 30,
+  height: 60,
   speed: 1.5,
   isAlive: true,
   element: document.createElement('div'),
@@ -45,9 +45,9 @@ let score = 0;
 
 // 子弹
 const bullets = [];
-let bulletSpeed = 3;       // 子弹向上移动速度
+let bulletSpeed = 5;       // 子弹向上移动速度
 let bulletDamage = 25;     // 子弹伤害
-let bulletSpawnRate = 125;  // 子弹发射频率(帧数间隔越小越快)
+let bulletSpawnRate = 60;  // 子弹发射频率(帧数间隔越小越快)
 let bulletSpawnCounter = 0;
 
 // 怪物
@@ -531,29 +531,29 @@ function updateAll() {
     monsterSpawnCounter = 0;
   }
   // 根据 timecount 动态调整怪物生成、怪物血量
-  if (timecount <= 15000) {
+  if (timecount <= 2400) {
     switch (timecount) {
       case 1:
-        monsterSpawnRate = 500;
+        monsterSpawnRate = 120;
         monsterHP = 50;   // 例：怪物血量变为 200
         break;
-      case 2500:
-        monsterSpawnRate = 500;
+      case 600:
+        monsterSpawnRate = 120;
         monsterHP = 100;   // 例：怪物血量变为 250
         currentLevel++;   // 例：怪物血量变为 250
         break;
-      case 5000:
-        monsterSpawnRate = 450;
+      case 1200:
+        monsterSpawnRate = 110;
         monsterHP = 200;   // 例：怪物血量变为 300
         currentLevel++;    // 例：怪物血量变为 300
         break;
-      case 7500:
-        monsterSpawnRate = 450;
+      case 1800:
+        monsterSpawnRate = 110;
         monsterHP = 350;   // 例：怪物血量变为 400
         currentLevel++;   // 例：怪物血量变为 400
         break;
-      case 10000:
-        monsterSpawnRate = 400;
+      case 2400:
+        monsterSpawnRate = 100;
         monsterHP = 475;   // 例：怪物血量变为 500
         currentLevel++;   // 例：怪物血量变为 500
         break;
@@ -561,10 +561,10 @@ function updateAll() {
     }
   } else {
     currentLevel++; 
-    monsterSpawnRate = 400;
-    monsterHP = Math.floor(500 + Math.floor(Math.random() * 50) + timecount*0.005);
+    monsterSpawnRate = 90;
+    monsterHP = Math.floor(500 + Math.floor(Math.random() * 50) + timecount*0.05);
   }
-  if (score>=0 &&!boss.isAlive) {
+  if (timecount>=4800 &&!boss.isAlive) {
     initBoss();
   }
   document.addEventListener('keydown', (e) => {
