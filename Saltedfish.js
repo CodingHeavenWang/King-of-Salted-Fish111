@@ -153,7 +153,7 @@ function spawnBullet() {
 
     bulletDiv.style.backgroundImage = `url('${bulletimg}')`;
   // 子弹初始位置：主角正中上方
-  const bulletX = hero.x + hero.width / 2 - 5;
+  const bulletX = hero.x + (hero.width / 2) - (30/2);
   const bulletY = hero.y - 15;
 
   const bulletObj = {
