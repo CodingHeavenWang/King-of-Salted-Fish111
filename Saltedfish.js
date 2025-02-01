@@ -622,7 +622,7 @@ function updateAll() {
     monsterSpawnCounter = 0;
   }
   // 根据 timecount 动态调整怪物生成、怪物血量
-  if (timecount <= 2400) {
+  if (timecount <= 3000) {
     switch (timecount) {
       case 1:
         monsterSpawnRate = 120;
@@ -653,7 +653,7 @@ function updateAll() {
   } else {
     currentLevel=6; 
     monsterSpawnRate = 90;
-    monsterHP = Math.floor(-200 + timecount*0.5);
+    monsterHP = Math.floor(-300 + timecount*0.5);
   }
   levelElement.textContent = "Level: " + currentLevel;
   if (timecount>=4800 &&!boss.isAlive) {
@@ -978,7 +978,7 @@ function removeGameObject(arr, index) {
 function showGameOver() {
   const gameoverDiv = document.createElement('div');
   gameoverDiv.className = 'gameover';
-  gameoverDiv.innerText = '游戏结束';
+  gameoverDiv.innerText = 'Game Over!';
   gameContainer.appendChild(gameoverDiv);
 
   // 停止背景音乐
