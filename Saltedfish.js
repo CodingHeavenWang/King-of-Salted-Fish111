@@ -45,7 +45,7 @@ let score = 0;
 // 子弹
 const bullets = [];
 let bulletSpeed = 3;       // 子弹向上移动速度
-let bulletDamage = 25;     // 子弹伤害
+let bulletDamage = 5000;     // 子弹伤害
 let bulletSpawnRate = 125;  // 子弹发射频率(帧数间隔越小越快)
 let bulletSpawnCounter = 0;
 
@@ -609,8 +609,7 @@ function updateHero() {
     
     // 如果需要保持元素位置不变，添加偏移修正
     const flipOffset = currentDirection === 'left' ? hero.width : 0;
-    hero.element.style.transform += ` translateX(${flipOffset}px)`;
-    
+    hero.element.style.transform = `scaleX(${currentDirection === 'left' ? -1 : 1})`;
     // 更新状态记录
     hero.isFlipped = currentDirection === 'left';
     hero.lastDirection = currentDirection;
