@@ -229,8 +229,8 @@
 
 /* 螺旋弹幕样式 */
 .spiral {
-  width: 40px;
-  height: 20px;
+  width: 42px;
+  height: 14px;
   background-image: url("Bullet/cry.png"); /* 假设有螺旋弹幕的图片 */
   position: absolute;
   background-size: cover;
@@ -238,8 +238,8 @@
 
 /* 追踪弹幕样式 */
 .homing {
-  width: 40px;
-  height: 20px;
+  width: 42px;
+  height: 14px;
   background-image: url("Bullet/cry.png"); /* 假设有追踪弹幕的图片 */
   position: absolute;
   background-size: cover;
