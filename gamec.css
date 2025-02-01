@@ -138,9 +138,31 @@
   width: 30px;
   height: 30px;
   position: absolute;
-  background-image: url("Others/jpg3.png"); /* 增益图 */
+  background-image: url("treasurebags/treasure1.png"); /* 增益图 */
   background-size: cover;
   background-repeat: no-repeat;
+}
+.powerup.level1 {
+  background-image: url("treasurebags/treasure1.png");
+}
+
+/* 第二关怪物图片 */
+.powerup.level2 {
+  background-image: url("treasurebags/treasure2.png"); /* 替换为你的新图片路径 */
+}
+
+.powerup.level3 {
+  background-image: url("treasurebags/treasure3.png"); /* 替换为你的新图片路径 */
+}
+
+.powerup.level4 {
+  background-image: url("treasurebags/treasure4.png"); /* 替换为你的新图片路径 */
+}
+.powerup.level5 {
+  background-image: url("treasurebags/treasure5.png"); /* 替换为你的新图片路径 */
+}
+.powerup.level6 {
+  background-image: url("treasurebags/treasure6.png"); /* 替换为你的新图片路径 */
 }
 
 /* “门”整行容器：占据 400px 宽 */
