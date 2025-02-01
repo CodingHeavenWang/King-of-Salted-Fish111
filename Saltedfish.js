@@ -45,7 +45,7 @@ let score = 0;
 // 子弹
 const bullets = [];
 let bulletSpeed = 3;       // 子弹向上移动速度
-let bulletDamage = 5000;     // 子弹伤害
+let bulletDamage = 25;     // 子弹伤害
 let bulletSpawnRate = 125;  // 子弹发射频率(帧数间隔越小越快)
 let bulletSpawnCounter = 0;
 
