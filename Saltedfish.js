@@ -606,8 +606,7 @@ function updateHero() {
     
     // 如果需要保持元素位置不变，添加偏移修正
     const flipOffset = currentDirection === 'left' ? hero.width : 0;
-    hero.element.style.transform += ` translateX(${flipOffset}px)`;
-    
+    hero.element.style.transform = `scaleX(${currentDirection === 'left' ? -1 : 1})`;
     // 更新状态记录
     hero.isFlipped = currentDirection === 'left';
     hero.lastDirection = currentDirection;
