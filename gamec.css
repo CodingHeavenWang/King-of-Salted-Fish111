@@ -70,9 +70,9 @@
   width: 50px;
   height: 50px;
   position: absolute;
-  background-image: url("Character/wizard.png"); /* 主角图 */
+  background-image: url("Character/wizard.png");
   background-size: cover;
-  background-repeat: no-repeat;
+  transform-origin: center; /* 确保轴心在中心 */
 }
 
 /* 子弹样式 */
@@ -231,7 +231,7 @@
 .spiral {
   width: 40px;
   height: 20px;
-  background-image: url("Bullet/cry.jpg"); /* 假设有螺旋弹幕的图片 */
+  background-image: url("Bullet/cry.png"); /* 假设有螺旋弹幕的图片 */
   position: absolute;
   background-size: cover;
 }
@@ -240,7 +240,7 @@
 .homing {
   width: 40px;
   height: 20px;
-  background-image: url("Bullet/cry.jpg"); /* 假设有追踪弹幕的图片 */
+  background-image: url("Bullet/cry.png"); /* 假设有追踪弹幕的图片 */
   position: absolute;
   background-size: cover;
 }
