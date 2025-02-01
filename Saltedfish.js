@@ -1,4 +1,5 @@
 
+
 /********************
  * 全局变量和配置
  ********************/
@@ -79,8 +80,8 @@ const boss = {
   y: 50,                      // 在顶部
   width: 100,
   height: 100,
-  hp: 50000,                   // Boss的血量
-  initialhp:50000,
+  hp: 1000,                   // Boss的血量
+  initialhp:1000,
   isAlive: false,             // Boss是否存活
   bulletSpawnRate: 60,        // Boss发射弹幕的频率
   bulletSpawnCounter: 0       // Boss弹幕发射计数器
@@ -88,19 +89,14 @@ const boss = {
 let bossPhase = 1; // 1: 第一阶段, 2: 第二阶段, 3: 第三阶段
 //boss 血量
 const bossHPElement = document.createElement('div');
-bossHPElement.style.position = 'absolute';
-bossHPElement.style.top = '10px';
-bossHPElement.style.left = '10px';
-bossHPElement.style.width = '200px'; // 血条总宽度
-bossHPElement.style.height = '20px';
-bossHPElement.style.backgroundColor = 'red';
-bossHPElement.style.border = '2px solid black';
+
 
 // 玩家血量
 let playerHP = 2000;
 const playerHPElement = document.createElement('div'); // 显示玩家血量的元素
+// 玩家血量显示
 playerHPElement.style.position = 'absolute';
-playerHPElement.style.top = '10px';
+playerHPElement.style.top = '40px'; 
 playerHPElement.style.right = '10px';
 playerHPElement.style.color = 'white';
 playerHPElement.style.fontSize = '24px';
@@ -401,8 +397,9 @@ gameContainer.appendChild(bossHPElement);
   updatePosition(boss);
   boss.isAlive = true;
 
+  bossHPElement.id = 'bossHP';
+  gameContainer.appendChild(bossHPElement);
   // 显示Boss血条
-  bossHPElement.style.display = 'block';
   updateBossHP(); // 初始化血条
 }
 
@@ -434,8 +431,8 @@ function spawnBossBulletSpiral(angle, speed = bossBulletSpeed) {
     element: bulletDiv,
     x: boss.x + boss.width / 2 - 10, // 从Boss中心发射
     y: boss.y + boss.height / 2 - 10,
-    width: 20,
-    height: 20,
+    width: 42,
+    height: 14,
     angle: angle, // 弹幕的角度
     speed: speed // 弹幕的速度
   };
@@ -453,8 +450,8 @@ function spawnBossBulletHoming(angle, speed = bossBulletSpeed) {
     element: bulletDiv,
     x: boss.x + boss.width / 2 - 10, // 从Boss中心发射
     y: boss.y + boss.height / 2 - 10,
-    width: 20,
-    height: 20,
+    width: 42,
+    height: 14,
     angle: angle, // 弹幕的角度
     speed: speed // 弹幕的速度
   };
@@ -567,7 +564,7 @@ function updateAll() {
     monsterSpawnRate = 400;
     monsterHP = Math.floor(500 + Math.floor(Math.random() * 50) + timecount*0.005);
   }
-  if (timecount==25000&&!boss.isAlive) {
+  if (score>=0 &&!boss.isAlive) {
     initBoss();
   }
   document.addEventListener('keydown', (e) => {
@@ -772,14 +769,22 @@ function updateBoss() {
   updateBossHP();
 
   // 根据Boss血量切换阶段
-  if (boss.hp <= 0.8*boss.initialhp && bossPhase === 1) {
+  if (boss.hp <= 0.8 * boss.initialhp && bossPhase === 1) {
     bossPhase = 2;
     console.log("Boss进入第二阶段");
     boss.element.style.backgroundImage = 'url("monster/secondsun.jpg")'; // 更换Boss外观
-  } else if (boss.hp <= 0.5*boss.initialhp && bossPhase === 2) {
+    boss.element.classList.add('boss-phase-transition'); // 添加转阶段动画
+    setTimeout(() => {
+      boss.element.classList.remove('boss-phase-transition'); // 动画结束后移除类
+    }, 1000); // 动画持续1秒
+  } else if (boss.hp <= 0.5 * boss.initialhp && bossPhase === 2) {
     bossPhase = 3;
     console.log("Boss进入第三阶段");
     boss.element.style.backgroundImage = 'url("monster/thirdsun.jpg")'; // 更换Boss外观
+    boss.element.classList.add('boss-phase-transition'); // 添加转阶段动画
+    setTimeout(() => {
+      boss.element.classList.remove('boss-phase-transition'); // 动画结束后移除类
+    }, 1000); // 动画持续1秒
   }
 
   // Boss发射弹幕
@@ -815,6 +820,7 @@ function updateBoss() {
 
         // 隐藏Boss血条
         bossHPElement.style.display = 'none';
+        updateBossHP(); // 更新Boss血条
       }
     }
   }
@@ -849,9 +855,11 @@ function updateBossBullets() {
 }
 
 // 更新Boss血条
+// 更新Boss血条
 function updateBossHP() {
   const hpPercentage = (boss.hp / boss.initialhp) * 100; // 计算血量百分比
-  bossHPElement.style.width = `${hpPercentage}%`; // 根据血量百分比调整血条宽度
+  bossHPElement.style.setProperty('--hp-width', `${hpPercentage}%`); // 根据血量百分比调整血条宽度
+  bossHPElement.setAttribute('data-hp', `${Math.round(hpPercentage)}%`); // 更新血量百分比显示
 }
 
 /********************
@@ -884,6 +892,8 @@ function showGameOver() {
 
   // 停止背景音乐
   bgm.pause();
+  
+  bossHPElement.style.display = 'none';
 }
 
 // 暂停所有怪物的移动

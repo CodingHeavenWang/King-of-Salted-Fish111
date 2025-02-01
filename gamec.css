@@ -188,7 +188,7 @@
 /* 新增计分板样式 */
 #scoreBoard {
   position: absolute;
-  top: 10px;
+  top: 35px;
   left: 10px;
   color: white;
   font-size: 24px;
@@ -200,7 +200,7 @@
 /* 新增关卡显示样式 */
 #levelBoard {
   position: absolute;
-  top: 50px;      /* 在计分板下方留出空间 */
+  top: 75px;      /* 在计分板下方留出空间 */
   left: 10px;
   color: white;
   font-size: 24px;
@@ -229,29 +229,31 @@
 
 /* 螺旋弹幕样式 */
 .spiral {
-  width: 40px;
-  height: 20px;
-  background-image: url("Bullet/cry.jpg"); /* 假设有螺旋弹幕的图片 */
+  width: 42px;
+  height: 14px;
+  background-image: url("Bullet/cry.png"); /* 假设有螺旋弹幕的图片 */
   position: absolute;
   background-size: cover;
 }
 
 /* 追踪弹幕样式 */
 .homing {
-  width: 40px;
-  height: 20px;
-  background-image: url("Bullet/cry.jpg"); /* 假设有追踪弹幕的图片 */
+  width: 42px;
+  height: 14px;
+  background-image: url("Bullet/cry.png"); /* 假设有追踪弹幕的图片 */
   position: absolute;
   background-size: cover;
 }
 
 /* Boss血条样式 */
+/* 修改Boss血条样式 */
 #bossHP {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  width: 200px;
-  height: 20px;
+  top: 20px; /* 将血条下移，避免遮挡计分板 */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 250px;  /* 减小血条宽度 */
+  height: 15px;  /* 减小血条高度 */
   background-color: #444; /* 血条背景色 */
   border: 2px solid #000; /* 血条边框 */
   border-radius: 10px; /* 圆角边框 */
@@ -265,7 +267,7 @@
   display: block;
   height: 100%;
   width: var(--hp-width, 100%); /* 动态宽度 */
-  background: linear-gradient(to right, #00ff00, #ff0000); /* 渐变色：从绿到红 */
+  background: linear-gradient(to left, #00ff00, #ff0000); /* 渐变色：从绿到红 */
   transition: width 0.3s ease; /* 平滑过渡效果 */
 }
 
@@ -276,7 +278,7 @@
   left: 50%;
   transform: translate(-50%, -50%); /* 居中显示 */
   color: white;
-  font-size: 14px;
+  font-size: 12px; /* 减小字体大小 */
   font-weight: bold;
   text-shadow: 1px 1px 2px black; /* 文字阴影 */
   z-index: 1;
@@ -297,4 +299,24 @@
 @keyframes walkCycle {
   from { background-position: 0 0; }
   to { background-position: -400% 0; }
+}
+
+/* Boss转阶段动画 */
+@keyframes bossPhaseTransition {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.boss-phase-transition {
+  animation: bossPhaseTransition 1s ease-in-out;
 }
