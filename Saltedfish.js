@@ -503,12 +503,12 @@ function spawnBossBulletsPhase3() {
  ********************/
 function gameLoop() {
   if (isGameOver) {
-    cancelAnimationFrame(frameId);
+    clearTimeout(frameId);
     showGameOver();
     return;
   }
   updateAll();
-  frameId = requestAnimationFrame(gameLoop);
+  frameId = setTimeout(gameLoop, 1000 / 60);
 }
 
 /********************
@@ -1018,7 +1018,7 @@ function startGame() {
   initHero();
 
   // 启动游戏循环
-  frameId = requestAnimationFrame(gameLoop);
+  gameLoop();
 }
 
 /********************
