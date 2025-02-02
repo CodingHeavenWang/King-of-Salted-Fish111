@@ -71,18 +71,19 @@ const doorSpeed = 1;          // 门下落速度
 let doorSpawnRate = 900;      // 约15秒(60帧/秒)
 let doorSpawnCounter = 0;     
 
-// Boss
 const boss = {
   element: null,
   x: containerWidth / 2 - 50, // 居中
   y: 50,                      // 在顶部
   width: 100,
   height: 100,
-  hp: 100000,                   // Boss的血量
-  initialhp:100000,
+  hp: 1000,                   // Boss的血量
+  initialhp: 1000,
   isAlive: false,             // Boss是否存活
   bulletSpawnRate: 60,        // Boss发射弹幕的频率
-  bulletSpawnCounter: 0       // Boss弹幕发射计数器
+  bulletSpawnCounter: 0,      // Boss弹幕发射计数器
+  speed: 1,                   // Boss移动速度
+  direction: 1                // Boss移动方向：1 表示向右，-1 表示向左
 };
 let bossPhase = 1; // 1: 第一阶段, 2: 第二阶段, 3: 第三阶段
 //boss 血量
@@ -877,6 +878,24 @@ function updateBoss() {
 
   // 更新Boss血条
   updateBossHP();
+
+  // Boss移动逻辑
+  boss.x += boss.speed * boss.direction;
+
+  // 检测Boss是否碰到屏幕边缘
+  if (boss.x + boss.width > containerWidth || boss.x < 0) {
+    boss.direction *= -1; // 反转方向
+  }
+
+  // 更新Boss位置
+  updatePosition(boss);
+
+  // 根据Boss血量调整背景音乐音量
+  if (boss.hp <= 0.1 * boss.initialhp) {
+    // 当Boss血量低于50%时，逐渐减小背景音乐音量
+    const volume = (boss.hp / (0.1 * boss.initialhp)) * 0.1; // 音量从50%逐渐减小到0
+    bgm.volume = Math.max(0, volume); // 确保音量不小于0
+  }
 
   // 根据Boss血量切换阶段
   if (boss.hp <= 0.8 * boss.initialhp && bossPhase === 1) {
