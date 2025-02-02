@@ -46,7 +46,7 @@ let score = 0;
 // 子弹
 const bullets = [];
 let bulletSpeed = 5;       // 子弹向上移动速度
-let bulletDamage = 25;     // 子弹伤害
+let bulletAttack = 25;     // 子弹伤害
 let bulletSpawnRate = 60;  // 子弹发射频率(帧数间隔越小越快)
 let bulletSpawnCounter = 0;
 
@@ -79,8 +79,8 @@ const boss = {
   y: 50,                      // 在顶部
   width: 100,
   height: 100,
-  hp: 1000,                   // Boss的血量
-  initialhp: 1000,
+  hp: 100000,                   // Boss的血量
+  initialhp: 100000,
   isAlive: false,             // Boss是否存活
   bulletSpawnRate: 60,        // Boss发射弹幕的频率
   bulletSpawnCounter: 0,      // Boss弹幕发射计数器
@@ -120,10 +120,10 @@ let frameId = null;
  * 可选的门增益选项
  ********************/
 const possibleDoorEffects = [
-  { label: 'Damage ++',    effect: { type: 'damage', value: 10 } },
+  { label: 'Attack ++',    effect: { type: 'Attack', value: 10 } },
   { label: 'Player Speed ++',  effect: { type: 'speed', value: 0.25 } },
   { label: 'Shoot frequency +', effect: { type: 'freq',  value: -3 } },
-  { label: 'Damage +',     effect: { type: 'damage', value: 5 } },
+  { label: 'Attack +',     effect: { type: 'Attack', value: 5 } },
   { label: 'Shoot frequency ++', effect: { type: 'freq',  value: -5 } },
   { label: 'Player Speed +', effect: { type: 'speed', value: 0.125 } },
   { label:'Weapon type +',effect:{type:'weapon',value:1}}
@@ -234,7 +234,7 @@ function spawnPowerup(x, y, level=1) {
   powerupDiv.className = `powerup level${level}`;
 
   // 这里也可随机决定增益类型
-  const type = Math.random() < 0.5 ? 'freq' : 'damage';
+  const type = Math.random() < 0.5 ? 'freq' : 'Attack';
 
   const timeScale = Math.floor(timecount / 600); 
   let baseValue;
@@ -281,7 +281,7 @@ let valuer = 0;
 const doorTimeScale = Math.floor(timecount / 600);
 
 if (
-  leftChoice.label === 'Damage ++'
+  leftChoice.label === 'Attack ++'
 ) {
   valuel = doorTimeScale * 20;
 } else if (
@@ -293,7 +293,7 @@ if (
 ) {
   valuel = -doorTimeScale * 2;
 }else if (
-  leftChoice.label === 'Damage +'
+  leftChoice.label === 'Attack +'
 ) {
   valuel = doorTimeScale * 10; // 或随时间变化
 } else if (
@@ -311,7 +311,7 @@ if (
 }
 
 if (
-  rightChoice.label === 'Damage ++'
+  rightChoice.label === 'Attack ++'
 ) {
   valuer = doorTimeScale * 20;
 } else if (
@@ -323,7 +323,7 @@ if (
 ) {
   valuer = -doorTimeScale * 2;
 }else if (
-  rightChoice.label === 'Damage +'
+  rightChoice.label === 'Attack +'
 ) {
   valuer = doorTimeScale * 10; // 或随时间变化
 } else if (
@@ -452,8 +452,8 @@ function updateDoors() {
 function applyDoorEffect(effect) {
   if (!effect) return;
   switch (effect.type) {
-    case 'damage':
-      bulletDamage += effect.value;
+    case 'Attack':
+      bulletAttack += effect.value;
       break;
     case 'speed':
       hero.speed += effect.value;
@@ -825,9 +825,9 @@ function updateBullets() {
           b.hasHit = true;
           b.stayFrames = 30;
           b.element.style.backgroundImage = 'url("Bullet/snowflake.png")';
-          m.hp -= bulletDamage;
+          m.hp -= bulletAttack;
           } else {
-        m.hp -= bulletDamage;
+        m.hp -= bulletAttack;
         removeGameObject(bullets, i);
         i--;
         }
@@ -872,8 +872,8 @@ function updatePowerups() {
       if (p.type === 'freq') {
         // 每次 -1 或 -2，保证最小10
         bulletSpawnRate = Math.max(10, bulletSpawnRate + p.value);
-      } else if (p.type === 'damage') {
-        bulletDamage += p.value;
+      } else if (p.type === 'Attack') {
+        bulletAttack += p.value;
       }
       removeGameObject(powerups, i);
       i--;
@@ -977,7 +977,9 @@ function updateBoss() {
     const b = bullets[i];
     if (isCollision(b, boss)&&!b.hasHit) {
       if(b.weaponTypeAtFire === 1){
-        boss.hp -= bulletDamage;
+        hitSounds.ice.currentTime = 0;
+        hitSounds.ice.play();
+        boss.hp -= bulletAttack;
         boss.slowRemain = 60;
         boss.element.classList.add('frozen');
         b.hasHit = true;
@@ -999,7 +1001,9 @@ function updateBoss() {
        }
       }
       else if(b.weaponTypeAtFire === 0){
-        boss.hp -= bulletDamage;
+        boss.hp -= bulletAttack;
+            hitSounds.default.currentTime = 0;
+            hitSounds.default.play();
         removeGameObject(bullets, i);
         i--;
         if (boss.hp <= 0) {
@@ -1077,7 +1081,7 @@ function updateBossHP() {
 }
 //更新属性栏
 function updateHeroStats() {
-  document.getElementById('heroDamage').textContent = bulletDamage;
+  document.getElementById('heroAttack').textContent = bulletAttack;
   document.getElementById('heroAttackSpeed').textContent = bulletSpawnRate;
   document.getElementById('heroMoveSpeed').textContent = hero.speed; // 更新移动速度
 }
