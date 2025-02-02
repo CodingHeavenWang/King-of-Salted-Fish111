@@ -121,7 +121,9 @@
   background-image: url("Monster/jpg3.png"); /* 替换为你的新图片路径 */
   border: 2px solid #f70707;
 }
-
+.monster.frozen {
+  filter: hue-rotate(180deg); /* 示例：色相偏移让它发蓝色 */
+}
 /* 怪物血量文字样式：显示在怪物顶部 */
 .monsterHP {
   position: absolute;
@@ -342,7 +344,9 @@
 .boss-phase-transition {
   animation: bossPhaseTransition 1s ease-in-out;
 }
-
+.boss.frozen {
+  filter: hue-rotate(180deg);
+}
 #heroStats {
   position: absolute;
   top: 10px;

@@ -84,7 +84,8 @@ const boss = {
   isAlive: false,             // Boss是否存活
   bulletSpawnRate: 60,        // Boss发射弹幕的频率
   bulletSpawnCounter: 0,      // Boss弹幕发射计数器
-  speed: 1,                   // Boss移动速度
+  speed: 1,  
+  slowRemain: 0,                 // Boss移动速度
   direction: 1                // Boss移动方向：1 表示向右，-1 表示向左
 };
 let bossPhase = 1; // 1: 第一阶段, 2: 第二阶段, 3: 第三阶段
@@ -169,7 +170,10 @@ function spawnBullet() {
     x: bulletX,
     y: bulletY,
     width: 25,
-    height: 25
+    height: 25,
+    weaponTypeAtFire: weapontype,
+    hasHit: false,
+    stayFrames: 0
   };
   bullets.push(bulletObj);
   gameContainer.appendChild(bulletDiv);
@@ -200,7 +204,8 @@ function spawnMonster() {
     height: monsterHeight,
     hp: monsterHP,
     isFrozen: false, // 初始状态为未冻结
-    level: currentLevel
+    level: currentLevel,
+    slowRemain: 0,
   };
 
   monsters.push(monsterObj);
@@ -457,7 +462,6 @@ function applyDoorEffect(effect) {
       bulletSpawnRate = Math.max(10, bulletSpawnRate + effect.value);
       break;
     case 'weapon':
-      bulletDamage += 5;
       weapontype += 1;
       bullets.forEach(bullet => {
         bullet.element.style.backgroundImage = 'url("Bullet/icefire.png")';
@@ -671,7 +675,14 @@ function updateAll() {
     if ((e.key === 'o' || e.key === 'O') && !boss.isAlive) {
       initBoss();
     }
-  });
+  }
+  );
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === '1' || e.key === '1') && !boss.isAlive) {
+      weapontype = 1;
+    }
+  }
+  )
   updateHero();
   updateBullets();
   updateMonstersAll();
@@ -741,12 +752,6 @@ function updateHeroHPBar() {
  * 更新怪物
  ********************/
 function updateMonstersAll() {
-  //monsterSpawnCounter++;
-  // 满足条件则生成怪物
-  //if (monsterSpawnCounter >= monsterSpawnRate) {
-  //  spawnMonster();
-  //  monsterSpawnCounter = 0;
-  //}
 
   // 移动怪物
   for (let i = 0; i < monsters.length; i++) {
@@ -754,7 +759,16 @@ function updateMonstersAll() {
 
     // 如果怪物没有被冻结，则更新位置
     if (!m.isFrozen) {
-      m.y += monsterSpeed * Math.random();
+      if (m.slowRemain > 0) {
+             m.slowRemain--;
+             m.y += monsterSpeed * Math.random() * 0.5;
+             if (m.slowRemain <= 0) {
+               m.element.classList.remove('frozen');
+             }
+           } else {
+              m.y += monsterSpeed * Math.random();
+           }
+        
       updateMonster(m);
     }
 
@@ -779,6 +793,7 @@ function updateMonstersAll() {
 function updateBullets() {
   for (let i = 0; i < bullets.length; i++) {
     const b = bullets[i];
+    if (!b.hasHit) {
     b.y -= bulletSpeed;
     updatePosition(b);
 
@@ -804,10 +819,18 @@ function updateBullets() {
           hitSounds.ice.currentTime = 0;
           hitSounds.ice.play();
         }
+        if (b.weaponTypeAtFire === 1) {
+          m.slowRemain = 60;  // 重置/设置剩余帧
+          m.element.classList.add('frozen'); 
+          b.hasHit = true;
+          b.stayFrames = 30;
+          b.element.style.backgroundImage = 'url("Bullet/snowflake.png")';
+          m.hp -= bulletDamage;
+          } else {
         m.hp -= bulletDamage;
         removeGameObject(bullets, i);
         i--;
-
+        }
         // 击杀怪物
         if (m.hp <= 0) {
           score += 5;  // 击杀加分
@@ -818,6 +841,13 @@ function updateBullets() {
         break;
       }
     }
+  }else{
+    b.stayFrames--;
+     if (b.stayFrames <= 0) {
+       removeGameObject(bullets, i);
+       i--;
+     }
+  }
   }
 }
 
@@ -882,9 +912,12 @@ function updateBoss() {
   updateBossHP();
 
   // Boss移动逻辑
-  boss.x += boss.speed * boss.direction;
-
-  // 检测Boss是否碰到屏幕边缘
+  if (boss.slowRemain > 0) {
+       boss.slowRemain--;
+       boss.x += boss.speed * 0.7 * boss.direction;
+     } else {
+        boss.x += boss.speed * boss.direction;
+     }
   if (boss.x + boss.width > containerWidth || boss.x < 0) {
     boss.direction *= -1; // 反转方向
   }
@@ -939,10 +972,14 @@ function updateBoss() {
   for (let i = 0; i < bullets.length; i++) {
     const b = bullets[i];
     if (isCollision(b, boss)) {
-      boss.hp -= bulletDamage;
-      removeGameObject(bullets, i);
-      i--;
-      if (boss.hp <= 0) {
+      if(b.weaponTypeAtFire === 1){
+        boss.hp -= bulletDamage;
+        boss.slowRemain = 60;
+        boss.element.classList.add('frozen');
+        b.hasHit = true;
+        b.stayFrames = 30;    
+        b.element.style.backgroundImage = 'url("Bullet/snowflake.jpg")';
+        if (boss.hp <= 0) {
         boss.isAlive = false;
         removeGameObject([boss], 0); // 移除Boss
         score += 100; // 击败Boss加100分
@@ -956,8 +993,28 @@ function updateBoss() {
         // 播放胜利视频
         playVictoryVideo();
       }
+      else if(b.weaponTypeAtFire === 0){
+        boss.hp -= bulletDamage;
+        removeGameObject(bullets, i);
+        i--;
+        if (boss.hp <= 0) {
+          boss.isAlive = false;
+          removeGameObject([boss], 0); // 移除Boss
+          score += 100; // 击败Boss加100分
+          scoreElement.textContent = `Score: ${score}`;
+          isGameOver = true;
+
+          // 隐藏Boss血条
+          bossHPElement.style.display = 'none';
+          updateBossHP(); // 更新Boss血条
+
+          // 播放胜利视频
+          playVictoryVideo();
+      }
+      }
     }
   }
+}
 }
 
 // 播放胜利视频
