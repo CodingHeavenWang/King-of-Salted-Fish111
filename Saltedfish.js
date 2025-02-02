@@ -1209,7 +1209,8 @@ function startGame() {
   document.getElementById('mainMenu').style.display = 'none';
   // 显示游戏容器
   gameContainer.style.display = 'block';
-
+  //显示bat
+  document.body.classList.add('game-active');
   // 重置游戏状态
   isGameOver = false;
   hero.isAlive = true;

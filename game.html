@@ -61,7 +61,7 @@
     .walkingmonster {
       width: 282px;
       height: 282px;
-      background: url('walkingmonster.png') 0 0;
+      background: url('Others/walkingmonster.png') 0 0;
       background-size: 2256px 282px; /* 8帧 x 282px */
       position: absolute;
       bottom: 100px;
@@ -109,8 +109,8 @@
         margin-left: -100px;
         background-size: 1600px 200px;
         animation: 
-          walk 1.8s steps(8) infinite,
-          move 14s linear infinite;
+          walk 2.4s steps(8) infinite,
+          move 18s linear infinite;
       }
       
       @keyframes walk {
@@ -161,7 +161,8 @@
   </style>
 </head>
 <body>
-
+  <div id="thunderAnimation"></div>
+  <img id="batIcon" src="Others/Bat.gif" alt="Bat Icon">
   <!-- 主界面 -->
   <div id="mainMenu">
     <img id="titleImage" src="Others/Title.png" alt="Game Title">
@@ -175,11 +176,11 @@
 
   <!-- 游戏主容器 -->
   <div id="gameContainer" style="display: none;">
-    <img id="batIcon" src="Bat.gif" alt="Bat Icon">
+    <img id="batIcon" src="Others/Bat.gif" alt="Bat Icon">
     <!-- 新增计分板 -->
-<div id="scoreBoard">分数: 0</div>
-<!-- 新增关卡显示 -->
-<div id="levelBoard">Level: 1</div>
+    <div id="scoreBoard">分数: 0</div>
+    <!-- 新增关卡显示 -->
+    <div id="levelBoard">Level: 1</div>
     <div id="heroStats">
       <div><i class="fas fa-bolt"></i>  <span id="heroAttack">25</span></div>
       <div><i class="fas fa-tachometer-alt"></i>  <span id="heroAttackSpeed">125</span></div>
@@ -191,53 +192,75 @@
       </div>
      <!-- 新增蝙蝠图片 -->
   
-<!-- <div id="skillCooldownDisplay">Stop!: ready</div> -->
-  <!-- 这里的内容（主角、怪物、子弹、增益、门）会通过 JS 动态创建 -->
-</div>
+    <!-- <div id="skillCooldownDisplay">Stop!: ready</div> -->
+      <!-- 这里的内容（主角、怪物、子弹、增益、门）会通过 JS 动态创建 -->
+    </div>
 
-<!-- 音效 (子弹命中怪物) -->
-<audio id="hitSound" src="Sound_Effect/fire_effect.MP3" preload="auto"></audio>
-  <!-- <div id="skillCooldownDisplay">Stop!: ready</div> -->
-  <!-- 新增计分板 -->
-  <!-- 新增技能冷却显示 -->
-  <!-- <div id="skillCooldownDisplay">Stop!: ready</div> -->
+    <!-- 音效 (子弹命中怪物) -->
+    <audio id="hitSound" src="Sound_Effect/fire_effect.MP3" preload="auto"></audio>
+      <!-- <div id="skillCooldownDisplay">Stop!: ready</div> -->
+      <!-- 新增计分板 -->
+      <!-- 新增技能冷却显示 -->
+      <!-- <div id="skillCooldownDisplay">Stop!: ready</div> -->
 
-<!-- 新增人物属性栏 -->
+    <!-- 新增人物属性栏 -->
 
 
-  <!-- 视频播放器 -->
-<div id="videoContainer">
-  <video id="videoPlayer" controls>
+    <!-- 视频播放器 -->
+    <div id="videoContainer">
+    <video id="videoPlayer" controls>
     <source src="Others/victory2.mp4" type="video/mp4">
     您的浏览器不支持视频播放。
-  </video>
-  <style>
-    /* 新增蝙蝠图标样式 */
-    #batIcon {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      width: 80px;  /* 根据实际图片尺寸调整 */
-      height: auto;
-      z-index: 999; /* 确保在最上层 */
-      filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.5)); /* 添加投影效果 */
-      animation: batFloat 2s ease-in-out infinite; /* 添加浮动动画 */
-    }
-  
-    /* 浮动动画效果 */
-    @keyframes batFloat {
-      0%, 100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(-10px);
-      }
-    }
-  
+    </video>
+    <style>
+
     /* 确保游戏容器有定位基准 */
     #gameContainer {
       position: relative; /* 新增定位基准 */
     }
+    #batIcon {
+      position: fixed;
+      top: 20px;
+      left: 350px;
+      width: 80px;
+      height: auto;
+      z-index: 9999;
+      filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.5));
+      animation: batFloat 2s ease-in-out infinite;
+      
+      /* 默认隐藏 */
+      display: none;
+      }
+      /* 游戏运行时显示 */
+      body.game-active #batIcon {
+        display: block;
+      }
+
+      /* 当游戏启动时微调位置 */
+      #gameContainer:has(:visible) + #batIcon {
+        left: 50px; /* 游戏运行时调整位置 */
+      }
+      /* 闪电容器 */
+    #thunderAnimation {
+      position: fixed;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 200px;  /* 根据实际图片尺寸调整 */
+      height: 200px;
+      z-index: 2;
+      overflow: hidden;
+    }
+   
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  #thunderAnimation {
+    left: 10px;
+    width: 120px;
+    height: 120px;
+  }
+}
   </style>
 </div>
 
