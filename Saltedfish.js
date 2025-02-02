@@ -21,7 +21,7 @@ bossBgm.loop = true;
 let timecount = 0;
 // 新增技能相关变量
 let isSkillActive = false; // 技能是否激活
-let skillCooldown = 10000; // 技能冷却时间（10秒）
+let skillCooldown = 600; // 技能冷却时间（10秒）
 let lastSkillTime = 0; // 上次使用技能的时间
 let weapontype = 0;
 // 主角
@@ -29,9 +29,9 @@ const hero = {
   element: null,
   x: containerWidth / 2 - 25, // 初始居中 (50px 宽的一半)
   y: containerHeight - 70,    // 在底部
-  width: 50,
-  height: 50,
-  speed: 3,
+  width: 30,
+  height: 60,
+  speed: 1.5,
   isAlive: true,
   element: document.createElement('div'),
   isFlipped: false,
@@ -43,9 +43,9 @@ let score = 0;
 
 // 子弹
 const bullets = [];
-let bulletSpeed = 3;       // 子弹向上移动速度
+let bulletSpeed = 5;       // 子弹向上移动速度
 let bulletDamage = 25;     // 子弹伤害
-let bulletSpawnRate = 125;  // 子弹发射频率(帧数间隔越小越快)
+let bulletSpawnRate = 60;  // 子弹发射频率(帧数间隔越小越快)
 let bulletSpawnCounter = 0;
 
 // 怪物
@@ -63,12 +63,12 @@ const levelElement = document.getElementById('levelBoard');
 
 // 增益
 const powerups = [];
-const powerupSpeed = 1;       // 增益下落速度
+const powerupSpeed = 3;       // 增益下落速度
 
 // “门”功能：每隔 15 秒生成，占据整行 (400px)，左右两个选项
 const doors = [];
 const doorSpeed = 1;          // 门下落速度
-let doorSpawnRate = 2500;      // 约15秒(60帧/秒)
+let doorSpawnRate = 900;      // 约15秒(60帧/秒)
 let doorSpawnCounter = 0;     
 
 // Boss
@@ -78,8 +78,8 @@ const boss = {
   y: 50,                      // 在顶部
   width: 100,
   height: 100,
-  hp: 50000,                   // Boss的血量
-  initialhp:50000,
+  hp: 100000,                   // Boss的血量
+  initialhp:100000,
   isAlive: false,             // Boss是否存活
   bulletSpawnRate: 60,        // Boss发射弹幕的频率
   bulletSpawnCounter: 0       // Boss弹幕发射计数器
@@ -104,7 +104,7 @@ const playerHPElement = document.createElement('div'); // 显示玩家血量的�
 
 // Boss弹幕
 const bossBullets = [];
-const bossBulletSpeed = 3; // Boss弹幕速度
+const bossBulletSpeed = 5; // Boss弹幕速度
 
 // 游戏控制
 let leftPressed = false;
@@ -116,13 +116,13 @@ let frameId = null;
  * 可选的门增益选项
  ********************/
 const possibleDoorEffects = [
-  { label: 'Damage +10',    effect: { type: 'damage', value: 10 } },
-  { label: 'Player Speed +0.5',  effect: { type: 'speed', value: 0.5 } },
-  { label: 'Shoot frequency + 5', effect: { type: 'freq',  value: -5 } },
-  { label: 'Damage +5',     effect: { type: 'damage', value: 5 } },
-  { label: 'Shoot frequency + 10', effect: { type: 'freq',  value: -10 } },
-  { label: 'Player Speed +0.25', effect: { type: 'speed', value: 0.25 } },
-  { label:'Change weapon',effect:{type:'weapon',value:1}}
+  { label: 'Damage ++',    effect: { type: 'damage', value: 10 } },
+  { label: 'Player Speed ++',  effect: { type: 'speed', value: 0.25 } },
+  { label: 'Shoot frequency +', effect: { type: 'freq',  value: -3 } },
+  { label: 'Damage +',     effect: { type: 'damage', value: 5 } },
+  { label: 'Shoot frequency ++', effect: { type: 'freq',  value: -5 } },
+  { label: 'Player Speed +', effect: { type: 'speed', value: 0.125 } },
+  { label:'Weapon type +',effect:{type:'weapon',value:1}}
 ];
 
 /********************
@@ -158,7 +158,7 @@ function spawnBullet() {
 
     bulletDiv.style.backgroundImage = `url('${bulletimg}')`;
   // 子弹初始位置：主角正中上方
-  const bulletX = hero.x + hero.width / 2 - 5;
+  const bulletX = hero.x;
   const bulletY = hero.y - 15;
 
   const bulletObj = {
@@ -196,7 +196,8 @@ function spawnMonster() {
     width: monsterWidth,
     height: monsterHeight,
     hp: monsterHP,
-    isFrozen: false // 初始状态为未冻结
+    isFrozen: false, // 初始状态为未冻结
+    level: currentLevel
   };
 
   monsters.push(monsterObj);
@@ -220,12 +221,24 @@ function updateMonster(m) {
 /********************
  * 生成增益
  ********************/
-function spawnPowerup(x, y) {
+function spawnPowerup(x, y, level=1) {
   const powerupDiv = document.createElement('div');
-  powerupDiv.className = 'powerup';
+  powerupDiv.className = `powerup level${level}`;
 
   // 这里也可随机决定增益类型
   const type = Math.random() < 0.5 ? 'freq' : 'damage';
+
+  const timeScale = Math.floor(timecount / 600); 
+  let baseValue;
+  let finalValue;
+  if (type === 'freq') {
+    baseValue = -2; 
+    finalValue = baseValue - timeScale*0.5;
+  } else {
+    baseValue = 5;
+    finalValue = baseValue + timeScale*5; 
+  }
+
 
   const powerupObj = {
     element: powerupDiv,
@@ -233,7 +246,8 @@ function spawnPowerup(x, y) {
     y: y,
     width: 30,
     height: 30,
-    type: type
+    type: type,
+    value: finalValue
   };
   powerups.push(powerupObj);
   gameContainer.appendChild(powerupDiv);
@@ -250,17 +264,94 @@ function spawnDoor() {
 
   // 随机抽取两种不同的增益选项
   const indices = pickTwoDistinctIndices(possibleDoorEffects.length);
-  const leftChoice = possibleDoorEffects[indices[0]];
-  const rightChoice = possibleDoorEffects[indices[1]];
+const leftChoice = possibleDoorEffects[indices[0]];
+const rightChoice = possibleDoorEffects[indices[1]];
 
+let valuel = 0;
+let valuer = 0;
+
+const doorTimeScale = Math.floor(timecount / 600);
+
+if (
+  leftChoice.label === 'Damage ++'
+) {
+  valuel = doorTimeScale * 20;
+} else if (
+  leftChoice.label === 'Player Speed +'
+) {
+  valuel = 0;
+} else if (
+  leftChoice.label === 'Shoot frequency ++'
+) {
+  valuel = -doorTimeScale * 2;
+}else if (
+  leftChoice.label === 'Damage +'
+) {
+  valuel = doorTimeScale * 10; // 或随时间变化
+} else if (
+  leftChoice.label === 'Shoot frequency +'
+) {
+  valuel = -doorTimeScale *1;
+}else if (
+  leftChoice.label === 'Player Speed ++'
+) {
+  valuel = 0
+} else if (
+  leftChoice.label === 'Weapon type +'
+) {
+  valuel = 0;
+}
+
+if (
+  rightChoice.label === 'Damage ++'
+) {
+  valuer = doorTimeScale * 20;
+} else if (
+  rightChoice.label === 'Player Speed +'
+) {
+  valuer = 0;
+} else if (
+  rightChoice.label === 'Shoot frequency ++'
+) {
+  valuer = -doorTimeScale * 2;
+}else if (
+  rightChoice.label === 'Damage +'
+) {
+  valuer = doorTimeScale * 10; // 或随时间变化
+} else if (
+  rightChoice.label === 'Shoot frequency +'
+) {
+  valuer = -doorTimeScale *1;
+}else if (
+  rightChoice.label === 'Player Speed ++'
+) {
+  valuer = 0
+} else if (
+  rightChoice.label === 'Weapon type +'
+) {
+  valuer = 0;
+}
+
+let leftEffectValue = leftChoice.effect.value + valuel;
+let rightEffectValue = rightChoice.effect.value + valuer;
+
+let leftLabel = leftChoice.label + leftEffectValue;
+let rightLabel = rightChoice.label + rightEffectValue;
+
+if(leftChoice.effect.type === 'freq'){
+  leftLabel = leftChoice.label + (-leftEffectValue);
+}
+if(rightChoice.effect.type === 'freq'){
+  rightLabel = rightChoice.label + (-rightEffectValue);
+}
   // 创建左、右选项
   const leftOptionDiv = document.createElement('div');
   leftOptionDiv.className = 'doorOption';
-  leftOptionDiv.textContent = leftChoice.label;
+  leftOptionDiv.textContent = leftLabel;
 
   const rightOptionDiv = document.createElement('div');
   rightOptionDiv.className = 'doorOption';
-  rightOptionDiv.textContent = rightChoice.label;
+  rightOptionDiv.textContent = rightLabel;
 
   // 将选项放入门容器
   doorRowDiv.appendChild(leftOptionDiv);
@@ -274,7 +365,7 @@ function spawnDoor() {
     y: -60,
     width: 200,
     height: 60,
-    effect: leftChoice.effect,
+    effect: { ...leftChoice.effect, value: leftEffectValue },
     groupId: groupId,
     parent: doorRowDiv
   };
@@ -284,7 +375,7 @@ function spawnDoor() {
     y: -60,
     width: 200,
     height: 60,
-    effect: rightChoice.effect,
+    effect: { ...rightChoice.effect, value: rightEffectValue },
     groupId: groupId,
     parent: doorRowDiv
   };
@@ -508,12 +599,12 @@ function spawnBossBulletsPhase3() {
  ********************/
 function gameLoop() {
   if (isGameOver) {
-    cancelAnimationFrame(frameId);
+    clearTimeout(frameId);
     showGameOver();
     return;
   }
   updateAll();
-  frameId = requestAnimationFrame(gameLoop);
+  frameId = setTimeout(gameLoop, 1000 / 60);
 }
 
 /********************
@@ -536,39 +627,40 @@ function updateAll() {
     monsterSpawnCounter = 0;
   }
   // 根据 timecount 动态调整怪物生成、怪物血量
-  if (timecount <= 15000) {
+  if (timecount <= 3000) {
     switch (timecount) {
       case 1:
-        monsterSpawnRate = 500;
-        monsterHP = 50;   // 例：怪物血量变为 200
+        monsterSpawnRate = 120;
+        monsterHP = 100;   // 例：怪物血量变为 200
         break;
-      case 2500:
-        monsterSpawnRate = 500;
-        monsterHP = 100;   // 例：怪物血量变为 250
+      case 600:
+        monsterSpawnRate = 120;
+        monsterHP = 200;   // 例：怪物血量变为 250
         currentLevel++;   // 例：怪物血量变为 250
         break;
-      case 5000:
-        monsterSpawnRate = 450;
-        monsterHP = 200;   // 例：怪物血量变为 300
+      case 1200:
+        monsterSpawnRate = 110;
+        monsterHP = 400;   // 例：怪物血量变为 300
         currentLevel++;    // 例：怪物血量变为 300
         break;
-      case 7500:
-        monsterSpawnRate = 450;
-        monsterHP = 350;   // 例：怪物血量变为 400
+      case 1800:
+        monsterSpawnRate = 110;
+        monsterHP = 600;   // 例：怪物血量变为 400
         currentLevel++;   // 例：怪物血量变为 400
         break;
-      case 10000:
-        monsterSpawnRate = 400;
-        monsterHP = 475;   // 例：怪物血量变为 500
+      case 2400:
+        monsterSpawnRate = 100;
+        monsterHP = 800;   // 例：怪物血量变为 500
         currentLevel++;   // 例：怪物血量变为 500
         break;
       
     }
   } else {
-    currentLevel++; 
-    monsterSpawnRate = 400;
-    monsterHP = Math.floor(500 + Math.floor(Math.random() * 50) + timecount*0.005);
+    currentLevel=6; 
+    monsterSpawnRate = 90;
+    monsterHP = Math.floor(-300 + timecount*0.5);
   }
+  levelElement.textContent = "Level: " + currentLevel;
   if (timecount>=4800 &&!boss.isAlive) {
     initBoss();
   }
@@ -717,7 +809,7 @@ function updateBullets() {
         if (m.hp <= 0) {
           score += 5;  // 击杀加分
           scoreElement.textContent = `Score: ${score}`;
-          spawnPowerup(m.x + m.width / 2, m.y + m.height / 2);
+          spawnPowerup(m.x + m.width / 2, m.y + m.height / 2, m.level);
           removeMonster(monsters, j);
         }
         break;
@@ -745,9 +837,10 @@ function updatePowerups() {
     // 主角拾取增益
     if (isCollision(hero, p)) {
       if (p.type === 'freq') {
-        bulletSpawnRate = Math.max(10, bulletSpawnRate - 1);
+        // 每次 -1 或 -2，保证最小10
+        bulletSpawnRate = Math.max(10, bulletSpawnRate + p.value);
       } else if (p.type === 'damage') {
-        bulletDamage += 5;
+        bulletDamage += p.value;
       }
       removeGameObject(powerups, i);
       i--;
@@ -931,7 +1024,7 @@ function removeGameObject(arr, index) {
 function showGameOver() {
   const gameoverDiv = document.createElement('div');
   gameoverDiv.className = 'gameover';
-  gameoverDiv.innerText = '游戏结束';
+  gameoverDiv.innerText = 'Game Over!';
   gameContainer.appendChild(gameoverDiv);
 
   // 停止背景音乐
@@ -1066,7 +1159,7 @@ function startGame() {
   initHero();
 
   // 启动游戏循环
-  frameId = requestAnimationFrame(gameLoop);
+  gameLoop();
 }
 /********************
  * 监听“开始游戏”按钮
