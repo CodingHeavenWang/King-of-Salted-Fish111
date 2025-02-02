@@ -383,3 +383,22 @@
   z-index: 1000; /* 确保血条在主角上方 */
   transition: width 0.3s ease; /* 平滑过渡效果 */
 }
+
+#openingScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 48px;
+  font-family: "Old English Text MT", "Gothic", serif;
+  opacity: 0;
+  transition: opacity 3s ease-in-out;
+  z-index: 9999;
+  display: none; /* 初始隐藏 */
+}
