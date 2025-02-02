@@ -13,6 +13,11 @@ const hitSounds = {
   // 添加更多音效...
 };
 
+const openingScreen = document.createElement('div');
+openingScreen.id = 'openingScreen';
+openingScreen.innerHTML = '<p>Once upon a time, the <strong>King of Salted Fish</strong> ruled a land bathed in the light of <strong>Three Suns</strong>. But their harmony shattered—one burned with fury, one wept in illusions, and one watched in silence. Now, the king stirs from his slumber. <em>Will he reclaim his throne, or be lost to the abyss?</em>';
+document.body.appendChild(openingScreen);
+
 
 const scoreElement = document.getElementById('scoreBoard'); // 计分板（HTML 中应有 <div id="scoreBoard"></div>）
 //在全局变量中添加Boss战斗音乐
@@ -144,6 +149,42 @@ function initHero() {
   heroHPBar.style.width = '50px'; // 初始血条宽度
   heroHPBar.style.left = `${hero.x}px`; // 血条位置与主角一致
   heroHPBar.style.top = `${hero.y - 20}px`; // 血条位于主角上方
+}
+
+function playOpeningAnimation() {
+  const openingScreen = document.getElementById('openingScreen'); // 假设开幕动画的容器元素是 openingScreen
+  openingScreen.style.display = 'flex'; // 显示开幕动画
+
+  let animationSkipped = false; // 标记动画是否被跳过
+
+  // 监听键盘事件
+  const skipAnimation = (event) => {
+    if (event.keyCode === 32) { // 32 是空格键的 keyCode
+      event.preventDefault(); // 防止空格键触发默认行为（如滚动页面）
+      animationSkipped = true; // 标记动画被跳过
+      openingScreen.style.opacity = '0'; // 立即淡出动画
+      setTimeout(() => {
+        openingScreen.style.display = 'none'; // 隐藏动画
+        startGame(); // 直接开始游戏
+      }, 500); // 500ms 是淡出动画的时间
+      window.removeEventListener('keydown', skipAnimation); // 移除事件监听器
+    }
+  };
+
+  window.addEventListener('keydown', skipAnimation); // 添加事件监听器
+
+  setTimeout(() => {
+    if (!animationSkipped) {
+      openingScreen.style.opacity = '1'; // 文字渐显
+      setTimeout(() => {
+        openingScreen.style.opacity = '0'; // 3秒后文字淡出
+        setTimeout(() => {
+          openingScreen.style.display = 'none'; // 2秒后隐藏动画
+          window.removeEventListener('keydown', skipAnimation); // 移除事件监听器
+        }, 500);
+      }, 3000); // 3秒后淡出
+    }
+  }, 100);
 }
 
 /********************
@@ -1247,5 +1288,9 @@ function startGame() {
 /********************
  * 监听“开始游戏”按钮
  ********************/
-document.getElementById('startButton').addEventListener('click', startGame);
+document.getElementById('startButton').addEventListener('click', (event) => {
+  event.preventDefault(); // 防止按钮触发默认行为
+  document.getElementById('mainMenu').style.display = 'none'; // 隐藏主菜单
+  playOpeningAnimation(); // 播放动画
+});
 
