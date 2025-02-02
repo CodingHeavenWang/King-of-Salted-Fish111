@@ -161,28 +161,35 @@ function playOpeningAnimation() {
   const skipAnimation = (event) => {
     if (event.keyCode === 32) { // 32 是空格键的 keyCode
       event.preventDefault(); // 防止空格键触发默认行为（如滚动页面）
-      animationSkipped = true; // 标记动画被跳过
-      openingScreen.style.opacity = '0'; // 立即淡出动画
-      setTimeout(() => {
-        openingScreen.style.display = 'none'; // 隐藏动画
-        startGame(); // 直接开始游戏
-      }, 500); // 500ms 是淡出动画的时间
-      window.removeEventListener('keydown', skipAnimation); // 移除事件监听器
+      if (!animationSkipped) { // 如果动画未被跳过
+        animationSkipped = true; // 标记动画被跳过
+        openingScreen.style.opacity = '0'; // 立即淡出动画
+        setTimeout(() => {
+          openingScreen.style.display = 'none'; // 隐藏动画
+          startGame(); // 直接开始游戏
+        }, 500); // 500ms 是淡出动画的时间
+        window.removeEventListener('keydown', skipAnimation); // 移除事件监听器
+      }
     }
   };
 
   window.addEventListener('keydown', skipAnimation); // 添加事件监听器
 
   setTimeout(() => {
-    if (!animationSkipped) {
+    if (!animationSkipped) { // 如果动画未被跳过
       openingScreen.style.opacity = '1'; // 文字渐显
       setTimeout(() => {
-        openingScreen.style.opacity = '0'; // 3秒后文字淡出
-        setTimeout(() => {
-          openingScreen.style.display = 'none'; // 2秒后隐藏动画
-          window.removeEventListener('keydown', skipAnimation); // 移除事件监听器
-        }, 500);
-      }, 3000); // 3秒后淡出
+        if (!animationSkipped) { // 再次检查动画是否被跳过
+          openingScreen.style.opacity = '0'; // 3秒后文字淡出
+          setTimeout(() => {
+            if (!animationSkipped) { // 再次检查动画是否被跳过
+              openingScreen.style.display = 'none'; // 2秒后隐藏动画
+              startGame(); // 开幕动画结束后开始游戏
+              window.removeEventListener('keydown', skipAnimation); // 移除事件监听器
+            }
+          }, 2500);
+        }
+      }, 5000); // 5秒后淡出
     }
   }, 100);
 }
