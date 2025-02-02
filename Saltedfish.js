@@ -12,6 +12,8 @@ const hitSounds = {
   ice: new Audio('Sound_Effect/LedasLuzta.ogg'),
   // 添加更多音效...
 };
+
+
 const scoreElement = document.getElementById('scoreBoard'); // 计分板（HTML 中应有 <div id="scoreBoard"></div>）
 //在全局变量中添加Boss战斗音乐
 const bossBgm = new Audio('BGM/jiangjun.mp3'); // 假设Boss战斗音乐路径
@@ -728,7 +730,7 @@ function updateHeroHPBar() {
   const heroHPBar = document.getElementById('heroHPBar');
   const hpPercentage = (playerHP / playerHPinitial) * 10; // 计算血量百分比
   heroHPBar.style.width = `${hpPercentage}%`; // 根据血量百分比调整血条宽度
-  heroHPBar.style.left = `${hero.x + 390}px`; // 血条位置与主角一致
+  heroHPBar.style.left = `${hero.x}px`; // 血条位置与主角一致
   heroHPBar.style.top = `${hero.y - 20}px`; // 血条位于主角上方
 }
 

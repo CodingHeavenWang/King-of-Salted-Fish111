@@ -175,12 +175,22 @@
 
   <!-- 游戏主容器 -->
   <div id="gameContainer" style="display: none;">
-     <!-- 新增蝙蝠图片 -->
-  <img id="batIcon" src="Bat.gif" alt="Bat Icon">
+    <img id="batIcon" src="Bat.gif" alt="Bat Icon">
     <!-- 新增计分板 -->
 <div id="scoreBoard">分数: 0</div>
 <!-- 新增关卡显示 -->
 <div id="levelBoard">Level: 1</div>
+    <div id="heroStats">
+      <div><i class="fas fa-bolt"></i>  <span id="heroDamage">25</span></div>
+      <div><i class="fas fa-tachometer-alt"></i>  <span id="heroAttackSpeed">125</span></div>
+      <div><i class="fas fa-running"></i>  <span id="heroMoveSpeed">3</span></div>
+    </div>
+      <!-- 新增主角血条 -->
+      <div id="heroHPBar"></div>
+        <!-- 这里的内容（主角、怪物、子弹、增益、门）会通过 JS 动态创建 -->
+      </div>
+     <!-- 新增蝙蝠图片 -->
+  
 <!-- <div id="skillCooldownDisplay">Stop!: ready</div> -->
   <!-- 这里的内容（主角、怪物、子弹、增益、门）会通过 JS 动态创建 -->
 </div>
@@ -189,22 +199,11 @@
 <audio id="hitSound" src="Sound_Effect/fire_effect.MP3" preload="auto"></audio>
   <!-- <div id="skillCooldownDisplay">Stop!: ready</div> -->
   <!-- 新增计分板 -->
-  <div id="scoreBoard">分数: 0</div>
-  <!-- 新增关卡显示 -->
-  <div id="levelBoard">Level: 1</div>
   <!-- 新增技能冷却显示 -->
   <!-- <div id="skillCooldownDisplay">Stop!: ready</div> -->
 
 <!-- 新增人物属性栏 -->
-<div id="heroStats">
-  <div><i class="fas fa-bolt"></i>  <span id="heroDamage">25</span></div>
-  <div><i class="fas fa-tachometer-alt"></i>  <span id="heroAttackSpeed">125</span></div>
-  <div><i class="fas fa-running"></i>  <span id="heroMoveSpeed">3</span></div>
-</div>
-  <!-- 新增主角血条 -->
-  <div id="heroHPBar"></div>
-    <!-- 这里的内容（主角、怪物、子弹、增益、门）会通过 JS 动态创建 -->
-  </div>
+
 
   <!-- 视频播放器 -->
 <div id="videoContainer">
