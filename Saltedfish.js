@@ -99,8 +99,8 @@ const bossHPElement = document.createElement('div');
 
 
 // 玩家血量
-let playerHP = 2000;
-let playerHPinitial=2000;
+let playerHP = 100;
+let playerHPinitial=100;
 const playerHPElement = document.createElement('div'); // 显示玩家血量的元素
 // 玩家血量显示
 //playerHPElement.style.position = 'absolute';
@@ -535,6 +535,7 @@ function removeDoorGroup(groupId) {
 }
 
 function initBoss() {
+  boss.originalBulletSpawnRate = boss.bulletSpawnRate; 
   bgm.pause();
   bossBgm.currentTime = 0;
   bossBgm.play();
@@ -558,7 +559,13 @@ function spawnBossBullet(angle, speed = bossBulletSpeed) {
   const bulletDiv = document.createElement('div');
   bulletDiv.className = 'bossBullet';
   bulletDiv.style.backgroundSize = 'cover';
-
+  if (boss.slowRemain > 0) {
+    // 让该弹幕添加 hue-rotate 滤镜
+    bulletDiv.classList.add('bossBulletFrozen');
+  } else {
+    // 否则保持原样
+    bulletDiv.style.filter = 'none';
+  }
   const bulletObj = {
     element: bulletDiv,
     x: boss.x + boss.width / 2 - 10, // 从Boss中心发射
@@ -965,6 +972,7 @@ function updateBoss() {
        boss.x += boss.speed * 0.7 * boss.direction;
        if (boss.slowRemain <= 0) {
         boss.element.classList.remove('frozen');
+        boss.bulletSpawnRate = boss.originalBulletSpawnRate;
       }
      } 
      else {
@@ -1029,6 +1037,7 @@ function updateBoss() {
         hitSounds.ice.play();
         boss.hp -= bulletAttack;
         boss.slowRemain = 60;
+        boss.bulletSpawnRate = 90; 
         boss.element.classList.add('frozen');
         b.hasHit = true;
         b.stayFrames = 30;    

@@ -340,7 +340,9 @@
     opacity: 1;
   }
 }
-
+.bossBulletFrozen {
+  filter: hue-rotate(180deg) saturate(200%) brightness(150%) !important;
+}
 .boss-phase-transition {
   animation: bossPhaseTransition 1s ease-in-out;
 }
