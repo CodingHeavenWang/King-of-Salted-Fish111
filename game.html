@@ -175,23 +175,25 @@
 
   <!-- 游戏主容器 -->
   <div id="gameContainer" style="display: none;">
+     <!-- 新增蝙蝠图片 -->
+  <img id="batIcon" src="Bat.gif" alt="Bat Icon">
     <!-- 新增计分板 -->
 <div id="scoreBoard">分数: 0</div>
 <!-- 新增关卡显示 -->
 <div id="levelBoard">Level: 1</div>
-<div id="skillCooldownDisplay">Stop!: ready</div>
+<!-- <div id="skillCooldownDisplay">Stop!: ready</div> -->
   <!-- 这里的内容（主角、怪物、子弹、增益、门）会通过 JS 动态创建 -->
 </div>
 
 <!-- 音效 (子弹命中怪物) -->
 <audio id="hitSound" src="Sound_Effect/fire_effect.MP3" preload="auto"></audio>
-  <div id="skillCooldownDisplay">Stop!: ready</div>
+  <!-- <div id="skillCooldownDisplay">Stop!: ready</div> -->
   <!-- 新增计分板 -->
   <div id="scoreBoard">分数: 0</div>
   <!-- 新增关卡显示 -->
   <div id="levelBoard">Level: 1</div>
   <!-- 新增技能冷却显示 -->
-  <div id="skillCooldownDisplay">Stop!: ready</div>
+  <!-- <div id="skillCooldownDisplay">Stop!: ready</div> -->
 
 <!-- 新增人物属性栏 -->
 <div id="heroStats">
@@ -210,6 +212,34 @@
     <source src="Others/victory2.mp4" type="video/mp4">
     您的浏览器不支持视频播放。
   </video>
+  <style>
+    /* 新增蝙蝠图标样式 */
+    #batIcon {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 80px;  /* 根据实际图片尺寸调整 */
+      height: auto;
+      z-index: 999; /* 确保在最上层 */
+      filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.5)); /* 添加投影效果 */
+      animation: batFloat 2s ease-in-out infinite; /* 添加浮动动画 */
+    }
+  
+    /* 浮动动画效果 */
+    @keyframes batFloat {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+  
+    /* 确保游戏容器有定位基准 */
+    #gameContainer {
+      position: relative; /* 新增定位基准 */
+    }
+  </style>
 </div>
 
   <!-- 音效 (子弹命中怪物) -->
