@@ -1,5 +1,3 @@
-
-
 /********************
  * 全局变量和配置
  ********************/
@@ -80,8 +78,8 @@ const boss = {
   y: 50,                      // 在顶部
   width: 100,
   height: 100,
-  hp: 1000,                   // Boss的血量
-  initialhp:1000,
+  hp: 50000,                   // Boss的血量
+  initialhp:50000,
   isAlive: false,             // Boss是否存活
   bulletSpawnRate: 60,        // Boss发射弹幕的频率
   bulletSpawnCounter: 0       // Boss弹幕发射计数器
@@ -93,15 +91,16 @@ const bossHPElement = document.createElement('div');
 
 // 玩家血量
 let playerHP = 2000;
+let playerHPinitial=2000;
 const playerHPElement = document.createElement('div'); // 显示玩家血量的元素
 // 玩家血量显示
-playerHPElement.style.position = 'absolute';
-playerHPElement.style.top = '40px'; 
-playerHPElement.style.right = '10px';
-playerHPElement.style.color = 'white';
-playerHPElement.style.fontSize = '24px';
-playerHPElement.style.textShadow = '2px 2px 2px black';
-gameContainer.appendChild(playerHPElement);
+//playerHPElement.style.position = 'absolute';
+//playerHPElement.style.top = '40px'; 
+//playerHPElement.style.right = '10px';
+//playerHPElement.style.color = 'white';
+//playerHPElement.style.fontSize = '24px';
+//playerHPElement.style.textShadow = '2px 2px 2px black';
+//gameContainer.appendChild(playerHPElement);
 
 // Boss弹幕
 const bossBullets = [];
@@ -135,6 +134,12 @@ function initHero() {
   gameContainer.appendChild(heroDiv);
   hero.element = heroDiv;
   updatePosition(hero);
+
+  // 初始化血条
+  const heroHPBar = document.getElementById('heroHPBar');
+  heroHPBar.style.width = '50px'; // 初始血条宽度
+  heroHPBar.style.left = `${hero.x}px`; // 血条位置与主角一致
+  heroHPBar.style.top = `${hero.y - 20}px`; // 血条位于主角上方
 }
 
 /********************
@@ -355,18 +360,18 @@ function applyDoorEffect(effect) {
       hero.speed += effect.value;
       break;
     case 'freq':
-      // freq 的 value 为负数 => 减少发射间隔
-      // 确保最小是 10
       bulletSpawnRate = Math.max(10, bulletSpawnRate + effect.value);
       break;
-    case 'weapon': 
-      bulletDamage += 5; // 新武器伤害
-      weapontype+=1;
+    case 'weapon':
+      bulletDamage += 5;
+      weapontype += 1;
       bullets.forEach(bullet => {
         bullet.element.style.backgroundImage = 'url("Bullet/icefire.png")';
       });
       break;
   }
+  // 更新属性栏
+  updateHeroStats();
 }
 
 /********************
@@ -564,11 +569,11 @@ function updateAll() {
     monsterSpawnRate = 400;
     monsterHP = Math.floor(500 + Math.floor(Math.random() * 50) + timecount*0.005);
   }
-  if (score>=0 &&!boss.isAlive) {
+  if (timecount>=4800 &&!boss.isAlive) {
     initBoss();
   }
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'o' || e.key === 'O') {
+    if ((e.key === 'o' || e.key === 'O') && !boss.isAlive) {
       initBoss();
     }
   });
@@ -579,6 +584,8 @@ function updateAll() {
   updateDoors();
   updateBoss();
   updateBossBullets();
+  updateHeroHPBar();
+  updateHeroStats()
 }
 
 /********************
@@ -612,6 +619,8 @@ function updateHero() {
     hero.lastDirection = currentDirection;
   }
 
+  
+
   updatePosition(hero);
 
   // 子弹发射
@@ -620,6 +629,14 @@ function updateHero() {
     spawnBullet();
     bulletSpawnCounter = 0;
   }
+}
+
+function updateHeroHPBar() {
+  const heroHPBar = document.getElementById('heroHPBar');
+  const hpPercentage = (playerHP / playerHPinitial) * 10; // 计算血量百分比
+  heroHPBar.style.width = `${hpPercentage}%`; // 根据血量百分比调整血条宽度
+  heroHPBar.style.left = `${hero.x}px`; // 血条位置与主角一致
+  heroHPBar.style.top = `${hero.y - 20}px`; // 血条位于主角上方
 }
 
 /********************
@@ -728,13 +745,14 @@ function updatePowerups() {
     // 主角拾取增益
     if (isCollision(hero, p)) {
       if (p.type === 'freq') {
-        // 每次 -1 或 -2，保证最小10
         bulletSpawnRate = Math.max(10, bulletSpawnRate - 1);
       } else if (p.type === 'damage') {
         bulletDamage += 5;
       }
       removeGameObject(powerups, i);
       i--;
+      // 更新属性栏
+      updateHeroStats();
     }
   }
 }
@@ -820,9 +838,30 @@ function updateBoss() {
         // 隐藏Boss血条
         bossHPElement.style.display = 'none';
         updateBossHP(); // 更新Boss血条
+
+        // 播放胜利视频
+        playVictoryVideo();
       }
     }
   }
+}
+
+// 播放胜利视频
+function playVictoryVideo() {
+  const videoContainer = document.getElementById('videoContainer');
+  const videoPlayer = document.getElementById('videoPlayer');
+
+  // 显示视频容器
+  videoContainer.style.display = 'block';
+
+  // 播放视频
+  videoPlayer.play();
+
+  // 视频播放结束后隐藏视频容器
+  videoPlayer.addEventListener('ended', () => {
+    videoContainer.style.display = 'none';
+    // 可以在这里添加其他逻辑，比如返回主菜单或重新开始游戏
+  });
 }
 
 function updateBossBullets() {
@@ -853,12 +892,18 @@ function updateBossBullets() {
   }
 }
 
-// 更新Boss血条
+
 // 更新Boss血条
 function updateBossHP() {
   const hpPercentage = (boss.hp / boss.initialhp) * 100; // 计算血量百分比
   bossHPElement.style.setProperty('--hp-width', `${hpPercentage}%`); // 根据血量百分比调整血条宽度
   bossHPElement.setAttribute('data-hp', `${Math.round(hpPercentage)}%`); // 更新血量百分比显示
+}
+//更新属性栏
+function updateHeroStats() {
+  document.getElementById('heroDamage').textContent = bulletDamage;
+  document.getElementById('heroAttackSpeed').textContent = bulletSpawnRate;
+  document.getElementById('heroMoveSpeed').textContent = hero.speed; // 更新移动速度
 }
 
 /********************
@@ -891,7 +936,7 @@ function showGameOver() {
 
   // 停止背景音乐
   bgm.pause();
-  
+  bossBgm.pause();
   bossHPElement.style.display = 'none';
 }
 
@@ -1010,6 +1055,9 @@ function startGame() {
   monsterHP = 200;
   monsterSpawnRate = 210;
 
+  // 初始化人物属性栏
+  updateHeroStats();
+
   // 启动背景音乐
   bgm.currentTime = 0;
   bgm.play().catch(e => console.log("音乐播放需要用户交互"));
@@ -1020,8 +1068,8 @@ function startGame() {
   // 启动游戏循环
   frameId = requestAnimationFrame(gameLoop);
 }
-
 /********************
  * 监听“开始游戏”按钮
  ********************/
 document.getElementById('startButton').addEventListener('click', startGame);
+

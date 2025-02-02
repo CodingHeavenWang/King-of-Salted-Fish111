@@ -320,3 +320,40 @@
 .boss-phase-transition {
   animation: bossPhaseTransition 1s ease-in-out;
 }
+
+#heroStats {
+  position: absolute;
+  top: 10px;
+  right: 0px;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  text-shadow: 2px 2px 2px black;
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.5); /* 半透明背景 */
+  padding: 10px;
+  border-radius: 5px;
+}
+
+#heroStats div {
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+}
+
+#heroStats i {
+  margin-right: 8px; /* 图标与文字之间的间距 */
+  font-size: 16px; /* 图标大小 */
+}
+
+/* 主角血条样式 */
+#heroHPBar {
+  position: absolute;
+  top: -20px; /* 血条位于主角上方 */
+  left: 0;
+  width: 50px; /* 与主角宽度一致 */
+  height: 5px; /* 血条高度 */
+  background-color: red; /* 血条颜色 */
+  z-index: 1000; /* 确保血条在主角上方 */
+  transition: width 0.3s ease; /* 平滑过渡效果 */
+}

@@ -58,6 +58,29 @@
       margin-top: -250px; /* 向上移动图片 */
     }
   </style>
+  <meta charset="UTF-8" />
+  <title>King of Salted Fish</title>
+  <!-- 引入外部 CSS -->
+  <link rel="stylesheet" href="gamec.css">
+  <!-- 引入 Font Awesome 图标库 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* 其他样式保持不变 */
+    #videoContainer {
+      display: none; /* 初始隐藏视频容器 */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      z-index: 10000; /* 确保视频在最上层 */
+    }
+    #videoPlayer {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
 </head>
 <body>
 
@@ -72,13 +95,32 @@
 
   <!-- 游戏主容器 -->
   <div id="gameContainer" style="display: none;">
-      <!-- 新增计分板 -->
+  <div id="skillCooldownDisplay">Stop!: ready</div>
+  <!-- 新增计分板 -->
   <div id="scoreBoard">分数: 0</div>
   <!-- 新增关卡显示 -->
   <div id="levelBoard">Level: 1</div>
+  <!-- 新增技能冷却显示 -->
   <div id="skillCooldownDisplay">Stop!: ready</div>
+
+<!-- 新增人物属性栏 -->
+<div id="heroStats">
+  <div><i class="fas fa-bolt"></i>  <span id="heroDamage">25</span></div>
+  <div><i class="fas fa-tachometer-alt"></i>  <span id="heroAttackSpeed">125</span></div>
+  <div><i class="fas fa-running"></i>  <span id="heroMoveSpeed">3</span></div>
+</div>
+  <!-- 新增主角血条 -->
+  <div id="heroHPBar"></div>
     <!-- 这里的内容（主角、怪物、子弹、增益、门）会通过 JS 动态创建 -->
   </div>
+
+  <!-- 视频播放器 -->
+<div id="videoContainer">
+  <video id="videoPlayer" controls>
+    <source src="Others/victory2.mp4" type="video/mp4">
+    您的浏览器不支持视频播放。
+  </video>
+</div>
 
   <!-- 音效 (子弹命中怪物) -->
   <audio id="hitSound" src="Sound_Effect/fire_effect.MP3" preload="auto"></audio>
