@@ -915,7 +915,11 @@ function updateBoss() {
   if (boss.slowRemain > 0) {
        boss.slowRemain--;
        boss.x += boss.speed * 0.7 * boss.direction;
-     } else {
+       if (boss.slowRemain <= 0) {
+        boss.element.classList.remove('frozen');
+      }
+     } 
+     else {
         boss.x += boss.speed * boss.direction;
      }
   if (boss.x + boss.width > containerWidth || boss.x < 0) {
@@ -971,7 +975,7 @@ function updateBoss() {
   // 检测玩家子弹与Boss碰撞
   for (let i = 0; i < bullets.length; i++) {
     const b = bullets[i];
-    if (isCollision(b, boss)) {
+    if (isCollision(b, boss)&&!b.hasHit) {
       if(b.weaponTypeAtFire === 1){
         boss.hp -= bulletDamage;
         boss.slowRemain = 60;
@@ -992,6 +996,7 @@ function updateBoss() {
 
         // 播放胜利视频
         playVictoryVideo();
+       }
       }
       else if(b.weaponTypeAtFire === 0){
         boss.hp -= bulletDamage;
@@ -1015,7 +1020,7 @@ function updateBoss() {
     }
   }
 }
-}
+
 
 // 播放胜利视频
 function playVictoryVideo() {
