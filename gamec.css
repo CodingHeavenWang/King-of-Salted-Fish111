@@ -404,3 +404,13 @@
   z-index: 9999;
   display: none; /* 初始隐藏 */
 }
+
+.explosion {
+  width: 200px;              /* 或者100×100，看你想要多大 */
+  height: 200px;
+  background-size: 100% 100%;  /* 将背景图缩放到占满容器 */
+  background-repeat: no-repeat; /* 不平铺 */
+  /* 如果想保持像素风格，可以加:
+     image-rendering: pixelated; 
+     这样放大后也不会被插值模糊 */
+}

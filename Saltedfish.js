@@ -10,6 +10,7 @@ const hitSound = document.getElementById('hitSound'); // 音效
 const hitSounds = {
   default: new Audio('Sound_Effect/fire_effect.MP3'),
   ice: new Audio('Sound_Effect/LedasLuzta.ogg'),
+  explode: new Audio('Sound_Effect/explode.flac'),
   // 添加更多音效...
 };
 
@@ -205,14 +206,18 @@ function spawnBullet() {
 
     if(weapontype==1){
         bulletimg = 'Bullet/icefire.png';
-
+    }else if (weapontype == 2) {
+         bulletimg = 'Bullet/baozha.png'; // 爆炸弹贴图
     }
 
     bulletDiv.style.backgroundImage = `url('${bulletimg}')`;
   // 子弹初始位置：主角正中上方
   const bulletX = hero.x;
   const bulletY = hero.y - 15;
-
+  let effectiveDamage = bulletAttack;
+    if (weapontype === 2) {
+        effectiveDamage = bulletAttack * 3; // 爆炸弹伤害=300%
+    }
   const bulletObj = {
     element: bulletDiv,
     x: bulletX,
@@ -221,7 +226,9 @@ function spawnBullet() {
     height: 25,
     weaponTypeAtFire: weapontype,
     hasHit: false,
-    stayFrames: 0
+    stayFrames: 0,
+    isExploded: false,
+    damage: effectiveDamage
   };
   bullets.push(bulletObj);
   gameContainer.appendChild(bulletDiv);
@@ -750,8 +757,14 @@ function updateAll() {
   }
   );
   document.addEventListener('keydown', (e) => {
-    if ((e.key === '1' || e.key === '1') && !boss.isAlive) {
+    if ((e.key === '1' || e.key === '1')) {
       weapontype = 1;
+    }
+  }
+  )
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === '2' || e.key === '2')) {
+      weapontype = 2;
     }
   }
   )
@@ -800,10 +813,13 @@ function updateHero() {
   
 
   updatePosition(hero);
-
+  let effectiveSpawnRate = bulletSpawnRate;
+    if (weapontype === 2) {
+        effectiveSpawnRate = bulletSpawnRate * 3; // 爆炸弹 => 发射间隔×3 => 攻速=1/3
+    }
   // 子弹发射
   bulletSpawnCounter++;
-  if (bulletSpawnCounter >= bulletSpawnRate) {
+  if (bulletSpawnCounter >= effectiveSpawnRate) {
     spawnBullet();
     bulletSpawnCounter = 0;
   }
@@ -866,63 +882,130 @@ function updateBullets() {
   for (let i = 0; i < bullets.length; i++) {
     const b = bullets[i];
     if (!b.hasHit) {
-    b.y -= bulletSpeed;
-    updatePosition(b);
+      b.y -= bulletSpeed;
+      updatePosition(b);
 
-    // 离开屏幕
-    if (b.y + b.height < 0) {
-      removeGameObject(bullets, i);
-      i--;
-      continue;
-    }
-
-    // 检测子弹和怪物碰撞
-    for (let j = 0; j < monsters.length; j++) {
-      const m = monsters[j];
-      if (isCollision(b, m)) {
-        // 命中音效
-        if (weapontype == 0)
-        {
-          hitSounds.default.currentTime = 0;
-          hitSounds.default.play();
-        }
-        else if (weapontype == 1)
-        {
-          hitSounds.ice.currentTime = 0;
-          hitSounds.ice.play();
-        }
-        if (b.weaponTypeAtFire === 1) {
-          m.slowRemain = 60;  // 重置/设置剩余帧
-          m.element.classList.add('frozen'); 
-          b.hasHit = true;
-          b.stayFrames = 30;
-          b.element.style.backgroundImage = 'url("Bullet/snowflake.png")';
-          m.hp -= bulletAttack;
-          } else {
-        m.hp -= bulletAttack;
+      // 离开屏幕
+      if (b.y + b.height < 0) {
         removeGameObject(bullets, i);
         i--;
+        continue;
+      }
+
+      // 检测子弹和怪物碰撞
+      for (let j = 0; j < monsters.length; j++) {
+        const m = monsters[j];
+        if (isCollision(b, m)) {
+          // //
+          if (weapontype == 0)
+          {
+            hitSounds.default.currentTime = 0;
+            hitSounds.default.play();
+          }
+          else if (weapontype == 1)
+          {
+            hitSounds.ice.currentTime = 0;
+            hitSounds.ice.play();
+          }
+          else if (weapontype == 2)
+            {
+              hitSounds.explode.currentTime = 0;
+              hitSounds.explode.play();
+            }
+          // //
+          if (b.weaponTypeAtFire === 1) {
+            m.slowRemain = 60;  // 重置/设置剩余帧
+            m.element.classList.add('frozen'); 
+            b.hasHit = true;
+            b.stayFrames = 30;
+            b.element.style.backgroundImage = 'url("Bullet/snowflake.png")';
+            m.hp -= b.damage;
+            } 
+            else if(b.weaponTypeAtFire === 2){
+              m.hp -= b.damage;
+              b.hasHit = true;
+              b.isExploded = true;      // 标记已爆炸
+              b.stayFrames = 32;        
+              b.explosionFrameIndex = 1;
+              b.width = 200;
+              b.height = 200;
+              b.element.classList.add("explosion");
+              b.element.style.backgroundImage = 'url("Bullet/exp/exp1.png")';
+              // 改成以碰撞点为中心(简单用 b.x,b.y)
+              b.x = b.x  - 100; 
+              b.y = b.y  - 100;
+              updatePosition(b);
+              
+            }
+            else {
+              m.hp -= b.damage;
+          removeGameObject(bullets, i);
+          i--;
+          }
+          // //
+          if (m.hp <= 0) {
+            score += 5;  // 击杀加分
+            scoreElement.textContent = `Score: ${score}`;
+            spawnPowerup(m.x + m.width / 2, m.y + m.height / 2, m.level);
+            removeMonster(monsters, j);
+          }
+          break;
         }
-        // 击杀怪物
-        if (m.hp <= 0) {
-          score += 5;  // 击杀加分
-          scoreElement.textContent = `Score: ${score}`;
-          spawnPowerup(m.x + m.width / 2, m.y + m.height / 2, m.level);
-          removeMonster(monsters, j);
-        }
-        break;
       }
     }
-  }else{
-    b.stayFrames--;
-     if (b.stayFrames <= 0) {
-       removeGameObject(bullets, i);
-       i--;
-     }
-  }
+    else{
+      b.stayFrames--;
+      if (b.isExploded) {
+        // 总帧=32, 每2帧播下一个
+        const framesPassed = 32 - b.stayFrames; 
+        if (framesPassed % 2 === 0) {
+            b.explosionFrameIndex++;
+            if (b.explosionFrameIndex <= 16) {
+                b.element.style.backgroundImage =
+                  'url("Bullet/exp/exp' + b.explosionFrameIndex + '.png")';
+            }
+        }
+        if (b.stayFrames === 31) {
+          applyExplosionDamage(b);
+        }
+      }
+      if (b.stayFrames <= 0) {
+        removeGameObject(bullets, i);
+        i--;
+      }
+    }
   }
 }
 
+function applyExplosionDamage(bullet) {
+  // bullet.x, bullet.y, bullet.width=100, bullet.height=100
+  // 计算范围 bounding box
+  const left = bullet.x;
+  const right = bullet.x + bullet.width;
+  const top = bullet.y;
+  const bottom = bullet.y + bullet.height;
+
+  // 对所有怪物遍历
+  for (let i = monsters.length - 1; i >= 0; i--) {
+    const m = monsters[i];
+    // 怪物中心 or bounding box? 这里使用 bounding box 相交即可
+    const mxLeft = m.x, mxRight = m.x + m.width;
+    const myTop = m.y, myBottom = m.y + m.height;
+    // 判断是否相交
+    const notCollide = (mxRight < left) || (mxLeft > right) || (myBottom < top) || (myTop > bottom);
+    if (!notCollide) {
+      // 说明怪物在爆炸范围内 -> 伤害
+      m.hp -= bullet.damage; // 同样伤害
+      // 若死亡
+      if (m.hp <= 0) {
+        score += 5;
+        scoreElement.textContent = `Score: ${score}`;
+        spawnPowerup(m.x + m.width / 2, m.y + m.height / 2, m.level);
+        removeMonster(monsters, i);
+      }
+    }
+  }
+}
 /********************
  * 更新增益
  ********************/
@@ -1052,7 +1135,7 @@ function updateBoss() {
       if(b.weaponTypeAtFire === 1){
         hitSounds.ice.currentTime = 0;
         hitSounds.ice.play();
-        boss.hp -= bulletAttack;
+        boss.hp -= b.damage;
         boss.slowRemain = 60;
         boss.bulletSpawnRate = 90; 
         boss.element.classList.add('frozen');
@@ -1075,7 +1158,7 @@ function updateBoss() {
        }
       }
       else if(b.weaponTypeAtFire === 0){
-        boss.hp -= bulletAttack;
+        boss.hp -= b.damage;
             hitSounds.default.currentTime = 0;
             hitSounds.default.play();
         removeGameObject(bullets, i);
@@ -1095,6 +1178,37 @@ function updateBoss() {
           playVictoryVideo();
       }
       }
+      else if (b.weaponTypeAtFire === 2) {
+           // 爆炸弹
+           boss.hp -= b.damage;
+           hitSounds.explode.currentTime = 0;
+           hitSounds.explode.play();
+           b.hasHit = true;
+           b.isExploded = true;
+           b.stayFrames = 32;
+           b.explosionFrameIndex = 1;
+           b.width = 200;
+           b.height = 200;
+           b.x = b.x  - 100; 
+           b.y = b.y  - 100;
+           b.element.classList.add("explosion");
+           b.element.style.backgroundImage = 'url("Bullet/exp/exp1.png")';
+            updatePosition(b);
+            if (boss.hp <= 0) {
+            boss.isAlive = false;
+            removeGameObject([boss], 0); // 移除Boss
+            score += 100; // 击败Boss加100分
+            scoreElement.textContent = `Score: ${score}`;
+            isGameOver = true;
+  
+            // 隐藏Boss血条
+            bossHPElement.style.display = 'none';
+            updateBossHP(); // 更新Boss血条
+  
+            // 播放胜利视频
+            playVictoryVideo();
+           }
+         }
     }
   }
 }
