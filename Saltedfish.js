@@ -18,10 +18,10 @@ const hitSounds = {
 const openingScreen = document.createElement('div');
 openingScreen.id = 'openingScreen';
 
+
+
 // 创建一个图片元素
 const img = document.createElement('img');
-img.src = 'Opening/Opening1.png'; // 替换为你的图片路径
-img.alt = 'King of Salted Fish'; // 替换为适当的替代文本
 
 // 将图片添加到 openingScreen 中
 openingScreen.appendChild(img);
@@ -162,47 +162,88 @@ function initHero() {
   heroHPBar.style.top = `${hero.y - 20}px`; // 血条位于主角上方
 }
 
+// 在预加载阶段添加优先级提示
+function preloadImages(images) {
+  images.forEach(src => {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = src;
+      document.head.appendChild(link);
+  });
+}
+
+// 图片路径数组（根据你的实际路径修改）
+const openingImages = [
+  'Opening/Opening1.png',
+  'Opening/Opening2.png',
+  'Opening/Opening3.png',
+  'Opening/Opening4.png',
+  'Opening/Opening5.png',
+];
+
 function playOpeningAnimation() {
-  const openingScreen = document.getElementById('openingScreen'); // 假设开幕动画的容器元素是 openingScreen
-  openingScreen.style.display = 'flex'; // 显示开幕动画
+  const openingScreen = document.getElementById('openingScreen');
+  let currentIndex = 0;
+  let animationSkipped = false;
 
-  let animationSkipped = false; // 标记动画是否被跳过
+  // 创建图片容器
+  const img = document.createElement('img');
+  openingScreen.appendChild(img);
 
-  // 监听键盘事件
-  const skipAnimation = (event) => {
-    if (event.keyCode === 32) { // 32 是空格键的 keyCode
-      event.preventDefault(); // 防止空格键触发默认行为（如滚动页面）
-      if (!animationSkipped) { // 如果动画未被跳过
-        animationSkipped = true; // 标记动画被跳过
-        openingScreen.style.opacity = '0'; // 立即淡出动画
-        setTimeout(() => {
-          openingScreen.style.display = 'none'; // 隐藏动画
-          startGame(); // 直接开始游戏
-        }, 500); // 500ms 是淡出动画的时间
-        window.removeEventListener('keydown', skipAnimation); // 移除事件监听器
+  // 预加载图片
+  preloadImages(openingImages);
+
+
+  
+  // 显示首屏
+  openingScreen.style.display = 'flex';
+  
+  const showNextImage = () => {
+      if (currentIndex >= openingImages.length || animationSkipped) {
+          // 动画结束
+          openingScreen.style.opacity = '0';
+          setTimeout(() => {
+              openingScreen.style.display = 'none';
+              startGame();
+          }, 500);
+          return;
       }
-    }
+
+      // 更新图片源
+      img.src = openingImages[currentIndex];
+      openingScreen.style.opacity = '1';
+
+      // 设置定时切换
+      setTimeout(() => {
+          if (animationSkipped) return;
+          openingScreen.style.opacity = '0';
+          setTimeout(() => {
+              currentIndex++;
+              showNextImage();
+          }, 500); // 淡出动画时间
+      }, 5000); // 每张图片显示时间
   };
 
-  window.addEventListener('keydown', skipAnimation); // 添加事件监听器
+  // 开始播放序列
+  setTimeout(showNextImage, 100);
 
-  setTimeout(() => {
-    if (!animationSkipped) { // 如果动画未被跳过
-      openingScreen.style.opacity = '1'; // 文字渐显
-      setTimeout(() => {
-        if (!animationSkipped) { // 再次检查动画是否被跳过
-          openingScreen.style.opacity = '0'; // 3秒后文字淡出
-          setTimeout(() => {
-            if (!animationSkipped) { // 再次检查动画是否被跳过
-              openingScreen.style.display = 'none'; // 2秒后隐藏动画
-              startGame(); // 开幕动画结束后开始游戏
-              window.removeEventListener('keydown', skipAnimation); // 移除事件监听器
-            }
-          }, 2500);
-        }
-      }, 5000); // 5秒后淡出
-    }
-  }, 100);
+  // 跳过动画逻辑
+  const skipAnimation = (event) => {
+      if (event.keyCode === 32) { // 空格键
+          event.preventDefault();
+          if (!animationSkipped) {
+              animationSkipped = true;
+              openingScreen.style.opacity = '0';
+              setTimeout(() => {
+                  openingScreen.style.display = 'none';
+                  startGame();
+                  window.removeEventListener('keydown', skipAnimation);
+              }, 500);
+          }
+      }
+  };
+  window.addEventListener('keydown', skipAnimation);
 }
 
 /********************
