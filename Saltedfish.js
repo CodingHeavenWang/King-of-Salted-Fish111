@@ -142,7 +142,8 @@ const possibleDoorEffects = [
   { label: 'Shoot frequency +', effect: { type: 'freq',  value: -3 } },
   { label: 'Attack +',     effect: { type: 'Attack', value: 5 } },
   { label: 'Shoot frequency ++', effect: { type: 'freq',  value: -5 } },
-  { label: 'Player Speed +', effect: { type: 'speed', value: 0.125 } }
+  { label: 'Player Speed +', effect: { type: 'speed', value: 0.125 } },
+  { label:'Weapon type +',effect:{type:'weapon',value:1}}
 ];
 
 /********************
@@ -158,7 +159,7 @@ function initHero() {
   // 初始化血条
   const heroHPBar = document.getElementById('heroHPBar');
   heroHPBar.style.width = '50px'; // 初始血条宽度
-  heroHPBar.style.left = `${hero.x}px`; // 血条位置与主角一致
+  heroHPBar.style.left = `${hero.x + 80}px`; // 血条位置与主角一致
   heroHPBar.style.top = `${hero.y - 20}px`; // 血条位于主角上方
 }
 
@@ -263,8 +264,8 @@ function spawnBullet() {
 
     bulletDiv.style.backgroundImage = `url('${bulletimg}')`;
   // 子弹初始位置：主角正中上方
-  const bulletX = hero.x;
-  const bulletY = hero.y - 15;
+  const bulletX = hero.x + 50;
+  const bulletY = hero.y + 10;
   let effectiveDamage = bulletAttack;
     if (weapontype === 2) {
         effectiveDamage = bulletAttack * 3; // 爆炸弹伤害=300%
@@ -410,7 +411,11 @@ if (
   leftChoice.label === 'Player Speed ++'
 ) {
   valuel = 0
-} 
+} else if (
+  leftChoice.label === 'Weapon type +'
+) {
+  valuel = 0;
+}
 
 if (
   rightChoice.label === 'Attack ++'
@@ -436,7 +441,11 @@ if (
   rightChoice.label === 'Player Speed ++'
 ) {
   valuer = 0
-} 
+} else if (
+  rightChoice.label === 'Weapon type +'
+) {
+  valuer = 0;
+}
 
 let leftEffectValue = leftChoice.effect.value + valuel;
 let rightEffectValue = rightChoice.effect.value + valuer;
@@ -559,6 +568,19 @@ function applyDoorEffect(effect) {
     case 'freq':
       bulletSpawnRate = Math.max(10, bulletSpawnRate + effect.value);
       break;
+    case 'weapon':
+      if (weapontype == 0)
+      {
+      weapontype += 1;
+      bullets.forEach(bullet => {
+        bullet.element.style.backgroundImage = 'url("Bullet/icefire.png")';
+      });
+      break;
+      }
+      else
+      {
+        break;
+      }
   }
   // 更新属性栏
   updateHeroStats();
@@ -859,8 +881,8 @@ function updateHeroHPBar() {
   const heroHPBar = document.getElementById('heroHPBar');
   const hpPercentage = (playerHP / playerHPinitial) * 10; // 计算血量百分比
   heroHPBar.style.width = `${hpPercentage}%`; // 根据血量百分比调整血条宽度
-  heroHPBar.style.left = `${hero.x}px`; // 血条位置与主角一致
-  heroHPBar.style.top = `${hero.y - 20}px`; // 血条位于主角上方
+  heroHPBar.style.left = `${hero.x+ 57}px`; // 血条位置与主角一致
+  heroHPBar.style.top = `${hero.y + 50}px`; // 血条位于主角上方
 }
 
 /********************
@@ -1432,8 +1454,8 @@ function startGame() {
   // 重置游戏状态
   isGameOver = false;
   hero.isAlive = true;
-  hero.x = containerWidth / 2 - 25;
-  hero.y = containerHeight - 70;
+  hero.x = containerWidth / 2 - 70;
+  hero.y = containerHeight - 150;
 
   bullets.length = 0;
   monsters.length = 0;
@@ -1475,4 +1497,6 @@ document.getElementById('startButton').addEventListener('click', (event) => {
   document.getElementById('mainMenu').style.display = 'none'; // 隐藏主菜单
   playOpeningAnimation(); // 播放动画
 });
+
+
 
