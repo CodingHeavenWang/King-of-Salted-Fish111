@@ -142,8 +142,7 @@ const possibleDoorEffects = [
   { label: 'Shoot frequency +', effect: { type: 'freq',  value: -3 } },
   { label: 'Attack +',     effect: { type: 'Attack', value: 5 } },
   { label: 'Shoot frequency ++', effect: { type: 'freq',  value: -5 } },
-  { label: 'Player Speed +', effect: { type: 'speed', value: 0.125 } },
-  { label:'Weapon type +',effect:{type:'weapon',value:1}}
+  { label: 'Player Speed +', effect: { type: 'speed', value: 0.125 } }
 ];
 
 /********************
@@ -411,11 +410,7 @@ if (
   leftChoice.label === 'Player Speed ++'
 ) {
   valuel = 0
-} else if (
-  leftChoice.label === 'Weapon type +'
-) {
-  valuel = 0;
-}
+} 
 
 if (
   rightChoice.label === 'Attack ++'
@@ -441,11 +436,7 @@ if (
   rightChoice.label === 'Player Speed ++'
 ) {
   valuer = 0
-} else if (
-  rightChoice.label === 'Weapon type +'
-) {
-  valuer = 0;
-}
+} 
 
 let leftEffectValue = leftChoice.effect.value + valuel;
 let rightEffectValue = rightChoice.effect.value + valuer;
@@ -568,19 +559,6 @@ function applyDoorEffect(effect) {
     case 'freq':
       bulletSpawnRate = Math.max(10, bulletSpawnRate + effect.value);
       break;
-    case 'weapon':
-      if (weapontype == 0)
-      {
-      weapontype += 1;
-      bullets.forEach(bullet => {
-        bullet.element.style.backgroundImage = 'url("Bullet/icefire.png")';
-      });
-      break;
-      }
-      else
-      {
-        break;
-      }
   }
   // 更新属性栏
   updateHeroStats();
