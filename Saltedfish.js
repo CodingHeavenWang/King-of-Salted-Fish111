@@ -13,9 +13,20 @@ const hitSounds = {
   // 添加更多音效...
 };
 
+
+
 const openingScreen = document.createElement('div');
 openingScreen.id = 'openingScreen';
-openingScreen.innerHTML = '<p>Once upon a time, the <strong>King of Salted Fish</strong> ruled a land bathed in the light of <strong>Three Suns</strong>. But their harmony shattered—one burned with fury, one wept in illusions, and one watched in silence. Now, the king stirs from his slumber. <em>Will he reclaim his throne, or be lost to the abyss?</em>';
+
+// 创建一个图片元素
+const img = document.createElement('img');
+img.src = 'Opening/Opening1.png'; // 替换为你的图片路径
+img.alt = 'King of Salted Fish'; // 替换为适当的替代文本
+
+// 将图片添加到 openingScreen 中
+openingScreen.appendChild(img);
+
+// 将 openingScreen 添加到 body 中
 document.body.appendChild(openingScreen);
 
 
