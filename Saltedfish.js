@@ -510,11 +510,18 @@ function applyDoorEffect(effect) {
       bulletSpawnRate = Math.max(10, bulletSpawnRate + effect.value);
       break;
     case 'weapon':
+      if (weapontype == 0)
+      {
       weapontype += 1;
       bullets.forEach(bullet => {
         bullet.element.style.backgroundImage = 'url("Bullet/icefire.png")';
       });
       break;
+      }
+      else
+      {
+        break;
+      }
   }
   // 更新属性栏
   updateHeroStats();
