@@ -67,10 +67,10 @@
 
 /* 主角样式 */
 .hero {
-  width: 160px;
-  height: 128px;
+  width: 40px;
+  height: 62px;
   position: absolute;
-  background-image: url("Character/wizard.gif");
+  background-image: url("Character/wizard.png");
   background-size: cover;
   transform-origin: center; /* 确保轴心在中心 */
 }
