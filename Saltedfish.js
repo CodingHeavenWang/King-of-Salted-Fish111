@@ -539,6 +539,7 @@ function initBoss() {
   bgm.pause();
   bossBgm.currentTime = 0;
   bossBgm.play();
+  removeAllMonstersNoReward();
 gameContainer.appendChild(bossHPElement);
   const bossDiv = document.createElement('div');
   bossDiv.className = 'boss';
@@ -553,6 +554,15 @@ gameContainer.appendChild(bossHPElement);
   gameContainer.appendChild(bossHPElement);
   // 显示Boss血条
   updateBossHP(); // 初始化血条
+}
+
+function removeAllMonstersNoReward() {
+  for (let i = monsters.length - 1; i >= 0; i--) {
+    if (monsters[i].hpElement && monsters[i].hpElement.parentNode) {
+      monsters[i].hpElement.parentNode.removeChild(monsters[i].hpElement);
+    }
+    removeGameObject(monsters, i);
+  }
 }
 
 function spawnBossBullet(angle, speed = bossBulletSpeed) {
