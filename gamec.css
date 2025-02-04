@@ -177,9 +177,7 @@
   height: 60px;
   z-index: 5; 
   position: absolute;
-  background-image: url("Others/Lasergate.png");
-  background-color: #fff099;
-  border: 2px solid #999;
+  background-image: url("Others/door.png");
   display: flex;
   flex-direction: row;
   background-repeat: no-repeat; /* 禁止重复 */
