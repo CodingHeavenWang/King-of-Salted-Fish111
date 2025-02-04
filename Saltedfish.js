@@ -14,7 +14,8 @@ const hitSounds = {
   // 添加更多音效...
 };
 
-
+let level2Bubble = null;
+let bubbleDisplayTime = 0;
 
 const openingScreen = document.createElement('div');
 openingScreen.id = 'openingScreen';
@@ -158,8 +159,8 @@ function initHero() {
   // 初始化血条
   const heroHPBar = document.getElementById('heroHPBar');
   heroHPBar.style.width = '50px'; // 初始血条宽度
-  heroHPBar.style.left = `${hero.x}px`; // 血条位置与主角一致
-  heroHPBar.style.top = `${hero.y - 20}px`; // 血条位于主角上方
+  heroHPBar.style.left = `${hero.x + 30}px`; // 血条位置与主角一致
+  heroHPBar.style.top = `${hero.y + 10 }px`; // 血条位于主角上方
 }
 
 // 在预加载阶段添加优先级提示
@@ -841,6 +842,10 @@ function updateAll() {
         monsterSpawnRate = 120;
         monsterHP = 200;   // 例：怪物血量变为 250
         currentLevel++;   // 例：怪物血量变为 250
+        console.log("Enter Level 2"); // 添加日志确认代码执行
+        if (!level2Bubble) {
+          createLevelBubble();
+        }
         break;
       case 1200:
         monsterSpawnRate = 110;
@@ -901,6 +906,12 @@ function updateAll() {
   updateBossBullets();
   updateHeroHPBar();
   updateHeroStats()
+  if (level2Bubble) {
+    bubbleDisplayTime++;
+    if (bubbleDisplayTime >= 240) { // 60帧/秒 * 4秒
+      removeBubble();
+    }
+  }
 }
 
 /********************
@@ -953,8 +964,8 @@ function updateHeroHPBar() {
   const heroHPBar = document.getElementById('heroHPBar');
   const hpPercentage = (playerHP / playerHPinitial) * 10; // 计算血量百分比
   heroHPBar.style.width = `${hpPercentage}%`; // 根据血量百分比调整血条宽度
-  heroHPBar.style.left = `${hero.x}px`; // 血条位置与主角一致
-  heroHPBar.style.top = `${hero.y - 20}px`; // 血条位于主角上方
+  heroHPBar.style.left = `${hero.x + 18}px`; // 血条位置与主角一致
+  heroHPBar.style.top = `${hero.y}px`; // 血条位于主角上方
 }
 
 /********************
@@ -1532,7 +1543,7 @@ function startGame() {
   isGameOver = false;
   hero.isAlive = true;
   hero.x = containerWidth / 2 - 25;
-  hero.y = containerHeight - 70;
+  hero.y = containerHeight - 95;
 
   bullets.length = 0;
   monsters.length = 0;
@@ -1574,3 +1585,44 @@ document.getElementById('startButton').addEventListener('click', (event) => {
   document.getElementById('mainMenu').style.display = 'none'; // 隐藏主菜单
   playOpeningAnimation(); // 播放动画
 });
+
+
+function createLevelBubble() {
+  level2Bubble = document.createElement('div');
+  level2Bubble.className = 'level-bubble';
+
+  // 获取游戏容器的位置（相对于视口）
+  const gameRect = gameContainer.getBoundingClientRect();
+  
+  // 计算气泡位置（左侧偏移262px + 20px间距）
+  const bubbleX = gameRect.left - 262 - 20; 
+  // 根据主角的Y坐标（需转换为页面坐标）
+  const bubbleY = gameRect.top + hero.y - 100; 
+
+  // 设置样式
+  level2Bubble.style.cssText = `
+    position: fixed;
+    width: 205px;
+    height: 222px;
+    background-image: url('Others/Chatbox1.png'); // 测试用占位图
+    background-size: cover;
+    left: ${bubbleX + 30}px;
+    top: ${bubbleY - 370}px;
+    opacity: 1; // 暂时关闭淡入，直接显示
+    z-index: 9999; // 确保层级最高
+    pointer-events: none;
+  `;
+
+  document.body.appendChild(level2Bubble);
+}
+
+function removeBubble() {
+  if (level2Bubble) {
+    level2Bubble.style.opacity = '0';
+    setTimeout(() => {
+      document.body.removeChild(level2Bubble);
+      level2Bubble = null;
+      bubbleDisplayTime = 0;
+    }, 500);
+  }
+}

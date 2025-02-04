@@ -67,8 +67,8 @@
 
 /* 主角样式 */
 .hero {
-  width: 50px;
-  height: 67px;
+  width: 75px;
+  height: 100.5px;
   position: absolute;
   background-image: url("Character/wizard.gif");
   background-size: cover;
@@ -471,6 +471,7 @@
      这样放大后也不会被插值模糊 */
 }
 
+<<<<<<< Updated upstream
 #dialogue-box {
   font-family: 'Arial', sans-serif;
   font-size: 18px;
@@ -482,4 +483,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
+=======
+.level-bubble {
+  animation: float 2s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+>>>>>>> Stashed changes
 }
