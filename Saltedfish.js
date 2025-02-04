@@ -138,11 +138,11 @@ let frameId = null;
  ********************/
 const possibleDoorEffects = [
   { label: 'Attack ++',    effect: { type: 'Attack', value: 10 } },
-  { label: 'Player Speed ++',  effect: { type: 'speed', value: 0.25 } },
+  { label: 'Player Speed ++',  effect: { type: 'speed', value: 0.5 } },
   { label: 'Shoot frequency +', effect: { type: 'freq',  value: -3 } },
   { label: 'Attack +',     effect: { type: 'Attack', value: 5 } },
   { label: 'Shoot frequency ++', effect: { type: 'freq',  value: -5 } },
-  { label: 'Player Speed +', effect: { type: 'speed', value: 0.125 } },
+  { label: 'Player Speed +', effect: { type: 'speed', value: 0.25 } },
 ];
 
 /********************
@@ -267,7 +267,7 @@ function spawnBullet() {
   const bulletY = hero.y - 15;
   let effectiveDamage = bulletAttack;
     if (weapontype === 2) {
-        effectiveDamage = bulletAttack * 3; // 爆炸弹伤害=300%
+        effectiveDamage = bulletAttack * 1.5; // 爆炸弹伤害=300%
     }
   const bulletObj = {
     element: bulletDiv,
@@ -979,7 +979,7 @@ function updateBullets() {
             m.hp -= b.damage;
             } 
             else if(b.weaponTypeAtFire === 2){
-              m.hp -= b.damage;
+              m.hp -= 2*b.damage;
               b.hasHit = true;
               b.isExploded = true;      // 标记已爆炸
               b.stayFrames = 32;        
@@ -1048,11 +1048,16 @@ function applyExplosionDamage(bullet) {
     // 怪物中心 or bounding box? 这里使用 bounding box 相交即可
     const mxLeft = m.x, mxRight = m.x + m.width;
     const myTop = m.y, myBottom = m.y + m.height;
+    const distance = Math.sqrt(Math.pow(left-mxLeft,2)+Math.pow(top-myTop,2));
     // 判断是否相交
     const notCollide = (mxRight < left) || (mxLeft > right) || (myBottom < top) || (myTop > bottom);
+    let explodedamage = 2*bullet.damage;
     if (!notCollide) {
-      // 说明怪物在爆炸范围内 -> 伤害
-      m.hp -= bullet.damage; // 同样伤害
+      if(distance>1&&distance<=100*Math.sqrt(5)){
+        explodedamage = (100*Math.sqrt(5)-distance)*explodedamage/(100*Math.sqrt(5)-1);
+      }
+      m.hp -= explodedamage;
+      m.hp = Math.floor(m.hp) ;// 同样伤害
       // 若死亡
       if (m.hp <= 0) {
         score += 5;
