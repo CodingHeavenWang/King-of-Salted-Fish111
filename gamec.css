@@ -77,10 +77,10 @@
 
 /* 子弹样式 */
 .bullet {
-  width: 25px;
-  height: 25px;
+  width: 100px;
+  height: 100px;
   position: absolute;
-  background-image: url("Bullet/shot_fireball.png"); /* 子弹图 */
+  background-image: url("Bullet/smallfireball.gif"); /* 子弹图 */
   background-size: cover;
   background-repeat: no-repeat;
 }

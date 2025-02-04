@@ -254,7 +254,7 @@ function spawnBullet() {
   const bulletDiv = document.createElement('div');
   bulletDiv.className = 'bullet';
 
-  let bulletimg='Bullet/shot_fireball.png';
+  let bulletimg='Bullet/smallfireball.gif';
 
     if(weapontype==1){
         bulletimg = 'Bullet/icefire.png';
