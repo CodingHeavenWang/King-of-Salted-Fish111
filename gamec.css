@@ -27,8 +27,8 @@
 /* 游戏容器样式 */
 #gameContainer {
   position: relative;
-  width: 400px;  /* 竖屏宽度 */
-  height: 600px; /* 竖屏高度 */
+  width: 600px;  /* 竖屏宽度 */
+  height: 750px; /* 竖屏高度 */
   background: url("Wallpaper/BankStash.png") no-repeat center/cover; /* 游戏背景 */
   border: 2px solid #333;
   overflow: hidden;
@@ -68,8 +68,8 @@
 /* 主角样式 */
 .hero {
   z-index: 1000;
-  width: 75px;
-  height: 100.5px;
+  width: 100px;
+  height: 125px;
   position: absolute;
   background-image: url("Character/wizard.gif");
   background-size: cover;
@@ -79,8 +79,8 @@
 /* 子弹样式 */
 .bullet {
   z-index: 11; 
-  width: 25px;
-  height: 35px;
+  width: 37.5px;
+  height: 45px;
   position: absolute;
   background-image: url("Bullet/smallfireball.gif"); /* 子弹图 */
   background-size: cover;
@@ -90,8 +90,8 @@
 /* 怪物样式 */
 .monster {
   z-index: 4;
-  width: 64px;
-  height: 64px;
+  width: 88px;
+  height: 88px;
   position: absolute;
   background-image: url("Monster/frogger.gif"); /* 怪物图 */
   background-size: cover;
@@ -129,19 +129,20 @@
 }
 /* 怪物血量文字样式：显示在怪物顶部 */
 .monsterHP {
+  z-index: 5;
   position: absolute;
   color: red;
   font-weight: bold;
-  font-size: 14px;
+  font-size: 20px;
   text-align: center;
-  width: 50px;    /* 与怪物宽度一致 */
+  width: 88px;    /* 与怪物宽度一致 */
   pointer-events: none; /* 避免干扰点击或碰撞 */
 }
 
 /* 增益样式 */
 .powerup {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   z-index: 3; 
   position: absolute;
   background-image: url("treasurebags/treasure1.png"); /* 增益图 */
@@ -173,8 +174,8 @@
 
 /* “门”整行容器：占据 400px 宽 */
 .doorRow {
-  width: 400px;
-  height: 60px;
+  width: 600px;
+  height: 75px;
   z-index: 5; 
   position: absolute;
   background-image: url("Others/Lasergate.png");
@@ -217,10 +218,10 @@
 /* 新增计分板样式 */
 #scoreBoard {
   position: absolute;
-  top: 35px;
-  left: 10px;
+  top: 50px;
+  left: 12.5px;
   color: white;
-  font-size: 24px;
+  font-size: 36px;
   font-weight: bold;
   text-shadow: 2px 2px 2px black;
   z-index: 1000;
@@ -229,10 +230,10 @@
 /* 新增关卡显示样式 */
 #levelBoard {
   position: absolute;
-  top: 75px;      /* 在计分板下方留出空间 */
-  left: 10px;
+  top: 100px;      /* 在计分板下方留出空间 */
+  left: 12.5px;
   color: white;
-  font-size: 24px;
+  font-size: 36px;
   font-weight: bold;
   text-shadow: 2px 2px 2px black;
   z-index: 1000;
@@ -240,8 +241,8 @@
 
 /* Boss样式 */
 .boss {
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
   position: absolute;
   background-size: cover;
   z-index: 1000; 
@@ -283,8 +284,8 @@
   top: 20px; /* 将血条下移，避免遮挡计分板 */
   left: 50%;
   transform: translateX(-50%);
-  width: 250px;  /* 减小血条宽度 */
-  height: 15px;  /* 减小血条高度 */
+  width: 375px;  /* 减小血条宽度 */
+  height: 18.75px;  /* 减小血条高度 */
   background-color: #444; /* 血条背景色 */
   border: 2px solid #000; /* 血条边框 */
   border-radius: 10px; /* 圆角边框 */
@@ -309,7 +310,7 @@
   left: 50%;
   transform: translate(-50%, -50%); /* 居中显示 */
   color: white;
-  font-size: 12px; /* 减小字体大小 */
+  font-size: 18px; /* 减小字体大小 */
   font-weight: bold;
   text-shadow: 1px 1px 2px black; /* 文字阴影 */
   z-index: 1000; 
@@ -361,10 +362,10 @@
 }
 #heroStats {
   position: absolute;
-  top: 10px;
+  top: 15px;
   right: 0px;
   color: white;
-  font-size: 16px;
+  font-size: 24px;
   font-weight: bold;
   text-shadow: 2px 2px 2px black;
   z-index: 1000;
@@ -374,14 +375,14 @@
 }
 
 #heroStats div {
-  margin-bottom: 5px;
+  margin-bottom: 7.5px;
   display: flex;
   align-items: center;
 }
 
 #heroStats i {
-  margin-right: 8px; /* 图标与文字之间的间距 */
-  font-size: 16px; /* 图标大小 */
+  margin-right: 12px; /* 图标与文字之间的间距 */
+  font-size: 24px; /* 图标大小 */
 }
 
 /* 主角血条样式 */
@@ -389,8 +390,8 @@
   position: absolute;
   top: -20px; /* 血条位于主角上方 */
   left: 0;
-  width: 50px; /* 与主角宽度一致 */
-  height: 5px; /* 血条高度 */
+  width: 100px; /* 与主角宽度一致 */
+  height: 8px; /* 血条高度 */
   background-color: red; /* 血条颜色 */
   z-index: 1000; /* 确保血条在主角上方 */
   transition: width 0.3s ease; /* 平滑过渡效果 */
@@ -453,8 +454,8 @@
 }
 
 .explosion {
-  width: 200px;              /* 或者100×100，看你想要多大 */
-  height: 200px;
+  width: 275px;              /* 或者100×100，看你想要多大 */
+  height: 275px;
   z-index: 100; 
   background-size: 100% 100%;  /* 将背景图缩放到占满容器 */
   background-repeat: no-repeat; /* 不平铺 */
@@ -472,24 +473,13 @@
   }
 }
 
-.explosion {
-  width: 200px;              /* 或者100×100，看你想要多大 */
-  height: 200px;
-  z-index: 100; 
-  background-size: 100% 100%;  /* 将背景图缩放到占满容器 */
-  background-repeat: no-repeat; /* 不平铺 */
-  /* 如果想保持像素风格，可以加:
-     image-rendering: pixelated; 
-     这样放大后也不会被插值模糊 */
-}
-
 .firewall {
   background-image: url('Bullet/firewall.gif');
   background-size: cover;
   position: absolute;
   z-index: 1;         /* 确保火墙层级较低 */
-  width: 200px;
-  height: 30px;
+  width: 300px;
+  height: 37.5px;
 }
 
 #dialogue-box {
