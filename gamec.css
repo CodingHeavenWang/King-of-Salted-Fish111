@@ -67,10 +67,10 @@
 
 /* 主角样式 */
 .hero {
-  width: 40px;
-  height: 62px;
+  width: 50px;
+  height: 67px;
   position: absolute;
-  background-image: url("Character/wizard.png");
+  background-image: url("Character/wizard.gif");
   background-size: cover;
   transform-origin: center; /* 确保轴心在中心 */
 }
@@ -433,6 +433,25 @@
       max-height: none !important;
   }
 }
+
+/* 超宽屏适配 */
+@media (min-aspect-ratio: 21/9) {
+  #openingScreen img {
+      max-height: 85vh !important;
+      max-width: none !important;
+  }
+}
+
+.explosion {
+  width: 200px;              /* 或者100×100，看你想要多大 */
+  height: 200px;
+  background-size: 100% 100%;  /* 将背景图缩放到占满容器 */
+  background-repeat: no-repeat; /* 不平铺 */
+  /* 如果想保持像素风格，可以加:
+     image-rendering: pixelated; 
+     这样放大后也不会被插值模糊 */
+  max-height: none !important;
+  }
 
 /* 超宽屏适配 */
 @media (min-aspect-ratio: 21/9) {
