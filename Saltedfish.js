@@ -143,7 +143,6 @@ const possibleDoorEffects = [
   { label: 'Attack +',     effect: { type: 'Attack', value: 5 } },
   { label: 'Shoot frequency ++', effect: { type: 'freq',  value: -5 } },
   { label: 'Player Speed +', effect: { type: 'speed', value: 0.125 } },
-  { label:'Weapon type +',effect:{type:'weapon',value:1}}
 ];
 
 /********************
@@ -160,7 +159,7 @@ function initHero() {
   const heroHPBar = document.getElementById('heroHPBar');
   heroHPBar.style.width = '50px'; // 初始血条宽度
   heroHPBar.style.left = `${hero.x}px`; // 血条位置与主角一致
-  heroHPBar.style.top = `${hero.y}px`; // 血条位于主角上方
+  heroHPBar.style.top = `${hero.y - 20}px`; // 血条位于主角上方
 }
 
 // 在预加载阶段添加优先级提示
@@ -809,13 +808,19 @@ function updateAll() {
   }
   );
   document.addEventListener('keydown', (e) => {
-    if ((e.key === '1' || e.key === '1')) {
+    if ((e.key === '0' )) {
+      weapontype = 0;
+    }
+  }
+  )
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === '1' )) {
       weapontype = 1;
     }
   }
   )
   document.addEventListener('keydown', (e) => {
-    if ((e.key === '2' || e.key === '2')) {
+    if ((e.key === '2')) {
       weapontype = 2;
     }
   }
@@ -882,7 +887,7 @@ function updateHeroHPBar() {
   const hpPercentage = (playerHP / playerHPinitial) * 10; // 计算血量百分比
   heroHPBar.style.width = `${hpPercentage}%`; // 根据血量百分比调整血条宽度
   heroHPBar.style.left = `${hero.x}px`; // 血条位置与主角一致
-  heroHPBar.style.top = `${hero.y }px`; // 血条位于主角上方
+  heroHPBar.style.top = `${hero.y - 20}px`; // 血条位于主角上方
 }
 
 /********************
@@ -1497,6 +1502,4 @@ document.getElementById('startButton').addEventListener('click', (event) => {
   document.getElementById('mainMenu').style.display = 'none'; // 隐藏主菜单
   playOpeningAnimation(); // 播放动画
 });
-
-
 
