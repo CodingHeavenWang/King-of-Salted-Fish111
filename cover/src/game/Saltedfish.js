@@ -16,6 +16,7 @@ const hitSounds = {
 };
 
 let level2Bubble = null;
+let level3Bubble = null;
 let bubbleDisplayTime = 0;
 
 const openingScreen = document.createElement('div');
@@ -1095,13 +1096,16 @@ function updateAll() {
           currentLevel++;   // 例：怪物血量变为 250
           console.log("Enter Level 2"); // 添加日志确认代码执行
           if (!level2Bubble) {
-            createLevelBubble();
+            createLevelBubble1();
           }
           break;
         case 1200:
           monsterSpawnRate = 110;
           monsterHP = 400;   // 例：怪物血量变为 300
           currentLevel++;    // 例：怪物血量变为 300
+          if (!level2Bubble) {
+            createLevelBubble2();
+          }
           break;
         case 1800:
           monsterSpawnRate = 110;
@@ -1175,6 +1179,12 @@ function updateAll() {
   updateBoss3Whirls(); // 更新Boss3的龙卷
   updateBoss3redmoon();//更新Boss3的猩红圆月
   if (level2Bubble) {
+    bubbleDisplayTime++;
+    if (bubbleDisplayTime >= 240) { // 60帧/秒 * 4秒
+      removeBubble1();
+    }
+  }
+  if (level3Bubble) {
     bubbleDisplayTime++;
     if (bubbleDisplayTime >= 240) { // 60帧/秒 * 4秒
       removeBubble();
@@ -2561,7 +2571,7 @@ document.getElementById('startButton').addEventListener('click', (event) => {
 });
 
 
-function createLevelBubble() {
+function createLevelBubble1() {
   level2Bubble = document.createElement('div');
   level2Bubble.className = 'level-bubble';
 
@@ -2590,12 +2600,52 @@ function createLevelBubble() {
   document.body.appendChild(level2Bubble);
 }
 
-function removeBubble() {
+function createLevelBubble2() {
+  level3Bubble = document.createElement('div');
+  level3Bubble.className = 'level-bubble';
+
+  // 获取游戏容器的位置（相对于视口）
+  const gameRect = gameContainer.getBoundingClientRect();
+  
+  // 计算气泡位置（左侧偏移262px + 20px间距）
+  const bubbleX = gameRect.left - 450; 
+  // 根据主角的Y坐标（需转换为页面坐标）
+  const bubbleY = gameRect.top + hero.y - 100; 
+
+  // 设置样式
+  level3Bubble.style.cssText = `
+    position: fixed;
+    width: 205px;
+    height: 223px;
+    background-image: url('Others/Chatbox2.png'); // 测试用占位图
+    background-size: cover;
+    left: ${bubbleX + 40}px;
+    top: ${bubbleY - 340}px;
+    opacity: 1; // 暂时关闭淡入，直接显示
+    z-index: 9999; // 确保层级最高
+    pointer-events: none;
+  `;
+
+  document.body.appendChild(level3Bubble);
+}
+
+function removeBubble1() {
   if (level2Bubble) {
     level2Bubble.style.opacity = '0';
     setTimeout(() => {
       document.body.removeChild(level2Bubble);
       level2Bubble = null;
+      bubbleDisplayTime = 0;
+    }, 500);
+  }
+}
+
+function removeBubble2() {
+  if (level3Bubble) {
+    level3Bubble.style.opacity = '0';
+    setTimeout(() => {
+      document.body.removeChild(level3Bubble);
+      level3Bubble = null;
       bubbleDisplayTime = 0;
     }, 500);
   }
