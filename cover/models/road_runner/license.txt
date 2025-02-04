@@ -1,11 +1,11 @@
 Model Information:
-* title:	Road Runner
-* source:	https://sketchfab.com/3d-models/road-runner-96f5c8107245474abbf8ff3ef282d37b
-* author:	zoyazainab16 (https://sketchfab.com/zoyazainab16)
+* title:	Magic Circle
+* source:	https://sketchfab.com/3d-models/magic-circle-0f6e45cbbacb47ff871e1ed1ef84df0f
+* author:	RBG_illustrations (https://sketchfab.com/RBG_illustrations)
 
 Model License:
 * license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
 * requirements:	Author must be credited. Commercial use is allowed.
 
 If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
-This work is based on "Road Runner" (https://sketchfab.com/3d-models/road-runner-96f5c8107245474abbf8ff3ef282d37b) by zoyazainab16 (https://sketchfab.com/zoyazainab16) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+This work is based on "Magic Circle" (https://sketchfab.com/3d-models/magic-circle-0f6e45cbbacb47ff871e1ed1ef84df0f) by RBG_illustrations (https://sketchfab.com/RBG_illustrations) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

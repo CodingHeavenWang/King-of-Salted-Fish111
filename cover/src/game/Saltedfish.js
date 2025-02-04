@@ -1316,7 +1316,7 @@ function updateBoss() {
         boss.element.classList.add('frozen');
         b.hasHit = true;
         b.stayFrames = 30;    
-        b.element.style.backgroundImage = 'url("Bullet/snowflake.jpg")';
+        b.element.style.backgroundImage = 'url("Bullet/snowflake.png")';
       }
       else if(b.weaponTypeAtFire === 0){
         boss.hp -= b.damage;
