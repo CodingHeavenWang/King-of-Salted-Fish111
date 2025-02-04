@@ -332,6 +332,118 @@
   z-index: 1000; 
 }
 
+/* Boss3样式 */
+.boss3 {
+  width: 40px;
+  height: 50px;
+  position: absolute;
+  background-size: cover;
+}
+
+/* Boss3血条样式 */
+#boss3HP {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 250px;
+  height: 15px;
+  background-color: #444;
+  border: 2px solid #000;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+#boss3HP::after {
+  content: '';
+  display: block;
+  height: 100%;
+  width: var(--hp-width, 100%);
+  background: linear-gradient(to left, #00ff00, #ff0000);
+  transition: width 0.3s ease;
+}
+
+#boss3HP::before {
+  content: attr(data-hp);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px black;
+  z-index: 1;
+}
+
+/* Boss3弹幕样式 */
+.boss3Bullet {
+  width: 20px;
+  height: 20px;
+  background-image: url("Bullet/dark_magic.gif"); /* 黑暗魔法球图片 */
+  position: absolute;
+  background-size: cover;
+}
+
+/* Boss3魔法旋风样式 */
+.magicTornado {
+  width: 50px;
+  height: 50px;
+  background-image: url("Bullet/magic_tornado.gif"); /* 魔法旋风图片 */
+  position: absolute;
+  background-size: cover;
+}
+
+/* Boss3红月亮样式 */
+.redmoon {
+  width: 80px;
+  height: 80px;
+  background-image: url("Monster/redmoon.webp"); /* 红月亮图片 */
+  position: absolute;
+  background-size: cover;
+}
+
+/* 灾厄龙卷样式 */
+.calamityWhirl {
+  width: 50px;
+  height: 30px;
+  background-image: url("Bullet/calamity_whirl.gif"); /* 龙卷图片 */
+  background-size: cover;
+  position: absolute;
+}
+
+.boss3Minion {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background-size: cover;
+}
+
+.leftMinion {
+  background-image: url('Monster/zaihuo.png');
+}
+
+.rightMinion {
+  background-image: url('Monster/zainan.png');
+}
+
+.boss3MinionBullet {
+  position: absolute;
+  width: 50px;
+  height: 20px;
+  background-size: cover;
+}
+
+.leftBullet {
+  background-image: url('Bullet/minion_bullet_left.gif');
+}
+
+.rightBullet {
+  background-image: url('Bullet/minion_bullet_right.gif');
+}
+
 /* 角色基础样式 */
 #hero {
   transition: transform 0.2s ease-in-out; /* 平滑翻转动画 */
@@ -374,6 +486,18 @@
   filter: hue-rotate(180deg);
 }
 .boss.burning{
+  filter: brightness(0.8) sepia(1) hue-rotate(-20deg) saturate(5);
+}
+.boss3.frozen {
+  filter: hue-rotate(180deg);
+}
+.boss3.burning{
+  filter: brightness(0.8) sepia(1) hue-rotate(-20deg) saturate(5);
+}
+.boss3Minion.frozen {
+  filter: hue-rotate(180deg);
+}
+.boss3Minion.burning{
   filter: brightness(0.8) sepia(1) hue-rotate(-20deg) saturate(5);
 }
 #heroStats {
