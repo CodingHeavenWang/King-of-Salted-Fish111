@@ -105,23 +105,21 @@
 
 /* 第二关怪物图片 */
 .monster.level2 {
-  background-image: url("Monster/sssbat.gif"); /* 替换为你的新图片路径 */
+  background-image: url("Monster/mushroom.gif"); /* 替换为你的新图片路径 */
 }
 
 .monster.level3 {
-  background-image: url("Monster/fireghost.gif"); /* 替换为你的新图片路径 */
+  background-image: url("Monster/sssbat.gif"); /* 替换为你的新图片路径 */
 }
 
 .monster.level4 {
-  background-image: url("Monster/jpg2.png"); /* 替换为你的新图片路径 */
-  border: 2px solid #f70707;
+  background-image: url("Monster/fireghost.gif"); /* 替换为你的新图片路径 */
 }
 .monster.level5 {
   background-image: url("Monster/fireghost.gif"); /* 替换为你的新图片路径 */
 }
 .monster.level6 {
-  background-image: url("Monster/jpg3.png"); /* 替换为你的新图片路径 */
-  border: 2px solid #f70707;
+  background-image: url("Monster/alien.gif"); /* 替换为你的新图片路径  */
 }
 .monster.frozen {
   filter: hue-rotate(180deg); /* 示例：色相偏移让它发蓝色 */

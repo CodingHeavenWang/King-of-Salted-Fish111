@@ -1713,8 +1713,8 @@ function createLevelBubble() {
     height: 222px;
     background-image: url('Others/Chatbox1.png'); // 测试用占位图
     background-size: cover;
-    left: ${bubbleX + 30}px;
-    top: ${bubbleY - 370}px;
+    left: ${bubbleX + 40}px;
+    top: ${bubbleY - 340}px;
     opacity: 1; // 暂时关闭淡入，直接显示
     z-index: 9999; // 确保层级最高
     pointer-events: none;
