@@ -257,7 +257,7 @@ function spawnBullet() {
   let bulletimg='Bullet/smallfireball.gif';
 
     if(weapontype==1){
-        bulletimg = 'Bullet/icefire.png';
+        bulletimg = 'Bullet/ice.gif';
     }else if (weapontype == 2) {
          bulletimg = 'Bullet/baozha.png'; // 爆炸弹贴图
     }
@@ -573,7 +573,7 @@ function applyDoorEffect(effect) {
       {
       weapontype += 1;
       bullets.forEach(bullet => {
-        bullet.element.style.backgroundImage = 'url("Bullet/icefire.png")';
+        bullet.element.style.backgroundImage = 'url("Bullet/ice,gif")';
       });
       break;
       }
