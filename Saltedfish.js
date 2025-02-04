@@ -50,8 +50,8 @@ const hero = {
   element: null,
   x: containerWidth / 2 - 25, // 初始居中 (50px 宽的一半)
   y: containerHeight - 70,    // 在底部
-  width: 30,
-  height: 60,
+  width: 75,
+  height: 100.5,
   speed: 1.5,
   isAlive: true,
   element: document.createElement('div'),
@@ -72,8 +72,8 @@ let bulletSpawnCounter = 0;
 // 怪物
 const monsters = [];
 
-const monsterWidth = 40;
-const monsterHeight = 40;
+const monsterWidth = 64;
+const monsterHeight = 64;
 const monsterSpeed = 1;
 let monsterHP = 200;
 let monsterSpawnRate = 750;    // 怪物生成频率(帧)
@@ -269,7 +269,7 @@ function spawnBullet() {
 
     bulletDiv.style.backgroundImage = `url('${bulletimg}')`;
   // 子弹初始位置：主角正中上方
-  const bulletX = hero.x;
+  const bulletX = hero.x+hero.width/2-12.5;
   const bulletY = hero.y - 15;
   let effectiveDamage = bulletAttack;
     if (weapontype === 2) {
