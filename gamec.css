@@ -68,14 +68,30 @@
 /* 主角样式 */
 .hero {
   z-index: 1000;
-  width: 100px;
-  height: 125px;
+  width: 60px;
+  height: 75px;
   position: absolute;
   background-image: url("Character/wizard.gif");
   background-size: cover;
   transform-origin: center; /* 确保轴心在中心 */
 }
+/* 主角受到攻击时短暂闪红效果 */
+.hero.hit {
+  animation: heroDamageFlash 0.3s ease-in-out;
+}
 
+@keyframes heroDamageFlash {
+  0% {
+    filter: none;
+  }
+  50% {
+    /* 这里通过加亮、对比和红色阴影来实现变红效果 */
+    filter: brightness(1.5) contrast(1.2) drop-shadow(0 0 10px red);
+  }
+  100% {
+    filter: none;
+  }
+}
 /* 子弹样式 */
 .bullet {
   z-index: 11; 
@@ -192,8 +208,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
-  color: #000;
+  font-size: 24px;
+  color: #fcf571;
   cursor: default;
   border-right: 1px solid #999; /* 中间加个分隔线 */
 }
@@ -264,6 +280,7 @@
   background-image: url("Bullet/cry.png"); /* 假设有螺旋弹幕的图片 */
   position: absolute;
   background-size: cover;
+  z-index: 10; 
 }
 
 /* 追踪弹幕样式 */
@@ -273,6 +290,7 @@
   background-image: url("Bullet/cry.png"); /* 假设有追踪弹幕的图片 */
   position: absolute;
   background-size: cover;
+  z-index: 10; 
 }
 
 /* Boss血条样式 */
@@ -388,8 +406,8 @@
   position: absolute;
   top: -20px; /* 血条位于主角上方 */
   left: 0;
-  width: 100px; /* 与主角宽度一致 */
-  height: 8px; /* 血条高度 */
+  width: 60px; /* 与主角宽度一致 */
+  height: 7px; /* 血条高度 */
   background-color: red; /* 血条颜色 */
   z-index: 1000; /* 确保血条在主角上方 */
   transition: width 0.3s ease; /* 平滑过渡效果 */

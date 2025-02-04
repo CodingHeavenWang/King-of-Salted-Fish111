@@ -48,11 +48,11 @@ let weapontype = 0;
 // 主角
 const hero = {
   element: null,
-  x: containerWidth / 2 - 56.25, // 初始居中 (50px 宽的一半)
-  y: containerHeight - 87.5,    // 在底部
-  width: 100,
-  height: 125,
-  speed: 1.75,
+  x: containerWidth / 2 - 30, // 初始居中 (50px 宽的一半)
+  y: containerHeight,    // 在底部
+  width: 60,
+  height: 75,
+  speed: 2.25,
   isAlive: true,
   element: document.createElement('div'),
   isFlipped: false,
@@ -161,9 +161,9 @@ function initHero() {
 
   // 初始化血条
   const heroHPBar = document.getElementById('heroHPBar');
-  heroHPBar.style.width = '100px'; // 初始血条宽度
-  heroHPBar.style.left = `${hero.x + 45}px`; // 血条位置与主角一致
-  heroHPBar.style.top = `${hero.y + 12.5 }px`; // 血条位于主角上方
+  heroHPBar.style.width = '60px'; // 初始血条宽度
+  heroHPBar.style.left = `${hero.x}px`; // 血条位置与主角一致
+  heroHPBar.style.top = `${hero.y + 10 }px`; // 血条位于主角上方
 }
 
 // 在预加载阶段添加优先级提示
@@ -705,6 +705,15 @@ function removeAllMonstersNoReward() {
   }
 }
 
+function flashHeroDamage() {
+  // 给主角元素添加 .hit 类，触发 CSS 动画
+  hero.element.classList.add('hit');
+  // 0.3秒后移除 .hit 类，保证动画可以重复触发
+  setTimeout(() => {
+    hero.element.classList.remove('hit');
+  }, 300);
+}
+
 function spawnBossBullet(angle, speed = bossBulletSpeed) {
   const bulletDiv = document.createElement('div');
   bulletDiv.className = 'bossBullet';
@@ -981,7 +990,7 @@ function updateHeroHPBar() {
   const heroHPBar = document.getElementById('heroHPBar');
   const hpPercentage = (playerHP / playerHPinitial) * 10; // 计算血量百分比
   heroHPBar.style.width = `${hpPercentage}%`; // 根据血量百分比调整血条宽度
-  heroHPBar.style.left = `${hero.x + 18}px`; // 血条位置与主角一致
+  heroHPBar.style.left = `${hero.x}px`; // 血条位置与主角一致
   heroHPBar.style.top = `${hero.y}px`; // 血条位于主角上方
 }
 
@@ -1496,8 +1505,9 @@ function updateBossBullets() {
 
     // 检测弹幕与玩家碰撞
     if (isCollision(hero, b)) {
-      playerHP -= 10; // 玩家扣血
+      playerHP -= 3; // 玩家扣血
       playerHPElement.textContent = `HP: ${playerHP}`;
+      flashHeroDamage();
       if (playerHP <= 0) {
         isGameOver = true;
       }
@@ -1702,9 +1712,9 @@ function createLevelBubble() {
   const gameRect = gameContainer.getBoundingClientRect();
   
   // 计算气泡位置（左侧偏移262px + 20px间距）
-  const bubbleX = gameRect.left - 500; 
+  const bubbleX = gameRect.left - 450; 
   // 根据主角的Y坐标（需转换为页面坐标）
-  const bubbleY = gameRect.top + hero.y - 125; 
+  const bubbleY = gameRect.top + hero.y - 100; 
 
   // 设置样式
   level2Bubble.style.cssText = `
