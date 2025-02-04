@@ -67,8 +67,8 @@
 
 /* 主角样式 */
 .hero {
-  width: 160px;
-  height: 128px;
+  width: 50px;
+  height: 67px;
   position: absolute;
   background-image: url("Character/wizard.gif");
   background-size: cover;
