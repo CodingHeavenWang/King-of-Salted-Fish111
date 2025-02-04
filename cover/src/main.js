@@ -87,8 +87,8 @@ let model; // Variable to hold the loaded model
 function onmodelLoad(gltf) {
     model = gltf.scene;
     model.scale.set(0.5, 0.5, 0.5);
-    model.rotation.set(-Math.PI / 2, 0, 0);
-    model.position.set(-1, 0, 0); // Adjust the scale of the model as needed
+    model.rotation.set(0.5, 0.75, 0.25);
+    model.position.set(0, 0, 0); // Adjust the scale of the model as needed
     scene.add(model);
 
     // Position the model after it's loaded
@@ -109,7 +109,7 @@ loader.load(
     onmodelLoad);
 
 // Scroll Animation
-
+const axis = new THREE.Vector3(0, 0.5, 0).normalize();
 function moveCamera() {
     const t = document.body.getBoundingClientRect().top;
     // Rotate all the keys continuously
@@ -124,8 +124,9 @@ function moveCamera() {
 
     // Check if the model has been loaded before rotating
     if (model) {
-        model.rotation.y += 0.05;
-        // model.rotation.z += 0.01;
+        //model.rotation.x += 0.03;
+        model.rotateOnAxis(axis, 0.02);
+        //model.rotation.z += 0.03;
 
         // Check if model.position is defined before accessing its properties
         //if (model.position && model.position.x !== undefined && model.position.z !== undefined) {

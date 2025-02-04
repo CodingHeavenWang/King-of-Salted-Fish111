@@ -1,4 +1,5 @@
 @import url("https://use.typekit.net/jmk3xov.css");
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
 
 canvas {
   position: fixed;
@@ -27,12 +28,18 @@ main {
 
   display: grid;
   grid-template-columns: repeat(12, 1fr);
+  background: url('path/to/your/main-bg.jpg') no-repeat center/cover;
 }
 
 h1, h2, h3, blockquote {
   font-family: elevon, sans-serif;
   font-weight: 700;
   font-style: normal;
+}
+
+header h1 {
+  font-family: 'Great Vibes', cursive, sans-serif;
+  text-shadow: 2px 2px 4px rgba(85, 220, 254, 0.6);
 }
 
 canvas {
@@ -44,20 +51,28 @@ canvas {
 
 
   header {
-    background: rgba(15, 15, 15, 0.7);
-    grid-column: 2 / span 5;
-    font-size: 2.5rem;
-    padding: 2rem;
-    margin-bottom: var(--spacing);
+    background: url('path/to/your/header-bg.jpg') no-repeat center/cover;
+  background-color: rgba(15, 15, 15, 0.7);
+  background-blend-mode: overlay;
+  grid-column: 2 / span 5;
+  font-size: 2.5rem;
+  padding: 2rem;
+  margin-bottom: var(--spacing);
+
+  /* 艺术字体 */
+  font-family: 'Great Vibes', cursive, sans-serif;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
   }
 
   section {
     grid-column: 2 / 8;
-    padding: 1rem;
-    background: var(--dark-bg);
-    font-size: 1.25rem;
-    line-height: 1.5;
-    margin-bottom: var(--spacing);
+  padding: 1rem;
+  background: url('path/to/your/section-bg.jpg') no-repeat center/cover;
+  background-color: rgba(15, 15, 15, 0.7);
+  background-blend-mode: overlay;
+  font-size: 1.25rem;
+  line-height: 1.5;
+  margin-bottom: var(--spacing);
   }
 
   blockquote {
@@ -73,6 +88,9 @@ canvas {
     font-size: 4rem;
     display: inline;
     line-height: 1.5;
+    border: 2px solid #fff;
+  padding: 0.5rem 1rem;
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
   }
 
   .left {
@@ -83,10 +101,18 @@ canvas {
 
   button {
     background-color: #000000;
+    background: url('game\Others\button.png') no-repeat center/cover;
     color: rgb(248, 248, 248);
-    padding: 30px 50px;
+    padding: 50px 50px;
     border: none;
     border-radius: 5px;
-    font-size: 1rem;
+    font-size: 3rem;
     cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #333333;
+    background: url('game\Others\button.png') no-repeat center/cover;
+    transform: scale(1.05);
   }
