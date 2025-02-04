@@ -1103,7 +1103,7 @@ function updateAll() {
           monsterSpawnRate = 110;
           monsterHP = 400;   // 例：怪物血量变为 300
           currentLevel++;    // 例：怪物血量变为 300
-          if (!level2Bubble) {
+          if (!level3Bubble) {
             createLevelBubble2();
           }
           break;
@@ -1187,7 +1187,7 @@ function updateAll() {
   if (level3Bubble) {
     bubbleDisplayTime++;
     if (bubbleDisplayTime >= 240) { // 60帧/秒 * 4秒
-      removeBubble();
+      removeBubble2();
     }
   }
 }
@@ -2640,7 +2640,8 @@ function removeBubble1() {
   }
 }
 
-function removeBubble2() {
+
+function removeBubble2() { // 需要正确定义
   if (level3Bubble) {
     level3Bubble.style.opacity = '0';
     setTimeout(() => {
