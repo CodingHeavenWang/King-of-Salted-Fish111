@@ -2,8 +2,8 @@
  * 全局变量和配置
  ********************/
 const gameContainer = document.getElementById('gameContainer');
-const containerWidth = 600;
-const containerHeight = 750;
+const containerWidth = 400;
+const containerHeight = 600;
 
 const bgm = document.getElementById('bgm'); // 背景音乐
 const hitSound = document.getElementById('hitSound'); // 音效
@@ -11,7 +11,6 @@ const hitSounds = {
   default: new Audio('Sound_Effect/fire_effect.MP3'),
   ice: new Audio('Sound_Effect/LedasLuzta.ogg'),
   explode: new Audio('Sound_Effect/explode.flac'),
-  fire: new Audio('Sound_Effect/fire.mp3'),
   // 添加更多音效...
 };
 
@@ -48,11 +47,11 @@ let weapontype = 0;
 // 主角
 const hero = {
   element: null,
-  x: containerWidth / 2 - 30, // 初始居中 (50px 宽的一半)
-  y: containerHeight,    // 在底部
-  width: 60,
-  height: 75,
-  speed: 2.25,
+  x: containerWidth / 2 - 25, // 初始居中 (50px 宽的一半)
+  y: containerHeight - 70,    // 在底部
+  width: 30,
+  height: 60,
+  speed: 1.5,
   isAlive: true,
   element: document.createElement('div'),
   isFlipped: false,
@@ -72,9 +71,9 @@ let bulletSpawnCounter = 0;
 // 怪物
 const monsters = [];
 
-const monsterWidth = 88;
-const monsterHeight = 88;
-const monsterSpeed = 1.5;
+const monsterWidth = 40;
+const monsterHeight = 40;
+const monsterSpeed = 1;
 let monsterHP = 200;
 let monsterSpawnRate = 750;    // 怪物生成频率(帧)
 let monsterSpawnCounter = 0;  // 用于计数帧
@@ -92,22 +91,20 @@ const doorSpeed = 1;          // 门下落速度
 let doorSpawnRate = 900;      // 约15秒(60帧/秒)
 let doorSpawnCounter = 0;     
 
-const firewalls = [];
-
 const boss = {
   element: null,
-  x: containerWidth / 2 - 75, // 居中
-  y: 75,                      // 在顶部
-  width: 150,
-  height: 150,
+  x: containerWidth / 2 - 50, // 居中
+  y: 50,                      // 在顶部
+  width: 100,
+  height: 100,
   hp: 100000,                   // Boss的血量
   initialhp: 100000,
   isAlive: false,             // Boss是否存活
   bulletSpawnRate: 60,        // Boss发射弹幕的频率
   bulletSpawnCounter: 0,      // Boss弹幕发射计数器
-  speed: 1.25,  
+  speed: 1,  
   slowRemain: 0,                 // Boss移动速度
-  direction: 1             // Boss移动方向：1 表示向右，-1 表示向左
+  direction: 1                // Boss移动方向：1 表示向右，-1 表示向左
 };
 let bossPhase = 1; // 1: 第一阶段, 2: 第二阶段, 3: 第三阶段
 //boss 血量
@@ -161,8 +158,8 @@ function initHero() {
 
   // 初始化血条
   const heroHPBar = document.getElementById('heroHPBar');
-  heroHPBar.style.width = '60px'; // 初始血条宽度
-  heroHPBar.style.left = `${hero.x}px`; // 血条位置与主角一致
+  heroHPBar.style.width = '50px'; // 初始血条宽度
+  heroHPBar.style.left = `${hero.x + 30}px`; // 血条位置与主角一致
   heroHPBar.style.top = `${hero.y + 10 }px`; // 血条位于主角上方
 }
 
@@ -209,6 +206,11 @@ function playOpeningAnimation() {
           openingScreen.style.opacity = '0';
           setTimeout(() => {
               openingScreen.style.display = 'none';
+              setTimeout(() => {
+                const overlay = document.getElementById('darkOverlay');
+                overlay.style.backgroundColor = 'rgba(0, 0, 0, 0)'; // 逐渐变亮
+              }, 300); // 等待0.5秒，确保渐变效果完成
+
               startGame();
           }, 500);
           return;
@@ -225,8 +227,8 @@ function playOpeningAnimation() {
           setTimeout(() => {
               currentIndex++;
               showNextImage();
-          }, 500); // 淡出动画时间
-      }, 5000); // 每张图片显示时间
+          }, 700); // 淡出动画时间
+      }, 3000); // 每张图片显示时间
   };
 
   // 开始播放序列
@@ -241,6 +243,10 @@ function playOpeningAnimation() {
               openingScreen.style.opacity = '0';
               setTimeout(() => {
                   openingScreen.style.display = 'none';
+                  setTimeout(() => {
+                    const overlay = document.getElementById('darkOverlay');
+                    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0)'; // 逐渐变亮
+                  }, 300); // 等待0.5秒，确保渐变效果完成
                   startGame();
                   window.removeEventListener('keydown', skipAnimation);
               }, 500);
@@ -257,32 +263,28 @@ function spawnBullet() {
   const bulletDiv = document.createElement('div');
   bulletDiv.className = 'bullet';
 
-  let bulletimg='Bullet/smallfireball.gif';
+  let bulletimg='Bullet/shot_fireball.png';
 
     if(weapontype==1){
-        bulletimg = 'Bullet/ice.gif';
+        bulletimg = 'Bullet/icefire.png';
     }else if (weapontype == 2) {
          bulletimg = 'Bullet/baozha.png'; // 爆炸弹贴图
-    }else if (weapontype == 3) {
-      bulletimg = 'Bullet/fireball.gif'; // 爆炸弹贴图
- }
+    }
 
     bulletDiv.style.backgroundImage = `url('${bulletimg}')`;
   // 子弹初始位置：主角正中上方
-  const bulletX = hero.x+hero.width/2-19;
-  const bulletY = hero.y - 18.8;
+  const bulletX = hero.x;
+  const bulletY = hero.y - 15;
   let effectiveDamage = bulletAttack;
     if (weapontype === 2) {
         effectiveDamage = bulletAttack * 1.5; // 爆炸弹伤害=300%
-    }else if (weapontype === 3) {
-      effectiveDamage = bulletAttack * 2;
     }
   const bulletObj = {
     element: bulletDiv,
     x: bulletX,
     y: bulletY,
-    width: 37.5,
-    height: 45,
+    width: 25,
+    height: 25,
     weaponTypeAtFire: weapontype,
     hasHit: false,
     stayFrames: 0,
@@ -366,8 +368,8 @@ function spawnPowerup(x, y, level=1) {
     element: powerupDiv,
     x: x,
     y: y,
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
     type: type,
     value: finalValue
   };
@@ -485,8 +487,8 @@ if(rightChoice.effect.type === 'freq'){
     element: leftOptionDiv,
     x: 0,
     y: -60,
-    width: 300,
-    height: 75,
+    width: 200,
+    height: 60,
     effect: { ...leftChoice.effect, value: leftEffectValue },
     groupId: groupId,
     parent: doorRowDiv
@@ -495,17 +497,17 @@ if(rightChoice.effect.type === 'freq'){
     element: rightOptionDiv,
     x: 200,
     y: -60,
-    width: 300,
-    height: 75,
+    width: 200,
+    height: 60,
     effect: { ...rightChoice.effect, value: rightEffectValue },
     groupId: groupId,
     parent: doorRowDiv
   };
 
   doorRowDiv.style.left = '0px';
-  doorRowDiv.style.top = '-75px';
-  doorRowDiv.style.width = '600px';
-  doorRowDiv.style.height = '75px';
+  doorRowDiv.style.top = '-60px';
+  doorRowDiv.style.width = '400px';
+  doorRowDiv.style.height = '60px';
   gameContainer.appendChild(doorRowDiv);
 
   doors.push(doorObjLeft, doorObjRight);
@@ -580,7 +582,7 @@ function applyDoorEffect(effect) {
       {
       weapontype += 1;
       bullets.forEach(bullet => {
-        bullet.element.style.backgroundImage = 'url("Bullet/ice,gif")';
+        bullet.element.style.backgroundImage = 'url("Bullet/icefire.png")';
       });
       break;
       }
@@ -613,8 +615,8 @@ function removeDoorGroup(groupId) {
 const bossDialogue = [
   "Sun: Needy Yan, Woody Tsu, CSRMMZZYGAG...... ",
   "Salted Fish: For the survival of the kingdom, I must stop you!",
-  "Sun: Vansoi!",
-  "Hint: Avoid the bullet barrage! Attack the core weak point!"
+  "Sun: Vansoi!!!!!!!!!!!!!",
+  "Hint: Avoid bullet barrages! Attack core weak points!"
 ];
 let currentDialogueIndex = 0;
 let isInDialogue = false;
@@ -705,15 +707,6 @@ function removeAllMonstersNoReward() {
   }
 }
 
-function flashHeroDamage() {
-  // 给主角元素添加 .hit 类，触发 CSS 动画
-  hero.element.classList.add('hit');
-  // 0.3秒后移除 .hit 类，保证动画可以重复触发
-  setTimeout(() => {
-    hero.element.classList.remove('hit');
-  }, 300);
-}
-
 function spawnBossBullet(angle, speed = bossBulletSpeed) {
   const bulletDiv = document.createElement('div');
   bulletDiv.className = 'bossBullet';
@@ -746,8 +739,8 @@ function spawnBossBulletSpiral(angle, speed = bossBulletSpeed) {
 
   const bulletObj = {
     element: bulletDiv,
-    x: boss.x + boss.width / 2 - 21, // 从Boss中心发射
-    y: boss.y + boss.height / 2 - 7,
+    x: boss.x + boss.width / 2 - 10, // 从Boss中心发射
+    y: boss.y + boss.height / 2 - 10,
     width: 42,
     height: 14,
     angle: angle, // 弹幕的角度
@@ -765,8 +758,8 @@ function spawnBossBulletHoming(angle, speed = bossBulletSpeed) {
 
   const bulletObj = {
     element: bulletDiv,
-    x: boss.x + boss.width / 2 - 21, // 从Boss中心发射
-    y: boss.y + boss.height / 2 - 7,
+    x: boss.x + boss.width / 2 - 10, // 从Boss中心发射
+    y: boss.y + boss.height / 2 - 10,
     width: 42,
     height: 14,
     angle: angle, // 弹幕的角度
@@ -913,12 +906,6 @@ function updateAll() {
     }
   }
   )
-  document.addEventListener('keydown', (e) => {
-    if ((e.key === '3')) {
-      weapontype = 3;
-    }
-  }
-  )
   updateHero();
   updateBullets();
   updateMonstersAll();
@@ -927,8 +914,7 @@ function updateAll() {
   updateBoss();
   updateBossBullets();
   updateHeroHPBar();
-  updateHeroStats();
-  updateFirewalls();
+  updateHeroStats()
   if (level2Bubble) {
     bubbleDisplayTime++;
     if (bubbleDisplayTime >= 240) { // 60帧/秒 * 4秒
@@ -974,10 +960,7 @@ function updateHero() {
   let effectiveSpawnRate = bulletSpawnRate;
     if (weapontype === 2) {
         effectiveSpawnRate = bulletSpawnRate * 3; // 爆炸弹 => 发射间隔×3 => 攻速=1/3
-    }else if (weapontype === 3) {
-      effectiveSpawnRate = bulletSpawnRate * 2; // 火焰弹：发射间隔为原来的 2 倍（即射速降为 0.5）
     }
-  
   // 子弹发射
   bulletSpawnCounter++;
   if (bulletSpawnCounter >= effectiveSpawnRate) {
@@ -990,7 +973,7 @@ function updateHeroHPBar() {
   const heroHPBar = document.getElementById('heroHPBar');
   const hpPercentage = (playerHP / playerHPinitial) * 10; // 计算血量百分比
   heroHPBar.style.width = `${hpPercentage}%`; // 根据血量百分比调整血条宽度
-  heroHPBar.style.left = `${hero.x}px`; // 血条位置与主角一致
+  heroHPBar.style.left = `${hero.x + 18}px`; // 血条位置与主角一致
   heroHPBar.style.top = `${hero.y}px`; // 血条位于主角上方
 }
 
@@ -1058,9 +1041,23 @@ function updateBullets() {
         const m = monsters[j];
         if (isCollision(b, m)) {
           // //
-          if (b.weaponTypeAtFire === 1) {
+          if (weapontype == 0)
+          {
+            hitSounds.default.currentTime = 0;
+            hitSounds.default.play();
+          }
+          else if (weapontype == 1)
+          {
             hitSounds.ice.currentTime = 0;
             hitSounds.ice.play();
+          }
+          else if (weapontype == 2)
+            {
+              hitSounds.explode.currentTime = 0;
+              hitSounds.explode.play();
+            }
+          // //
+          if (b.weaponTypeAtFire === 1) {
             m.slowRemain = 60;  // 重置/设置剩余帧
             m.element.classList.add('frozen'); 
             b.hasHit = true;
@@ -1069,36 +1066,22 @@ function updateBullets() {
             m.hp -= b.damage;
             } 
             else if(b.weaponTypeAtFire === 2){
-              hitSounds.explode.currentTime = 0;
-              hitSounds.explode.play();
               m.hp -= 2*b.damage;
               b.hasHit = true;
               b.isExploded = true;      // 标记已爆炸
               b.stayFrames = 32;        
               b.explosionFrameIndex = 1;
-              b.width = 275;
-              b.height = 275;
+              b.width = 200;
+              b.height = 200;
               b.element.classList.add("explosion");
               b.element.style.backgroundImage = 'url("Bullet/exp/exp1.png")';
               // 改成以碰撞点为中心(简单用 b.x,b.y)
-              b.x = b.x  - 137.5; 
-              b.y = b.y  - 137.5;
+              b.x = b.x  - 100; 
+              b.y = b.y  - 100;
               updatePosition(b);
               
             }
-            else if (b.weaponTypeAtFire === 3)
-              {
-                hitSounds.fire.currentTime = 0;
-                hitSounds.fire.play();
-                m.hp -= b.damage;
-            // 以子弹中心为准生成火墙
-                spawnFirewall(b.x + b.width / 2, b.y + b.height / 2);
-                removeGameObject(bullets, i);
-                i--;
-              }
             else {
-              hitSounds.default.currentTime = 0;
-            hitSounds.default.play();
               m.hp -= b.damage;
           removeGameObject(bullets, i);
           i--;
@@ -1109,7 +1092,6 @@ function updateBullets() {
             scoreElement.textContent = `Score: ${score}`;
             spawnPowerup(m.x + m.width / 2, m.y + m.height / 2, m.level);
             removeMonster(monsters, j);
-            j--;
           }
           break;
         }
@@ -1158,8 +1140,8 @@ function applyExplosionDamage(bullet) {
     const notCollide = (mxRight < left) || (mxLeft > right) || (myBottom < top) || (myTop > bottom);
     let explodedamage = 2*bullet.damage;
     if (!notCollide) {
-      if(distance>1&&distance<=137.5*Math.sqrt(5)){
-        explodedamage = (137.5*Math.sqrt(5)-distance)*explodedamage/(137.5*Math.sqrt(5)-1);
+      if(distance>1&&distance<=100*Math.sqrt(5)){
+        explodedamage = (100*Math.sqrt(5)-distance)*explodedamage/(100*Math.sqrt(5)-1);
       }
       m.hp -= explodedamage;
       m.hp = Math.floor(m.hp) ;// 同样伤害
@@ -1227,20 +1209,12 @@ function isCollision(a, b) {
   );
 }
 
-function isheroCollision(a, b) {
-  return !(
-    a.x + a.width + 25 < b.x || // 让 a 的碰撞箱左移 10px
-    a.x + 25 > b.x + b.width ||
-    a.y + a.height < b.y ||
-    a.y > b.y + b.height
-  );
-}
-
 function updateBoss() {
   if (!boss.isAlive) return;
 
   // 更新Boss血条
   updateBossHP();
+
   // Boss移动逻辑
   if (boss.slowRemain > 0) {
        boss.slowRemain--;
@@ -1317,40 +1291,7 @@ function updateBoss() {
         b.hasHit = true;
         b.stayFrames = 30;    
         b.element.style.backgroundImage = 'url("Bullet/snowflake.jpg")';
-      }
-      else if(b.weaponTypeAtFire === 0){
-        boss.hp -= b.damage;
-        hitSounds.default.currentTime = 0;
-        hitSounds.default.play();
-        removeGameObject(bullets, i);
-        i--;
-      }
-      else if (b.weaponTypeAtFire === 2) {
-           // 爆炸弹
-           boss.hp -= b.damage;
-           hitSounds.explode.currentTime = 0;
-           hitSounds.explode.play();
-           b.hasHit = true;
-           b.isExploded = true;
-           b.stayFrames = 32;
-           b.explosionFrameIndex = 1;
-           b.width = 275;
-           b.height = 275;
-           b.x = b.x  - 137.5; 
-           b.y = b.y  - 137.5;
-           b.element.classList.add("explosion");
-           b.element.style.backgroundImage = 'url("Bullet/exp/exp1.png")';
-            updatePosition(b);
-      }
-      else if (b.weaponTypeAtFire === 3) {
-        hitSounds.default.currentTime = 0;
-        hitSounds.default.play();
-        boss.hp -= b.damage;
-        spawnFirewall(b.x + b.width / 2, b.y + b.height / 2);
-        removeGameObject(bullets, i);
-        i--;
-      }
-      if (boss.hp <= 0) {
+        if (boss.hp <= 0) {
         boss.isAlive = false;
         removeGameObject([boss], 0); // 移除Boss
         score += 100; // 击败Boss加100分
@@ -1364,112 +1305,64 @@ function updateBoss() {
         // 播放胜利视频
         playVictoryVideo();
        }
-    }
-  }
-}
+      }
+      else if(b.weaponTypeAtFire === 0){
+        boss.hp -= b.damage;
+            hitSounds.default.currentTime = 0;
+            hitSounds.default.play();
+        removeGameObject(bullets, i);
+        i--;
+        if (boss.hp <= 0) {
+          boss.isAlive = false;
+          removeGameObject([boss], 0); // 移除Boss
+          score += 100; // 击败Boss加100分
+          scoreElement.textContent = `Score: ${score}`;
+          isGameOver = true;
 
-function spawnFirewall(centerX, centerY) {
-  const firewallDiv = document.createElement('div');
-  // 添加 CSS 类，使火墙样式由 CSS 定义
-  firewallDiv.classList.add('firewall');
+          // 隐藏Boss血条
+          bossHPElement.style.display = 'none';
+          updateBossHP(); // 更新Boss血条
+
+          // 播放胜利视频
+          playVictoryVideo();
+      }
+      }
+      else if (b.weaponTypeAtFire === 2) {
+           // 爆炸弹
+           boss.hp -= b.damage;
+           hitSounds.explode.currentTime = 0;
+           hitSounds.explode.play();
+           b.hasHit = true;
+           b.isExploded = true;
+           b.stayFrames = 32;
+           b.explosionFrameIndex = 1;
+           b.width = 200;
+           b.height = 200;
+           b.x = b.x  - 100; 
+           b.y = b.y  - 100;
+           b.element.classList.add("explosion");
+           b.element.style.backgroundImage = 'url("Bullet/exp/exp1.png")';
+            updatePosition(b);
+            if (boss.hp <= 0) {
+            boss.isAlive = false;
+            removeGameObject([boss], 0); // 移除Boss
+            score += 100; // 击败Boss加100分
+            scoreElement.textContent = `Score: ${score}`;
+            isGameOver = true;
   
-  // 以 (centerX, centerY) 为中心定位，计算左上角坐标
-  const fwX = centerX - 150;  // 因为宽度为200px，所以偏移100px
-  const fwY = centerY - 25;   // 因为高度为30px，所以偏移15px
-  firewallDiv.style.left = fwX + 'px';
-  firewallDiv.style.top = fwY + 'px';
+            // 隐藏Boss血条
+            bossHPElement.style.display = 'none';
+            updateBossHP(); // 更新Boss血条
   
-  // 将火墙添加到游戏容器中
-  gameContainer.appendChild(firewallDiv);
-
-  const firewallObj = {
-    element: firewallDiv,
-    x: fwX,
-    y: fwY,
-    width: 300,
-    height: 37.5,
-    duration: 240
-  };
-  firewalls.push(firewallObj);
+            // 播放胜利视频
+            playVictoryVideo();
+           }
+         }
+    }
+  }
 }
 
-function updateFirewalls() {
-  // 更新火墙的存活时间
-  for (let i = 0; i < firewalls.length; i++) {
-    const fw = firewalls[i];
-    fw.duration--;
-    if (fw.duration <= 0) {
-      removeGameObject(firewalls, i);
-      i--;
-      continue;
-    }
-  }
-  // 检测火墙与每个敌怪的碰撞
-  for (let i = 0; i < monsters.length; i++) {
-    const m = monsters[i];
-    // 遍历所有火墙，若有碰撞则扣血并加上燃烧效果
-    for (let j = 0; j < firewalls.length; j++) {
-      const fw = firewalls[j];
-      if (isCollision(m, fw)) {
-        m.hp -= 5; 
-        m.element.classList.add('burning');
-      }
-    }
-    // 若该敌怪不再与任何火墙碰撞，则移除燃烧效果
-    let burning = false;
-    for (let j = 0; j < firewalls.length; j++) {
-      if (isCollision(m, firewalls[j])) {
-        burning = true;
-        break;
-      }
-    }
-    if (!burning) {
-      m.element.classList.remove('burning');
-    }
-    if (m.hp <= 0) {
-      score += 5;  // 击杀加分
-      scoreElement.textContent = `Score: ${score}`;
-      spawnPowerup(m.x + m.width / 2, m.y + m.height / 2, m.level);
-      removeMonster(monsters, i);
-      i--;
-    }
-  }
-  if (boss.isAlive) {
-    for (let j = 0; j < firewalls.length; j++) {
-      const fw = firewalls[j];
-      if (isCollision(boss, fw)) {
-        // 每帧火墙对 boss 造成 5 点伤害（可根据需要调整数值）
-        boss.hp -= 5;
-        boss.element.classList.add('burning');
-      }
-    }
-    // 如果 boss 没有与任何火墙碰撞，则移除燃烧效果
-    let bossBurning = false;
-    for (let j = 0; j < firewalls.length; j++) {
-      if (isCollision(boss, firewalls[j])) {
-        bossBurning = true;
-        break;
-      }
-    }
-    if (!bossBurning) {
-      boss.element.classList.remove('burning');
-    }
-    if (boss.hp <= 0) {
-      boss.isAlive = false;
-      removeGameObject([boss], 0); // 移除Boss
-      score += 100; // 击败Boss加100分
-      scoreElement.textContent = `Score: ${score}`;
-      isGameOver = true;
 
-      // 隐藏Boss血条
-      bossHPElement.style.display = 'none';
-      updateBossHP(); // 更新Boss血条
-
-      // 播放胜利视频
-      playVictoryVideo();
-     }
-  }
-}
 // 播放胜利视频
 function playVictoryVideo() {
   const videoContainer = document.getElementById('videoContainer');
@@ -1505,9 +1398,8 @@ function updateBossBullets() {
 
     // 检测弹幕与玩家碰撞
     if (isCollision(hero, b)) {
-      playerHP -= 3; // 玩家扣血
+      playerHP -= 10; // 玩家扣血
       playerHPElement.textContent = `HP: ${playerHP}`;
-      flashHeroDamage();
       if (playerHP <= 0) {
         isGameOver = true;
       }
@@ -1572,7 +1464,7 @@ function freezeMonsters() {
   }
 }
 
-// 恢复所有怪物的移动 
+// 恢复所有怪物的移动
 function unfreezeMonsters() {
   for (let i = 0; i < monsters.length; i++) {
     monsters[i].isFrozen = false; // 取消怪物的冻结状态
@@ -1659,8 +1551,8 @@ function startGame() {
   // 重置游戏状态
   isGameOver = false;
   hero.isAlive = true;
-  hero.x = containerWidth / 2 - 50;
-  hero.y = containerHeight - 135;
+  hero.x = containerWidth / 2 - 25;
+  hero.y = containerHeight - 95;
 
   bullets.length = 0;
   monsters.length = 0;
@@ -1694,13 +1586,31 @@ function startGame() {
   // 启动游戏循环
   gameLoop();
 }
+
+
 /********************
- * 监听“开始游戏”按钮
+ * 监听任意键按下事件
  ********************/
-document.getElementById('startButton').addEventListener('click', (event) => {
-  event.preventDefault(); // 防止按钮触发默认行为
-  document.getElementById('mainMenu').style.display = 'none'; // 隐藏主菜单
-  playOpeningAnimation(); // 播放动画
+document.addEventListener('keydown', (event) => {
+  // 判断是否在主菜单界面
+  if (document.getElementById('mainMenu').style.display !== 'none') {
+    // 隐藏“按任意键开始游戏”字幕
+    const startMessage = document.getElementById('startMessage');
+    startMessage.style.opacity = '0'; // 字幕淡出
+
+    // 在字幕淡出后执行其他操作
+    setTimeout(() => {
+      // 创建并显示遮罩层的渐变效果
+      const overlay = document.getElementById('darkOverlay');
+      overlay.style.backgroundColor = 'rgba(0, 0, 0, 1)'; // 逐渐变暗
+
+      // 在遮罩层变暗后隐藏主菜单并播放开场动画
+      setTimeout(() => {
+        document.getElementById('mainMenu').style.display = 'none'; // 隐藏主菜单
+        playOpeningAnimation(); // 播放动画
+      }, 1000); // 等待1秒，确保渐变效果完成
+    }, 1000); // 等待1秒，确保字幕淡出
+  }
 });
 
 
@@ -1712,7 +1622,7 @@ function createLevelBubble() {
   const gameRect = gameContainer.getBoundingClientRect();
   
   // 计算气泡位置（左侧偏移262px + 20px间距）
-  const bubbleX = gameRect.left - 450; 
+  const bubbleX = gameRect.left - 262 - 20; 
   // 根据主角的Y坐标（需转换为页面坐标）
   const bubbleY = gameRect.top + hero.y - 100; 
 
@@ -1720,11 +1630,11 @@ function createLevelBubble() {
   level2Bubble.style.cssText = `
     position: fixed;
     width: 205px;
-    height: 223px;
+    height: 222px;
     background-image: url('Others/Chatbox1.png'); // 测试用占位图
     background-size: cover;
-    left: ${bubbleX + 40}px;
-    top: ${bubbleY - 340}px;
+    left: ${bubbleX + 30}px;
+    top: ${bubbleY - 370}px;
     opacity: 1; // 暂时关闭淡入，直接显示
     z-index: 9999; // 确保层级最高
     pointer-events: none;
