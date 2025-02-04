@@ -67,6 +67,7 @@
 
 /* 主角样式 */
 .hero {
+  z-index: 1000;
   width: 75px;
   height: 100.5px;
   position: absolute;
@@ -77,8 +78,9 @@
 
 /* 子弹样式 */
 .bullet {
+  z-index: 11; 
   width: 25px;
-  height: 25px;
+  height: 35px;
   position: absolute;
   background-image: url("Bullet/smallfireball.gif"); /* 子弹图 */
   background-size: cover;
@@ -87,6 +89,7 @@
 
 /* 怪物样式 */
 .monster {
+  z-index: 4;
   width: 64px;
   height: 64px;
   position: absolute;
@@ -121,6 +124,9 @@
 .monster.frozen {
   filter: hue-rotate(180deg); /* 示例：色相偏移让它发蓝色 */
 }
+.monster.burning {
+  filter: brightness(0.8) sepia(1) hue-rotate(-20deg) saturate(5);
+}
 /* 怪物血量文字样式：显示在怪物顶部 */
 .monsterHP {
   position: absolute;
@@ -136,6 +142,7 @@
 .powerup {
   width: 30px;
   height: 30px;
+  z-index: 3; 
   position: absolute;
   background-image: url("treasurebags/treasure1.png"); /* 增益图 */
   background-size: cover;
@@ -168,6 +175,7 @@
 .doorRow {
   width: 400px;
   height: 60px;
+  z-index: 5; 
   position: absolute;
   background-image: url("Others/Lasergate.png");
   background-color: #fff099;
@@ -236,6 +244,7 @@
   height: 100px;
   position: absolute;
   background-size: cover;
+  z-index: 1000; 
 }
 
 
@@ -246,6 +255,7 @@
   background-image: url("Bullet/sun.png");
   position: absolute;
   background-size: cover;
+  z-index: 10; 
 }
 
 /* 螺旋弹幕样式 */
@@ -302,7 +312,7 @@
   font-size: 12px; /* 减小字体大小 */
   font-weight: bold;
   text-shadow: 1px 1px 2px black; /* 文字阴影 */
-  z-index: 1;
+  z-index: 1000; 
 }
 
 /* 角色基础样式 */
@@ -345,6 +355,9 @@
 }
 .boss.frozen {
   filter: hue-rotate(180deg);
+}
+.boss.burning{
+  filter: brightness(0.8) sepia(1) hue-rotate(-20deg) saturate(5);
 }
 #heroStats {
   position: absolute;
@@ -442,6 +455,7 @@
 .explosion {
   width: 200px;              /* 或者100×100，看你想要多大 */
   height: 200px;
+  z-index: 100; 
   background-size: 100% 100%;  /* 将背景图缩放到占满容器 */
   background-repeat: no-repeat; /* 不平铺 */
   /* 如果想保持像素风格，可以加:
@@ -461,11 +475,21 @@
 .explosion {
   width: 200px;              /* 或者100×100，看你想要多大 */
   height: 200px;
+  z-index: 100; 
   background-size: 100% 100%;  /* 将背景图缩放到占满容器 */
   background-repeat: no-repeat; /* 不平铺 */
   /* 如果想保持像素风格，可以加:
      image-rendering: pixelated; 
      这样放大后也不会被插值模糊 */
+}
+
+.firewall {
+  background-image: url('Bullet/firewall.gif');
+  background-size: cover;
+  position: absolute;
+  z-index: 1;         /* 确保火墙层级较低 */
+  width: 200px;
+  height: 30px;
 }
 
 #dialogue-box {
