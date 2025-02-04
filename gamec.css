@@ -119,7 +119,7 @@
   background-image: url("Monster/fireghost.gif"); /* 替换为你的新图片路径 */
 }
 .monster.level6 {
-  background-image: url("Monster/alien.gif"); /* 替换为你的新图片路径 */
+  background-image: url("Monster/alien.gif"); /* 替换为你的新图片路径  */
 }
 .monster.frozen {
   filter: hue-rotate(180deg); /* 示例：色相偏移让它发蓝色 */
