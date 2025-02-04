@@ -1502,4 +1502,3 @@ document.getElementById('startButton').addEventListener('click', (event) => {
   document.getElementById('mainMenu').style.display = 'none'; // 隐藏主菜单
   playOpeningAnimation(); // 播放动画
 });
-
