@@ -1562,7 +1562,7 @@ function freezeMonsters() {
   }
 }
 
-// 恢复所有怪物的移动
+// 恢复所有怪物的移动 
 function unfreezeMonsters() {
   for (let i = 0; i < monsters.length; i++) {
     monsters[i].isFrozen = false; // 取消怪物的冻结状态
