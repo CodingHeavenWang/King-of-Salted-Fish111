@@ -261,11 +261,6 @@ function playOpeningAnimation() {
           openingScreen.style.opacity = '0';
           setTimeout(() => {
               openingScreen.style.display = 'none';
-              setTimeout(() => {
-                const overlay = document.getElementById('darkOverlay');
-                overlay.style.backgroundColor = 'rgba(0, 0, 0, 0)'; // 逐渐变亮
-              }, 300); // 等待0.5秒，确保渐变效果完成
-
               startGame();
           }, 500);
           return;
@@ -282,8 +277,8 @@ function playOpeningAnimation() {
           setTimeout(() => {
               currentIndex++;
               showNextImage();
-          }, 700); // 淡出动画时间
-      }, 3000); // 每张图片显示时间
+          }, 500); // 淡出动画时间
+      }, 5000); // 每张图片显示时间
   };
 
   // 开始播放序列
@@ -298,10 +293,6 @@ function playOpeningAnimation() {
               openingScreen.style.opacity = '0';
               setTimeout(() => {
                   openingScreen.style.display = 'none';
-                  setTimeout(() => {
-                    const overlay = document.getElementById('darkOverlay');
-                    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0)'; // 逐渐变亮
-                  }, 300); // 等待0.5秒，确保渐变效果完成
                   startGame();
                   window.removeEventListener('keydown', skipAnimation);
               }, 500);
@@ -2561,28 +2552,12 @@ function startGame() {
   gameLoop();
 }
 /********************
- * 监听任意键按下事件
+ * 监听“开始游戏”按钮
  ********************/
-document.addEventListener('keydown', (event) => {
-  // 判断是否在主菜单界面
-  if (document.getElementById('mainMenu').style.display !== 'none') {
-    // 隐藏“按任意键开始游戏”字幕
-    const startMessage = document.getElementById('startMessage');
-    startMessage.style.opacity = '0'; // 字幕淡出
-
-    // 在字幕淡出后执行其他操作
-    setTimeout(() => {
-      // 创建并显示遮罩层的渐变效果
-      const overlay = document.getElementById('darkOverlay');
-      overlay.style.backgroundColor = 'rgba(0, 0, 0, 1)'; // 逐渐变暗
-
-      // 在遮罩层变暗后隐藏主菜单并播放开场动画
-      setTimeout(() => {
-        document.getElementById('mainMenu').style.display = 'none'; // 隐藏主菜单
-        playOpeningAnimation(); // 播放动画
-      }, 1000); // 等待1秒，确保渐变效果完成
-    }, 1000); // 等待1秒，确保字幕淡出
-  }
+document.getElementById('startButton').addEventListener('click', (event) => {
+  event.preventDefault(); // 防止按钮触发默认行为
+  document.getElementById('mainMenu').style.display = 'none'; // 隐藏主菜单
+  playOpeningAnimation(); // 播放动画
 });
 
 

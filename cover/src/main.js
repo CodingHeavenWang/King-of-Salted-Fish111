@@ -26,7 +26,7 @@ const ambientLight = new THREE.AmbientLight(0xffffff);
 scene.add(pointLight, ambientLight);
 
 // Background
-const spaceTexture = new THREE.TextureLoader().load('images/desert.jpg');
+const spaceTexture = new THREE.TextureLoader().load('images/castlenight.jpg');
 scene.background = spaceTexture;
 
 // Objects
