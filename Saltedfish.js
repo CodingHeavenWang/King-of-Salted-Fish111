@@ -543,7 +543,7 @@ function updateDoors() {
     }
 
     // 检测主角碰撞
-    if (isCollision(hero, d)) {
+    if (isheroCollision(hero, d)) {
       // 应用门增益
       applyDoorEffect(d.effect);
       // 移除同组
@@ -1003,7 +1003,7 @@ function updateMonstersAll() {
     }
 
     // 碰撞主角
-    if (isCollision(hero, m)) {
+    if (isheroCollision(hero, m)) {
       isGameOver = true;
       break;
     }
@@ -1163,7 +1163,7 @@ function updatePowerups() {
     }
 
     // 主角拾取增益
-    if (isCollision(hero, p)) {
+    if (isheroCollision(hero, p)) {
       if (p.type === 'freq') {
         // 每次 -1 或 -2，保证最小10
         bulletSpawnRate = Math.max(10, bulletSpawnRate + p.value);
@@ -1195,6 +1195,15 @@ function isCollision(a, b) {
   return !(
     a.x + a.width < b.x ||
     a.x > b.x + b.width ||
+    a.y + a.height < b.y ||
+    a.y > b.y + b.height
+  );
+}
+
+function isheroCollision(a, b) {
+  return !(
+    a.x + a.width + 20 < b.x || // 让 a 的碰撞箱左移 10px
+    a.x + 20 > b.x + b.width ||
     a.y + a.height < b.y ||
     a.y > b.y + b.height
   );
@@ -1388,7 +1397,7 @@ function updateBossBullets() {
     }
 
     // 检测弹幕与玩家碰撞
-    if (isCollision(hero, b)) {
+    if (isheroCollision(hero, b)) {
       playerHP -= 10; // 玩家扣血
       playerHPElement.textContent = `HP: ${playerHP}`;
       if (playerHP <= 0) {

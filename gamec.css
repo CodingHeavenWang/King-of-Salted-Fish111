@@ -90,20 +90,19 @@
   width: 64px;
   height: 64px;
   position: absolute;
-  background-image: url("Monster/batmon.gif"); /* 怪物图 */
+  background-image: url("Monster/frogger.gif"); /* 怪物图 */
   background-size: cover;
   background-repeat: no-repeat;
 }
 
 /* 第一关怪物图片 */
 .monster.level1 {
-  background-image: url("Monster/batmon.gif");
+  background-image: url("Monster/Slime.gif");
 }
 
 /* 第二关怪物图片 */
 .monster.level2 {
-  background-image: url("Monster/batmon.gif"); /* 替换为你的新图片路径 */
-  border: 2px solid #f70707;
+  background-image: url("Monster/sssbat.gif"); /* 替换为你的新图片路径 */
 }
 
 .monster.level3 {
