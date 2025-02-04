@@ -16,6 +16,7 @@ const hitSounds = {
 };
 
 let level2Bubble = null;
+let level3Bubble = null;
 let bubbleDisplayTime = 0;
 
 const openingScreen = document.createElement('div');
@@ -37,6 +38,16 @@ const scoreElement = document.getElementById('scoreBoard'); // 计分板（HTML 
 //在全局变量中添加Boss战斗音乐
 const bossBgm = new Audio('BGM/jiangjun.mp3'); // 假设Boss战斗音乐路径
 bossBgm.loop = true;
+const boss3Bgm1=new Audio('BGM/StainedBrutalCalamity1.mp3');
+boss3Bgm1.loop = true;
+const boss3Bgm2=new Audio('BGM/StainedBrutalCalamity2.mp3');
+boss3Bgm2.loop = true;
+const boss3Bgm3=new Audio('BGM/StainedBrutalCalamity3.mp3');
+boss3Bgm3.loop = true;
+const boss3Bgm4=new Audio('BGM/StainedBrutalCalamity4.mp3');
+boss3Bgm4.loop = true;
+const boss3Bgm5=new Audio('BGM/StainedBrutalCalamity5.mp3');
+boss3Bgm5.loop = true;
 
 // timecount：用于控制怪物生成频率和血量等随时间变化
 let timecount = 0;
@@ -113,10 +124,52 @@ let bossPhase = 1; // 1: 第一阶段, 2: 第二阶段, 3: 第三阶段
 //boss 血量
 const bossHPElement = document.createElement('div');
 
+// 定义第三个Boss的全局变量
+const boss3 = {
+  element: null,
+  x: containerWidth / 2 - 50,
+  y: 50,
+  width: 40,
+  height: 50,
+  hp: 10000,
+  initialhp: 10000,
+  isAlive: false,
+  bulletSpawnRate: 60,
+  bulletSpawnCounter: 0,
+  speed: 1,
+  direction: 1,
+  tranphase:1,
+  phase: 1, // 1: 第一阶段, 2: 第二阶段, 3: 第三阶段
+  isCharging: false, // 是否正在冲撞
+  isReturning: false, // 是否正在返回上方
+  isTransitioning: false, // 是否正在过渡阶段
+  transitionTimer: 0, // 过渡阶段计时器
+  chargeSpeed: 10, // 冲撞速度
+  chargeCooldown: 1000, // 冲撞冷却时间（帧数）
+  chargeCooldowntran:200,
+  chargeCounter: 0, // 冲撞冷却计数器
+  chargePredictTime: 30, // 冲撞预判时间（帧数）
+  returnSpeed: 5, // 返回上方的速度
+  isInvincible: false, // 是否无敌
+  mooncount:0,
+  callminion:0,
+  initnumber:0,
+};
+// Boss3的血条元素
+const boss3HPElement = document.createElement('div');
+boss3HPElement.id = 'boss3HP';
+
+// Boss3的弹幕数组
+const boss3Bullets = [];
+const boss3Tornadoes = []; // 魔法旋风
+const boss3Whirls = []; // 灾厄龙卷
+const boss3redmoon = [];// 猩红圆月
+const boss3Minions = []; // 用于存储敌怪的数组
+
 
 // 玩家血量
-let playerHP = 100;
-let playerHPinitial=100;
+let playerHP = 10000;
+let playerHPinitial=10000;
 const playerHPElement = document.createElement('div'); // 显示玩家血量的元素
 // 玩家血量显示
 //playerHPElement.style.position = 'absolute';
@@ -815,6 +868,186 @@ function spawnBossBulletsPhase3() {
   spawnBossBulletHoming(angleToHero, 4); // 速度更快
 }
 
+// 初始化第三个Boss
+function initBoss3() {
+  boss3.initnumber+=1;
+  removeAllMonstersNoReward();
+  // 暂停当前背景音乐，播放Boss战斗音乐
+  bgm.pause();
+  boss3Bgm1.currentTime = 0;
+  boss3Bgm1.play();
+  // 创建Boss的DOM元素
+  const boss3Div = document.createElement('div');
+  boss3Div.className = 'boss3';
+  boss3Div.style.backgroundImage = 'url("Monster/boss3_phase1.png")'; // 设置Boss的图片
+  boss3Div.style.backgroundSize = 'cover'; // 图片覆盖整个元素
+
+  // 将Boss添加到游戏容器中
+  gameContainer.appendChild(boss3Div);
+  boss3.element = boss3Div;
+
+  // 初始化Boss的位置
+  updatePosition(boss3);
+
+  // 设置Boss为存活状态
+  boss3.isAlive = true;
+
+  // 添加Boss血条到游戏容器
+  gameContainer.appendChild(boss3HPElement);
+
+  // 初始化Boss血条
+  updateBoss3HP();
+}
+// 第一阶段弹幕：黑暗魔法球
+function spawnBoss3BulletsPhase1() {
+  for (let i = 0; i < 8; i++) {
+    spawnBoss3Bullet((Math.PI * 2 / 8) * i, 3); // 8个方向的黑暗魔法球
+  }
+}
+// 第二阶段弹幕：灾厄追踪弹
+function spawnBoss3BulletsPhase2() {
+  for (let i = 0; i < 12; i++) {
+    const angle = (Math.PI * 2 / 12) * i + (boss3.bulletSpawnCounter * 0.1); // 角度随时间变化
+    spawnBoss3Bullet(angle, 4); // 12个方向的追踪弹幕
+  }
+}
+
+// 生成Boss3的子弹
+function spawnBoss3Bullet(angle, speed = 3) {
+  const bulletDiv = document.createElement('div');
+  bulletDiv.className = 'boss3Bullet';
+
+  const bulletObj = {
+    element: bulletDiv,
+    x: boss3.x + boss3.width / 2 - 10, // 从Boss中心发射
+    y: boss3.y + boss3.height / 2 - 10,
+    width: 20,
+    height: 20,
+    angle: angle, // 弹幕的角度
+    speed: speed // 弹幕的速度
+  };
+  boss3Bullets.push(bulletObj);
+  gameContainer.appendChild(bulletDiv);
+  updatePosition(bulletObj);
+}
+
+function spawnBoss3Bullettran(angle, speed = 3) {
+  const bulletDiv = document.createElement('div');
+  bulletDiv.className = 'boss3Bullet';
+
+  const bulletObj = {
+    element: bulletDiv,
+    x: 300,
+    y: 375,
+    width: 20,
+    height: 20,
+    angle: angle, // 弹幕的角度
+    speed: speed // 弹幕的速度
+  };
+  boss3Bullets.push(bulletObj);
+  gameContainer.appendChild(bulletDiv);
+  updatePosition(bulletObj);
+}
+
+// 第一阶段弹幕：魔法旋风
+function spawnBoss3MagicTornado() {
+  const tornado = {
+    element: document.createElement('div'),
+    x: boss3.x + boss3.width / 2 - 25,
+    y: boss3.y + boss3.height / 2 - 25,
+    width: 50,
+    height: 50,
+    speed: 1,
+    angle: Math.atan2(hero.y - boss3.y, hero.x - boss3.x) // 追踪玩家
+  };
+  tornado.element.className = 'magicTornado';
+  gameContainer.appendChild(tornado.element);
+  updatePosition(tornado);
+  boss3Tornadoes.push(tornado);
+}
+
+// 生成Boss3的灾厄龙卷
+function spawnBoss3CalamityWhirl() {
+  for (let i = 0; i < 4; i++) {
+    const whirl = {
+      element: document.createElement('div'),
+      x: Math.random()*containerWidth,
+      y: 300,
+      width: 50,
+      height: 30,
+      speed: 3,
+      angle: Math.random() * Math.PI// 随机方向
+    };
+    whirl.element.className = 'calamityWhirl';
+    whirl.element.style.backgroundImage = 'url("Bullet/calamity_whirl.gif")'; // 设置龙卷图片
+    gameContainer.appendChild(whirl.element);
+    updatePosition(whirl);
+    boss3Whirls.push(whirl);
+  }
+}
+
+// 第三转阶段弹幕猩红圆月
+function spawnBoss3RedMoon() {
+  const redmoon = {
+    element: document.createElement('div'),
+    x: 200,
+    y: 300,
+    width: 80,
+    height: 80,
+    speed: 1,
+    angle: Math.atan2(hero.y - boss3.y, hero.x - boss3.x) // 追踪玩家
+  };
+  redmoon.element.className = 'redmoon';
+  gameContainer.appendChild(redmoon.element);
+  updatePosition(redmoon);
+  boss3redmoon.push(redmoon);
+}
+
+//兄弟重生
+// 左上角敌怪
+function spawnBoss3MinionLeft() {
+  const minion = {
+    element: document.createElement('div'),
+    x: 50, // 左上角
+    y: 300,
+    width: 60,
+    height: 60,
+    hp: 1000, // 敌怪的血量
+    bulletSpawnRate: 120, // 发射弹幕的频率
+    bulletSpawnCounter: 0,
+    speed: 1,
+    isAlive: true,
+    type: 'left' // 标记敌怪类型
+  };
+  minion.element.className = 'boss3Minion leftMinion';
+  minion.element.style.backgroundImage = 'url("Monster/zaihuo.png")'; // 左上角敌怪的图片
+  gameContainer.appendChild(minion.element);
+  updatePosition(minion);
+  boss3Minions.push(minion);
+}
+
+// 右上角敌怪
+function spawnBoss3MinionRight() {
+  const minion = {
+    element: document.createElement('div'),
+    x: containerWidth - 110, // 右上角
+    y: 300,
+    width: 60,
+    height: 60,
+    hp: 1000, // 敌怪的血量
+    bulletSpawnRate: 120, // 发射弹幕的频率
+    bulletSpawnCounter: 0,
+    speed: 1,
+    isAlive: true,
+    type: 'right' // 标记敌怪类型
+  };
+  minion.element.className = 'boss3Minion rightMinion';
+  minion.element.style.backgroundImage = 'url("Monster/zainan.png")'; // 右上角敌怪的图片
+  gameContainer.appendChild(minion.element);
+  updatePosition(minion);
+  boss3Minions.push(minion);
+}
+
 /********************
  * 修改游戏循环
  ********************/
@@ -832,62 +1065,73 @@ function gameLoop() {
  * 每帧更新
  ********************/
 function updateAll() {
+  if(!boss.isAlive && !boss3.isAlive){
   timecount++;         // 时间计数（帧数）
   doorSpawnCounter++;  // 门生成计数
   monsterSpawnCounter++;
+  }
 
   // 门计数器
   doorSpawnCounter++;
 
-  if (doorSpawnCounter >= doorSpawnRate && !boss.isAlive) {
+  if (doorSpawnCounter >= doorSpawnRate && !boss.isAlive && !boss3.isAlive) {
     spawnDoor();
     doorSpawnCounter = 0;
   }
-  if (monsterSpawnCounter >= monsterSpawnRate && !boss.isAlive) {
+  if (monsterSpawnCounter >= monsterSpawnRate && !boss.isAlive && !boss3.isAlive) {
     spawnMonster();
     monsterSpawnCounter = 0;
   }
   // 根据 timecount 动态调整怪物生成、怪物血量
-  if (timecount <= 3000) {
-    switch (timecount) {
-      case 1:
-        monsterSpawnRate = 120;
-        monsterHP = 100;   // 例：怪物血量变为 200
-        break;
-      case 600:
-        monsterSpawnRate = 120;
-        monsterHP = 200;   // 例：怪物血量变为 250
-        currentLevel++;   // 例：怪物血量变为 250
-        console.log("Enter Level 2"); // 添加日志确认代码执行
-        if (!level2Bubble) {
-          createLevelBubble();
-        }
-        break;
-      case 1200:
-        monsterSpawnRate = 110;
-        monsterHP = 400;   // 例：怪物血量变为 300
-        currentLevel++;    // 例：怪物血量变为 300
-        break;
-      case 1800:
-        monsterSpawnRate = 110;
-        monsterHP = 600;   // 例：怪物血量变为 400
-        currentLevel++;   // 例：怪物血量变为 400
-        break;
-      case 2400:
-        monsterSpawnRate = 100;
-        monsterHP = 800;   // 例：怪物血量变为 500
-        currentLevel++;   // 例：怪物血量变为 500
-        break;
-      
+  if(!boss.isAlive && !boss3.isAlive){
+    if (timecount <= 3000) {
+      switch (timecount) {
+        case 1:
+          monsterSpawnRate = 120;
+          monsterHP = 100;   // 例：怪物血量变为 200
+          break;
+        case 600:
+          monsterSpawnRate = 120;
+          monsterHP = 200;   // 例：怪物血量变为 250
+          currentLevel++;   // 例：怪物血量变为 250
+          console.log("Enter Level 2"); // 添加日志确认代码执行
+          if (!level2Bubble) {
+            createLevelBubble1();
+          }
+          break;
+        case 1200:
+          monsterSpawnRate = 110;
+          monsterHP = 400;   // 例：怪物血量变为 300
+          currentLevel++;    // 例：怪物血量变为 300
+          if (!level2Bubble) {
+            createLevelBubble2();
+          }
+          break;
+        case 1800:
+          monsterSpawnRate = 110;
+          monsterHP = 600;   // 例：怪物血量变为 400
+          currentLevel++;   // 例：怪物血量变为 400
+          break;
+        case 2400:
+          monsterSpawnRate = 100;
+          monsterHP = 800;   // 例：怪物血量变为 500
+          currentLevel++;   // 例：怪物血量变为 500
+          break;
+        
+      }
+    } else {
+      currentLevel=6; 
+      monsterSpawnRate = 90;
+      monsterHP = Math.floor(-300 + timecount*0.5);
     }
-  } else {
-    currentLevel=6; 
-    monsterSpawnRate = 90;
-    monsterHP = Math.floor(-300 + timecount*0.5);
   }
+  
   levelElement.textContent = "Level: " + currentLevel;
   if (timecount>=4800 &&!boss.isAlive) {
     initBoss();
+  }
+  if (timecount>=1200 && !boss3.isAlive && boss3.initnumber===0) {
+    initBoss3();
   }
   document.addEventListener('keydown', (e) => {
     if ((e.key === 'o' || e.key === 'O') && !boss.isAlive) {
@@ -929,7 +1173,18 @@ function updateAll() {
   updateHeroHPBar();
   updateHeroStats();
   updateFirewalls();
+  updateBoss3();
+  updateBoss3Bullets(); // 更新Boss3的弹幕
+  updateBoss3Tornadoes(); // 更新Boss3的旋风
+  updateBoss3Whirls(); // 更新Boss3的龙卷
+  updateBoss3redmoon();//更新Boss3的猩红圆月
   if (level2Bubble) {
+    bubbleDisplayTime++;
+    if (bubbleDisplayTime >= 240) { // 60帧/秒 * 4秒
+      removeBubble1();
+    }
+  }
+  if (level3Bubble) {
     bubbleDisplayTime++;
     if (bubbleDisplayTime >= 240) { // 60帧/秒 * 4秒
       removeBubble();
@@ -1051,6 +1306,66 @@ function updateBullets() {
         removeGameObject(bullets, i);
         i--;
         continue;
+      }
+
+
+      for (let j = 0; j < boss3Minions.length; j++) {
+        const minion = boss3Minions[j];
+        if (isCollision(b, minion)) {
+          // //
+          if (b.weaponTypeAtFire === 1) {
+            hitSounds.ice.currentTime = 0;
+            hitSounds.ice.play();
+            minion.slowRemain = 60;  // 重置/设置剩余帧
+            minion.element.classList.add('frozen'); 
+            b.hasHit = true;
+            b.stayFrames = 30;
+            b.element.style.backgroundImage = 'url("Bullet/snowflake.png")';
+            minion.hp -= b.damage;
+            } 
+            else if(b.weaponTypeAtFire === 2){
+              hitSounds.explode.currentTime = 0;
+              hitSounds.explode.play();
+              minion.hp -= 2*b.damage;
+              b.hasHit = true;
+              b.isExploded = true;      // 标记已爆炸
+              b.stayFrames = 32;        
+              b.explosionFrameIndex = 1;
+              b.width = 275;
+              b.height = 275;
+              b.element.classList.add("explosion");
+              b.element.style.backgroundImage = 'url("Bullet/exp/exp1.png")';
+              // 改成以碰撞点为中心(简单用 b.x,b.y)
+              b.x = b.x  - 137.5; 
+              b.y = b.y  - 137.5;
+              updatePosition(b);
+              
+            }
+            else if (b.weaponTypeAtFire === 3)
+              {
+                hitSounds.fire.currentTime = 0;
+                hitSounds.fire.play();
+                minion.hp -= b.damage;
+            // 以子弹中心为准生成火墙
+                spawnFirewall(b.x + b.width / 2, b.y + b.height / 2);
+                removeGameObject(bullets, i);
+                i--;
+              }
+            else {
+              hitSounds.default.currentTime = 0;
+            hitSounds.default.play();
+              minion.hp -= b.damage;
+          removeGameObject(bullets, i);
+          i--;
+          }
+          // //
+          if (minion.hp <= 0) {
+            scoreElement.textContent = `Score: ${score}`;
+            removeMonster(boss3Minions, j);
+            j--;
+          }
+          break;
+        }
       }
 
       // 检测子弹和怪物碰撞
@@ -1368,6 +1683,524 @@ function updateBoss() {
   }
 }
 
+function updateBoss3() {
+  if (!boss3.isAlive) return;
+
+  // 更新Boss血条
+  updateBoss3HP();
+// 当Boss血量降至35%时，召唤两种敌怪
+  if (boss3.hp <= 0.35 * boss3.initialhp && boss3Minions.length === 0 && boss3.callminion===0) {
+    spawnBoss3MinionLeft(); // 左上角敌怪
+    spawnBoss3MinionRight(); // 右上角敌怪
+    boss3.bulletSpawnRate = 100000000000; // Boss停止发射弹幕
+    boss3.isInvincible = true;
+    boss3.callminion=1;
+    boss3Bgm3.pause();
+    boss3Bgm4.currentTime = 0;
+    boss3Bgm4.play();
+  }
+  if (boss3Minions.length===0){
+    boss3.bulletSpawnRate=60;
+    boss3.isInvincible = false;
+  }
+  // 更新敌怪
+  updateBoss3Minions();
+
+  // 当Boss血量降至50%时，进入二阶段
+  if (boss3.hp <= 0.5 * boss3.initialhp && boss3.phase === 1) {
+    boss3.phase = 2;
+    boss3.element.style.backgroundImage = 'url("Monster/boss3_phase2.png")'; // 更换Boss外观
+    boss3Bgm2.pause();
+    boss3Bgm3.currentTime = 0;
+    boss3Bgm3.play();
+  }
+
+
+  // 更新敌怪
+  updateBoss3Minions();
+
+  // 检测是否进入过渡阶段
+  if (!boss3.isTransitioning) {
+    if (boss3.hp <= 0.15 * boss3.initialhp && boss3.tranphase <= 3) {
+      startTransition(3); // 进入第三阶段
+    } else if (boss3.hp <= 0.75 * boss3.initialhp && boss3.tranphase <= 2) {
+      startTransition(2); // 进入第二阶段
+      boss3Bgm1.pause();
+      boss3Bgm2.currentTime = 0;
+      boss3Bgm2.play();
+    } else if (boss3.hp <= boss3.initialhp && boss3.tranphase <= 1) {
+      startTransition(1); // 进入第一阶段
+    }
+  }
+
+  // 过渡阶段逻辑
+  if (boss3.isTransitioning) {
+    boss3.transitionTimer--;
+
+    // 过渡阶段结束
+    if (boss3.transitionTimer <= 0) {
+      boss3.isTransitioning = false;
+      boss3.isInvincible = false;
+      boss3.tranphase++; // 进入下一阶段
+      if(boss3.hp >0.5*boss3.initialhp){
+        boss3.element.style.backgroundImage = 'url("Monster/boss3_phase1.png")'
+      }else{
+        boss3.element.style.backgroundImage = 'url("Monster/boss3_phase2.png")'
+      }
+    } else {
+      // 过渡阶段行为：冲撞玩家并生成全屏弹幕
+      boss3.isInvincible = true; // 无敌
+      // 冲撞冷却逻辑
+      if (boss3.chargeCounter <= 0) {
+        // 计算玩家预判位置
+        const predictX = hero.x + hero.speed * boss3.chargePredictTime;
+        const predictY = hero.y + hero.speed * boss3.chargePredictTime;
+
+        // 计算冲撞方向
+        const angle = Math.atan2(predictY - boss3.y, predictX - boss3.x);
+
+        // 设置冲撞速度和方向
+        boss3.chargeVelocityX = Math.cos(angle) * boss3.chargeSpeed;
+        boss3.chargeVelocityY = Math.sin(angle) * boss3.chargeSpeed;
+        boss3.isCharging = true; // 开始冲撞
+        boss3.chargeCounter = boss3.chargeCooldowntran; // 重置冷却时间
+      }
+      // 冲撞玩家
+      if (boss3.isCharging ) {
+        // 冲撞逻辑
+        boss3.x += boss3.chargeVelocityX;
+        boss3.y += boss3.chargeVelocityY;
+  
+        // 检测是否撞到玩家或边界
+        if (isCollision(hero, boss3) || boss3.x < 0 || boss3.x + boss3.width > containerWidth || boss3.y < 0 || boss3.y + boss3.height > containerHeight) {
+          boss3.isCharging = false; // 停止冲撞
+          boss3.isReturning = true; // 开始返回上方
+        }
+      } else if (boss3.isReturning) {
+        // 返回上方逻辑
+        boss3.y -= boss3.returnSpeed;
+  
+        // 检测是否返回上方
+        if (boss3.y <= 50) {
+          boss3.isReturning = false; // 停止返回
+          boss3.y = 50; // 确保Boss回到顶部
+        }
+      }
+      if (boss3.transitionTimer %30===0)spawnBulletHell(); // 全屏弹幕炼狱
+
+      // 在15%血量时生成强追踪弹幕
+      if (boss3.tranphase === 3 && boss3.transitionTimer %30===0 && boss3.mooncount<3) {
+        spawnBoss3RedMoon();
+        boss3.mooncount+=1;
+      }
+    }
+  } else {
+    // 正常阶段逻辑
+    if (boss3.isCharging) {
+      // 冲撞逻辑
+      boss3.x += boss3.chargeVelocityX;
+      boss3.y += boss3.chargeVelocityY;
+
+      // 检测是否撞到玩家或边界
+      if (isCollision(hero, boss3) || boss3.x < 0 || boss3.x + boss3.width > containerWidth || boss3.y < 0 || boss3.y + boss3.height > containerHeight) {
+        boss3.isCharging = false; // 停止冲撞
+        boss3.isReturning = true; // 开始返回上方
+      }
+    } else if (boss3.isReturning) {
+      // 返回上方逻辑
+      boss3.y -= boss3.returnSpeed;
+
+      // 检测是否返回上方
+      if (boss3.y <= 50) {
+        boss3.isReturning = false; // 停止返回
+        boss3.y = 50; // 确保Boss回到顶部
+      }
+    } else {
+      // 正常移动和弹幕生成逻辑
+      if (boss3.slowRemain > 0) {
+        boss3.slowRemain--;
+        boss3.x += boss3.speed * 0.7 * boss3.direction;
+        if (boss3.slowRemain <= 0) {
+         boss3.element.classList.remove('frozen');
+         boss3.bulletSpawnRate = boss3.originalBulletSpawnRate;
+       }
+      } 
+      else {
+         boss3.x += boss3.speed * boss3.direction;
+      }
+      if (boss3.x + boss3.width > containerWidth || boss3.x < 0) {
+        boss3.direction *= -1; // 反转方向
+      }
+
+      // 发射弹幕逻辑
+  boss3.bulletSpawnCounter++;
+  if (boss3.bulletSpawnCounter >= boss3.bulletSpawnRate) {
+    if (boss3.phase === 1) {
+      spawnBoss3BulletsPhase1();
+      if (Math.random() < 0.2) {
+        spawnBoss3MagicTornado();
+      }
+    } else if (boss3.phase === 2) {
+      spawnBoss3BulletsPhase2();
+      if (Math.random() < 0.3) {
+        spawnBoss3CalamityWhirl();
+      }
+    }
+    boss3.bulletSpawnCounter = 0;
+  }
+
+      // 冲撞冷却逻辑
+      if (boss3.chargeCounter <= 0) {
+        // 计算玩家预判位置
+        const predictX = hero.x + hero.speed * boss3.chargePredictTime;
+        const predictY = hero.y + hero.speed * boss3.chargePredictTime;
+
+        // 计算冲撞方向
+        const angle = Math.atan2(predictY - boss3.y, predictX - boss3.x);
+
+        // 设置冲撞速度和方向
+        boss3.chargeVelocityX = Math.cos(angle) * boss3.chargeSpeed;
+        boss3.chargeVelocityY = Math.sin(angle) * boss3.chargeSpeed;
+        boss3.isCharging = true; // 开始冲撞
+        boss3.chargeCounter = boss3.chargeCooldown; // 重置冷却时间
+      }
+    }
+  }
+
+  // 更新冲撞冷却计数器
+  if (boss3.chargeCounter > 0) {
+    boss3.chargeCounter--;
+  }
+
+   // 更新弹幕炼狱冷却计数器
+   if (boss3.bulletHellCounter > 0) {
+    boss3.bulletHellCounter--;
+  }
+  // 更新Boss位置
+  updatePosition(boss3);
+
+  // 检测玩家子弹与Boss碰撞
+  if (!boss3.isInvincible) {
+    for (let i = 0; i < bullets.length; i++) {
+      const b = bullets[i];
+      if (isCollision(b, boss3)&&!b.hasHit) {
+        if(b.weaponTypeAtFire === 1){
+          hitSounds.ice.currentTime = 0;
+          hitSounds.ice.play();
+          boss3.hp -= b.damage;
+          boss3.slowRemain = 60;
+          boss3.bulletSpawnRate = 90; 
+          boss3.element.classList.add('frozen');
+          b.hasHit = true;
+          b.stayFrames = 30;    
+          b.element.style.backgroundImage = 'url("Bullet/snowflake.png")';
+        }
+        else if(b.weaponTypeAtFire === 0){
+          boss3.hp -= b.damage;
+          hitSounds.default.currentTime = 0;
+          hitSounds.default.play();
+          removeGameObject(bullets, i);
+          i--;
+        }
+        else if (b.weaponTypeAtFire === 2) {
+             // 爆炸弹
+             boss3.hp -= b.damage;
+             hitSounds.explode.currentTime = 0;
+             hitSounds.explode.play();
+             b.hasHit = true;
+             b.isExploded = true;
+             b.stayFrames = 32;
+             b.explosionFrameIndex = 1;
+             b.width = 275;
+             b.height = 275;
+             b.x = b.x  - 137.5; 
+             b.y = b.y  - 137.5;
+             b.element.classList.add("explosion");
+             b.element.style.backgroundImage = 'url("Bullet/exp/exp1.png")';
+              updatePosition(b);
+        }
+        else if (b.weaponTypeAtFire === 3) {
+          hitSounds.default.currentTime = 0;
+          hitSounds.default.play();
+          boss3.hp -= b.damage;
+          spawnFirewall(b.x + b.width / 2, b.y + b.height / 2);
+          removeGameObject(bullets, i);
+          i--;
+        }
+        if (boss3.hp <= 0) {
+          boss3.isAlive = false;
+          removeGameObject([boss3], 0); // 移除Boss
+          score += 100; // 击败Boss3加100分
+          scoreElement.textContent = `Score: ${score}`;
+          boss3Bgm4.pause();
+          boss3Bgm5.currentTime = 0;
+          boss3Bgm5.play();
+  
+          // 隐藏Boss血条
+          boss3HPElement.style.display = 'none';
+          updateBoss3HP(); // 更新Boss血条
+         }
+      }
+    }
+  }
+}
+
+// 开始过渡阶段
+function startTransition(newPhase) {
+  boss3.isTransitioning = true;
+  boss3.transitionTimer = 600; // 10秒（60帧/秒）
+  boss3.tranphase = newPhase;
+  boss3.element.style.backgroundImage = `url("Monster/boss3_tranphase.png")`; // 更换Boss贴图
+  boss3.chargeCounter=0;
+}
+
+// 冲撞玩家
+function bossChargePlayer() {
+  const angle = Math.atan2(hero.y - boss3.y, hero.x - boss3.x);
+  boss3.chargeVelocityX = Math.cos(angle) * boss3.chargeSpeed;
+  boss3.chargeVelocityY = Math.sin(angle) * boss3.chargeSpeed;
+  boss3.isCharging = true;
+}
+
+// 全屏弹幕炼狱
+function spawnBulletHell() {
+  for (let i = 0; i < 36; i++) {
+    const angle = (Math.PI * 2 / 18) * i;
+    spawnBoss3Bullettran(angle, 4); // 36个方向的弹幕
+  }
+}
+
+function updateBoss3Minions() {
+  for (let i = 0; i < boss3Minions.length; i++) {
+    const minion = boss3Minions[i];
+
+    // 敌怪发射弹幕
+    minion.bulletSpawnCounter++;
+    if (minion.bulletSpawnCounter >= minion.bulletSpawnRate) {
+      const angle = Math.atan2(hero.y - minion.y, hero.x - minion.x);
+      if (minion.type === 'left') {
+        spawnBoss3MinionBulletLeft(minion.x + minion.width / 2, minion.y + minion.height / 2, angle);
+      } else if (minion.type === 'right') {
+        spawnBoss3MinionBulletRight(minion.x + minion.width / 2, minion.y + minion.height / 2, angle);
+      }
+      minion.bulletSpawnCounter = 0;
+    }
+    if (!minion.isFrozen) {
+      if (minion.slowRemain > 0) {
+             minion.slowRemain--;
+             if (minion.slowRemain <= 0) {
+               minion.element.classList.remove('frozen');
+             }
+      }
+      // 检测敌怪血量
+      if (minion.hp <= 0) {
+        removeGameObject(boss3Minions, i);
+        i--;
+        continue;
+      }
+    }
+  }
+}
+
+// 左上角敌怪的弹幕
+function spawnBoss3MinionBulletLeft(x, y, angle) {
+  const bulletDiv = document.createElement('div');
+  bulletDiv.className = 'boss3MinionBullet leftBullet';
+  bulletDiv.style.backgroundImage = 'url("Bullet/minion_bullet_left.gif")'; // 左上角敌怪的弹幕贴图
+
+  const bulletObj = {
+    element: bulletDiv,
+    x: x,
+    y: y,
+    width: 50,
+    height: 20,
+    angle: angle,
+    speed: 3
+  };
+  gameContainer.appendChild(bulletDiv);
+  updatePosition(bulletObj);
+  boss3Bullets.push(bulletObj);
+}
+
+// 右上角敌怪的弹幕
+function spawnBoss3MinionBulletRight(x, y, angle) {
+  const bulletDiv = document.createElement('div');
+  bulletDiv.className = 'boss3MinionBullet rightBullet';
+  bulletDiv.style.backgroundImage = 'url("Bullet/minion_bullet_right.gif")'; // 右上角敌怪的弹幕贴图
+
+  const bulletObj = {
+    element: bulletDiv,
+    x: x,
+    y: y,
+    width: 50,
+    height: 20,
+    angle: angle,
+    speed: 3
+  };
+  gameContainer.appendChild(bulletDiv);
+  updatePosition(bulletObj);
+  boss3Bullets.push(bulletObj);
+}
+
+
+
+// 更新Boss3的弹幕
+function updateBoss3Bullets() {
+  for (let i = 0; i < boss3Bullets.length; i++) {
+    const b = boss3Bullets[i];
+
+    // 根据弹幕类型更新行为
+    if (b.type === 'left' && b.isHoming) {
+      // 左上角敌怪的弹幕：追踪玩家
+      const angleToHero = Math.atan2(hero.y - b.y, hero.x - b.x);
+      b.angle += (angleToHero - b.angle) * b.homingStrength; // 平滑转向玩家
+    } else if (b.type === 'right') {
+      // 右上角敌怪的弹幕：曲线运动
+      b.angle += Math.sin(b.curveFrequency * b.y) * b.curveAmplitude;
+    }
+
+    // 根据角度移动弹幕
+    b.x += b.speed * Math.cos(b.angle);
+    b.y += b.speed * Math.sin(b.angle);
+    updatePosition(b);
+
+    // 超出屏幕则移除
+    if (b.x < 0 || b.x > containerWidth || b.y < 0 || b.y > containerHeight) {
+      removeGameObject(boss3Bullets, i);
+      i--;
+      continue;
+    }
+
+    // 检测弹幕与玩家碰撞
+    if (isCollision(hero, b)) {
+      playerHP -= 10; // 玩家扣血
+      playerHPElement.textContent = `HP: ${playerHP}`;
+      if (playerHP <= 0) {
+        isGameOver = true;
+      }
+      removeGameObject(boss3Bullets, i);
+      i--;
+    }
+  }
+}
+
+// 更新Boss3的魔法旋风
+function updateBoss3Tornadoes() {
+  for (let i = 0; i < boss3Tornadoes.length; i++) {
+    const t = boss3Tornadoes[i];
+    // 根据角度移动旋风
+    t.x += t.speed * Math.cos(t.angle);
+    t.y += t.speed * Math.sin(t.angle);
+    updatePosition(t);
+
+    // 超出屏幕则移除
+    if (t.x < 0 || t.x > containerWidth || t.y < 0 || t.y > containerHeight) {
+      removeGameObject(boss3Tornadoes, i);
+      i--;
+      continue;
+    }
+
+    // 检测旋风与玩家碰撞
+    if (isCollision(hero, t)) {
+      playerHP -= 15; // 玩家扣血
+      playerHPElement.textContent = `HP: ${playerHP}`;
+      if (playerHP <= 0) {
+        isGameOver = true;
+      }
+      removeGameObject(boss3Tornadoes, i);
+      i--;
+    }
+  }
+}
+
+
+// 更新Boss3的灾厄龙卷
+function updateBoss3Whirls() {
+  for (let i = 0; i < boss3Whirls.length; i++) {
+    const w = boss3Whirls[i];
+    // 根据角度移动龙卷
+    w.x += w.speed * Math.cos(w.angle);
+    w.y += w.speed * Math.sin(w.angle);
+    updatePosition(w);
+
+    // 超出屏幕则移除
+    if (w.x < 0 || w.x > containerWidth || w.y < 0 || w.y > containerHeight) {
+      removeGameObject(boss3Whirls, i);
+      i--;
+      continue;
+    }
+
+    // 检测龙卷与玩家碰撞
+    if (isCollision(hero, w)) {
+      playerHP -= 20; // 玩家扣血
+      playerHPElement.textContent = `HP: ${playerHP}`;
+      if (playerHP <= 0) {
+        isGameOver = true;
+      }
+      removeGameObject(boss3Whirls, i);
+      i--;
+    }
+  }
+}
+
+// 更新Boss3的猩红圆月
+function updateBoss3redmoon() {
+  for (let i = 0; i < boss3redmoon.length; i++) {
+    const r = boss3redmoon[i];
+    // 根据角度移动旋风
+    r.x += r.speed * Math.cos(r.angle);
+    r.y += r.speed * Math.sin(r.angle);
+    updatePosition(r);
+
+    // 超出屏幕则移除
+    if (r.x < 0 || r.x > containerWidth || r.y < 0 || r.y > containerHeight) {
+      removeGameObject(boss3redmoon, i);
+      i--;
+      continue;
+    }
+
+    // 检测旋风与玩家碰撞
+    if (isCollision(hero, r)) {
+      playerHP -= 15; // 玩家扣血
+      playerHPElement.textContent = `HP: ${playerHP}`;
+      if (playerHP <= 0) {
+        isGameOver = true;
+      }
+      removeGameObject(boss3redmoon, i);
+      i--;
+    }
+  }
+}
+
+
+
+// 更新Boss3的血条
+function updateBoss3HP() {
+  const hpPercentage = (boss3.hp / boss3.initialhp) * 100; // 计算血量百分比
+  boss3HPElement.style.setProperty('--hp-width', `${hpPercentage}%`); // 根据血量百分比调整血条宽度
+  boss3HPElement.setAttribute('data-hp', `${Math.round(hpPercentage)}%`); // 更新血量百分比显示
+}
+
+
+
+function spawnBoss3MinionBullet(x, y, angle) {
+  const bulletDiv = document.createElement('div');
+  bulletDiv.className = 'boss3MinionBullet';
+
+  const bulletObj = {
+    element: bulletDiv,
+    x: x,
+    y: y,
+    width: 20,
+    height: 20,
+    angle: angle,
+    speed: 3
+  };
+  gameContainer.appendChild(bulletDiv);
+  updatePosition(bulletObj);
+  boss3Bullets.push(bulletObj);
+}
+
 function spawnFirewall(centerX, centerY) {
   const firewallDiv = document.createElement('div');
   // 添加 CSS 类，使火墙样式由 CSS 定义
@@ -1467,6 +2300,40 @@ function updateFirewalls() {
 
       // 播放胜利视频
       playVictoryVideo();
+     }
+  }
+  if (boss3.isAlive) {
+    for (let j = 0; j < firewalls.length; j++) {
+      const fw = firewalls[j];
+      if (isCollision(boss3, fw)) {
+        // 每帧火墙对 boss3 造成 5 点伤害（可根据需要调整数值）
+        boss3.hp -= 5;
+        boss3.element.classList.add('burning');
+      }
+    }
+    // 如果 boss3 没有与任何火墙碰撞，则移除燃烧效果
+    let boss3Burning = false;
+    for (let j = 0; j < firewalls.length; j++) {
+      if (isCollision(boss, firewalls[j])) {
+        boss3Burning = true;
+        break;
+      }
+    }
+    if (!boss3Burning) {
+      boss3.element.classList.remove('burning');
+    }
+    if (boss3.hp <= 0) {
+      boss3.isAlive = false;
+      removeGameObject([boss3], 0); // 移除Boss3
+      score += 100; // 击败Boss3加100分
+      scoreElement.textContent = `Score: ${score}`;
+
+      // 隐藏Boss3血条
+      boss3HPElement.style.display = 'none';
+      updateBoss3HP(); // 更新Boss3血条
+      boss3Bgm4.pause();
+      boss3Bgm5.currentTime = 0;
+      boss3Bgm5.play();
      }
   }
 }
@@ -1704,7 +2571,7 @@ document.getElementById('startButton').addEventListener('click', (event) => {
 });
 
 
-function createLevelBubble() {
+function createLevelBubble1() {
   level2Bubble = document.createElement('div');
   level2Bubble.className = 'level-bubble';
 
@@ -1733,12 +2600,52 @@ function createLevelBubble() {
   document.body.appendChild(level2Bubble);
 }
 
-function removeBubble() {
+function createLevelBubble2() {
+  level3Bubble = document.createElement('div');
+  level3Bubble.className = 'level-bubble';
+
+  // 获取游戏容器的位置（相对于视口）
+  const gameRect = gameContainer.getBoundingClientRect();
+  
+  // 计算气泡位置（左侧偏移262px + 20px间距）
+  const bubbleX = gameRect.left - 450; 
+  // 根据主角的Y坐标（需转换为页面坐标）
+  const bubbleY = gameRect.top + hero.y - 100; 
+
+  // 设置样式
+  level3Bubble.style.cssText = `
+    position: fixed;
+    width: 205px;
+    height: 223px;
+    background-image: url('Others/Chatbox2.png'); // 测试用占位图
+    background-size: cover;
+    left: ${bubbleX + 40}px;
+    top: ${bubbleY - 340}px;
+    opacity: 1; // 暂时关闭淡入，直接显示
+    z-index: 9999; // 确保层级最高
+    pointer-events: none;
+  `;
+
+  document.body.appendChild(level3Bubble);
+}
+
+function removeBubble1() {
   if (level2Bubble) {
     level2Bubble.style.opacity = '0';
     setTimeout(() => {
       document.body.removeChild(level2Bubble);
       level2Bubble = null;
+      bubbleDisplayTime = 0;
+    }, 500);
+  }
+}
+
+function removeBubble2() {
+  if (level3Bubble) {
+    level3Bubble.style.opacity = '0';
+    setTimeout(() => {
+      document.body.removeChild(level3Bubble);
+      level3Bubble = null;
       bubbleDisplayTime = 0;
     }, 500);
   }
