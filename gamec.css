@@ -470,3 +470,16 @@
      image-rendering: pixelated; 
      这样放大后也不会被插值模糊 */
 }
+
+#dialogue-box {
+  font-family: 'Arial', sans-serif;
+  font-size: 18px;
+  text-shadow: 1px 1px 2px black;
+}
+
+#dialogue-text {
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

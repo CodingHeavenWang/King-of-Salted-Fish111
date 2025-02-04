@@ -599,16 +599,73 @@ function removeDoorGroup(groupId) {
   }
 }
 
+/********************
+ * 新增对话相关变量
+ ********************/
+const bossDialogue = [
+  "Sun: Needy Yan, Woody Tsu, CSRMMZZYGAG...... ",
+  "Salted Fish: For the survival of the kingdom, I must stop you!",
+  "Sun: Vansoi!",
+  "Hint: Avoid the bullet barrage! Attack the core weak point!"
+];
+let currentDialogueIndex = 0;
+let isInDialogue = false;
+
+
+/********************
+ * 修改 initBoss 函数
+ ********************/
 function initBoss() {
+  // 暂停游戏
+  isInDialogue = true;
+  
+  // 显示对话框
+  const dialogueBox = document.getElementById('boss-dialogue');
+  dialogueBox.style.display = 'block';
+  currentDialogueIndex = 0;
+  updateDialogue();
+  
+  // 绑定空格键事件
+  document.addEventListener('keydown', handleDialogueKey);
+}
+
+/********************
+ * 新增对话处理函数
+ ********************/
+function updateDialogue() {
+  const textElement = document.getElementById('dialogue-text');
+  if (currentDialogueIndex < bossDialogue.length) {
+    textElement.textContent = bossDialogue[currentDialogueIndex];
+    currentDialogueIndex++;
+  } else {
+    // 对话结束
+    const dialogueBox = document.getElementById('boss-dialogue');
+    dialogueBox.style.display = 'none';
+    isInDialogue = false;
+    
+    // 解除按键监听
+    document.removeEventListener('keydown', handleDialogueKey);
+    
+    // 正式启动Boss战
+    startRealBossFight();
+  }
+}
+
+/********************
+ * 修改后的真正Boss战启动函数
+ ********************/
+function startRealBossFight() {
+  // 原有initBoss的内容
   boss.originalBulletSpawnRate = boss.bulletSpawnRate; 
   bgm.pause();
   bossBgm.currentTime = 0;
   bossBgm.play();
   removeAllMonstersNoReward();
-gameContainer.appendChild(bossHPElement);
+  gameContainer.appendChild(bossHPElement);
+
   const bossDiv = document.createElement('div');
   bossDiv.className = 'boss';
-  bossDiv.style.backgroundImage = 'url("monster/bigsun.jpg")'; // 假设Boss图片路径
+  bossDiv.style.backgroundImage = 'url("monster/bigsun.jpg")';
   bossDiv.style.backgroundSize = 'cover';
   gameContainer.appendChild(bossDiv);
   boss.element = bossDiv;
@@ -617,9 +674,19 @@ gameContainer.appendChild(bossHPElement);
 
   bossHPElement.id = 'bossHP';
   gameContainer.appendChild(bossHPElement);
-  // 显示Boss血条
-  updateBossHP(); // 初始化血条
+  updateBossHP();
+  
+  // 恢复游戏循环
+  if (!frameId) gameLoop();
 }
+
+function handleDialogueKey(e) {
+  if (e.code === 'Space') {
+    e.preventDefault();
+    updateDialogue();
+  }
+}
+
 
 function removeAllMonstersNoReward() {
   for (let i = monsters.length - 1; i >= 0; i--) {
@@ -732,12 +799,12 @@ function spawnBossBulletsPhase3() {
 }
 
 /********************
- * 游戏循环
+ * 修改游戏循环
  ********************/
 function gameLoop() {
-  if (isGameOver) {
+  if (isGameOver || isInDialogue) { // 添加对话状态判断
     clearTimeout(frameId);
-    showGameOver();
+    if (!isGameOver) frameId = setTimeout(gameLoop, 1000 / 60);
     return;
   }
   updateAll();
