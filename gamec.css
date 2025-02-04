@@ -87,22 +87,22 @@
 
 /* 怪物样式 */
 .monster {
-  width: 50px;
-  height: 50px;
+  width: 64px;
+  height: 64px;
   position: absolute;
-  background-image: url("Monster/jpg1.png"); /* 怪物图 */
+  background-image: url("Monster/batmon.gif"); /* 怪物图 */
   background-size: cover;
   background-repeat: no-repeat;
 }
 
 /* 第一关怪物图片 */
 .monster.level1 {
-  background-image: url("Monster/jpg1.png");
+  background-image: url("Monster/batmon.gif");
 }
 
 /* 第二关怪物图片 */
 .monster.level2 {
-  background-image: url("Monster/jpg1.png"); /* 替换为你的新图片路径 */
+  background-image: url("Monster/batmon.gif"); /* 替换为你的新图片路径 */
   border: 2px solid #f70707;
 }
 
@@ -471,7 +471,6 @@
      这样放大后也不会被插值模糊 */
 }
 
-<<<<<<< Updated upstream
 #dialogue-box {
   font-family: 'Arial', sans-serif;
   font-size: 18px;
@@ -483,7 +482,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-=======
+}
 .level-bubble {
   animation: float 2s ease-in-out infinite;
 }
@@ -492,5 +491,4 @@
   0% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
   100% { transform: translateY(0); }
->>>>>>> Stashed changes
 }
