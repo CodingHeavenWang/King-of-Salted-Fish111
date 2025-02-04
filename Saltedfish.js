@@ -15,7 +15,8 @@ const hitSounds = {
   // 添加更多音效...
 };
 
-
+let level2Bubble = null;
+let bubbleDisplayTime = 0;
 
 const openingScreen = document.createElement('div');
 openingScreen.id = 'openingScreen';
@@ -161,8 +162,8 @@ function initHero() {
   // 初始化血条
   const heroHPBar = document.getElementById('heroHPBar');
   heroHPBar.style.width = '50px'; // 初始血条宽度
-  heroHPBar.style.left = `${hero.x}px`; // 血条位置与主角一致
-  heroHPBar.style.top = `${hero.y - 20}px`; // 血条位于主角上方
+  heroHPBar.style.left = `${hero.x + 30}px`; // 血条位置与主角一致
+  heroHPBar.style.top = `${hero.y + 10 }px`; // 血条位于主角上方
 }
 
 // 在预加载阶段添加优先级提示
@@ -256,10 +257,10 @@ function spawnBullet() {
   const bulletDiv = document.createElement('div');
   bulletDiv.className = 'bullet';
 
-  let bulletimg='Bullet/shot_fireball.png';
+  let bulletimg='Bullet/smallfireball.gif';
 
     if(weapontype==1){
-        bulletimg = 'Bullet/icefire.png';
+        bulletimg = 'Bullet/ice.gif';
     }else if (weapontype == 2) {
          bulletimg = 'Bullet/baozha.png'; // 爆炸弹贴图
     }else if (weapontype == 3) {
@@ -549,7 +550,7 @@ function updateDoors() {
     }
 
     // 检测主角碰撞
-    if (isCollision(hero, d)) {
+    if (isheroCollision(hero, d)) {
       // 应用门增益
       applyDoorEffect(d.effect);
       // 移除同组
@@ -579,7 +580,7 @@ function applyDoorEffect(effect) {
       {
       weapontype += 1;
       bullets.forEach(bullet => {
-        bullet.element.style.backgroundImage = 'url("Bullet/icefire.png")';
+        bullet.element.style.backgroundImage = 'url("Bullet/ice,gif")';
       });
       break;
       }
@@ -606,16 +607,73 @@ function removeDoorGroup(groupId) {
   }
 }
 
+/********************
+ * 新增对话相关变量
+ ********************/
+const bossDialogue = [
+  "Sun: Needy Yan, Woody Tsu, CSRMMZZYGAG...... ",
+  "Salted Fish: For the survival of the kingdom, I must stop you!",
+  "Sun: Vansoi!",
+  "Hint: Avoid the bullet barrage! Attack the core weak point!"
+];
+let currentDialogueIndex = 0;
+let isInDialogue = false;
+
+
+/********************
+ * 修改 initBoss 函数
+ ********************/
 function initBoss() {
+  // 暂停游戏
+  isInDialogue = true;
+  
+  // 显示对话框
+  const dialogueBox = document.getElementById('boss-dialogue');
+  dialogueBox.style.display = 'block';
+  currentDialogueIndex = 0;
+  updateDialogue();
+  
+  // 绑定空格键事件
+  document.addEventListener('keydown', handleDialogueKey);
+}
+
+/********************
+ * 新增对话处理函数
+ ********************/
+function updateDialogue() {
+  const textElement = document.getElementById('dialogue-text');
+  if (currentDialogueIndex < bossDialogue.length) {
+    textElement.textContent = bossDialogue[currentDialogueIndex];
+    currentDialogueIndex++;
+  } else {
+    // 对话结束
+    const dialogueBox = document.getElementById('boss-dialogue');
+    dialogueBox.style.display = 'none';
+    isInDialogue = false;
+    
+    // 解除按键监听
+    document.removeEventListener('keydown', handleDialogueKey);
+    
+    // 正式启动Boss战
+    startRealBossFight();
+  }
+}
+
+/********************
+ * 修改后的真正Boss战启动函数
+ ********************/
+function startRealBossFight() {
+  // 原有initBoss的内容
   boss.originalBulletSpawnRate = boss.bulletSpawnRate; 
   bgm.pause();
   bossBgm.currentTime = 0;
   bossBgm.play();
   removeAllMonstersNoReward();
-gameContainer.appendChild(bossHPElement);
+  gameContainer.appendChild(bossHPElement);
+
   const bossDiv = document.createElement('div');
   bossDiv.className = 'boss';
-  bossDiv.style.backgroundImage = 'url("monster/bigsun.jpg")'; // 假设Boss图片路径
+  bossDiv.style.backgroundImage = 'url("monster/bigsun.jpg")';
   bossDiv.style.backgroundSize = 'cover';
   gameContainer.appendChild(bossDiv);
   boss.element = bossDiv;
@@ -624,9 +682,19 @@ gameContainer.appendChild(bossHPElement);
 
   bossHPElement.id = 'bossHP';
   gameContainer.appendChild(bossHPElement);
-  // 显示Boss血条
-  updateBossHP(); // 初始化血条
+  updateBossHP();
+  
+  // 恢复游戏循环
+  if (!frameId) gameLoop();
 }
+
+function handleDialogueKey(e) {
+  if (e.code === 'Space') {
+    e.preventDefault();
+    updateDialogue();
+  }
+}
+
 
 function removeAllMonstersNoReward() {
   for (let i = monsters.length - 1; i >= 0; i--) {
@@ -739,12 +807,12 @@ function spawnBossBulletsPhase3() {
 }
 
 /********************
- * 游戏循环
+ * 修改游戏循环
  ********************/
 function gameLoop() {
-  if (isGameOver) {
+  if (isGameOver || isInDialogue) { // 添加对话状态判断
     clearTimeout(frameId);
-    showGameOver();
+    if (!isGameOver) frameId = setTimeout(gameLoop, 1000 / 60);
     return;
   }
   updateAll();
@@ -781,6 +849,10 @@ function updateAll() {
         monsterSpawnRate = 120;
         monsterHP = 200;   // 例：怪物血量变为 250
         currentLevel++;   // 例：怪物血量变为 250
+        console.log("Enter Level 2"); // 添加日志确认代码执行
+        if (!level2Bubble) {
+          createLevelBubble();
+        }
         break;
       case 1200:
         monsterSpawnRate = 110;
@@ -848,6 +920,12 @@ function updateAll() {
   updateHeroHPBar();
   updateHeroStats();
   updateFirewalls();
+  if (level2Bubble) {
+    bubbleDisplayTime++;
+    if (bubbleDisplayTime >= 240) { // 60帧/秒 * 4秒
+      removeBubble();
+    }
+  }
 }
 
 /********************
@@ -903,8 +981,8 @@ function updateHeroHPBar() {
   const heroHPBar = document.getElementById('heroHPBar');
   const hpPercentage = (playerHP / playerHPinitial) * 10; // 计算血量百分比
   heroHPBar.style.width = `${hpPercentage}%`; // 根据血量百分比调整血条宽度
-  heroHPBar.style.left = `${hero.x}px`; // 血条位置与主角一致
-  heroHPBar.style.top = `${hero.y - 20}px`; // 血条位于主角上方
+  heroHPBar.style.left = `${hero.x + 18}px`; // 血条位置与主角一致
+  heroHPBar.style.top = `${hero.y}px`; // 血条位于主角上方
 }
 
 /********************
@@ -942,7 +1020,7 @@ function updateMonstersAll() {
     }
 
     // 碰撞主角
-    if (isCollision(hero, m)) {
+    if (isheroCollision(hero, m)) {
       isGameOver = true;
       break;
     }
@@ -1103,7 +1181,7 @@ function updatePowerups() {
     }
 
     // 主角拾取增益
-    if (isCollision(hero, p)) {
+    if (isheroCollision(hero, p)) {
       if (p.type === 'freq') {
         // 每次 -1 或 -2，保证最小10
         bulletSpawnRate = Math.max(10, bulletSpawnRate + p.value);
@@ -1135,6 +1213,15 @@ function isCollision(a, b) {
   return !(
     a.x + a.width < b.x ||
     a.x > b.x + b.width ||
+    a.y + a.height < b.y ||
+    a.y > b.y + b.height
+  );
+}
+
+function isheroCollision(a, b) {
+  return !(
+    a.x + a.width + 20 < b.x || // 让 a 的碰撞箱左移 10px
+    a.x + 20 > b.x + b.width ||
     a.y + a.height < b.y ||
     a.y > b.y + b.height
   );
@@ -1408,7 +1495,7 @@ function updateBossBullets() {
     }
 
     // 检测弹幕与玩家碰撞
-    if (isCollision(hero, b)) {
+    if (isheroCollision(hero, b)) {
       playerHP -= 10; // 玩家扣血
       playerHPElement.textContent = `HP: ${playerHP}`;
       if (playerHP <= 0) {
@@ -1563,7 +1650,7 @@ function startGame() {
   isGameOver = false;
   hero.isAlive = true;
   hero.x = containerWidth / 2 - 25;
-  hero.y = containerHeight - 70;
+  hero.y = containerHeight - 95;
 
   bullets.length = 0;
   monsters.length = 0;
@@ -1605,3 +1692,44 @@ document.getElementById('startButton').addEventListener('click', (event) => {
   document.getElementById('mainMenu').style.display = 'none'; // 隐藏主菜单
   playOpeningAnimation(); // 播放动画
 });
+
+
+function createLevelBubble() {
+  level2Bubble = document.createElement('div');
+  level2Bubble.className = 'level-bubble';
+
+  // 获取游戏容器的位置（相对于视口）
+  const gameRect = gameContainer.getBoundingClientRect();
+  
+  // 计算气泡位置（左侧偏移262px + 20px间距）
+  const bubbleX = gameRect.left - 262 - 20; 
+  // 根据主角的Y坐标（需转换为页面坐标）
+  const bubbleY = gameRect.top + hero.y - 100; 
+
+  // 设置样式
+  level2Bubble.style.cssText = `
+    position: fixed;
+    width: 205px;
+    height: 222px;
+    background-image: url('Others/Chatbox1.png'); // 测试用占位图
+    background-size: cover;
+    left: ${bubbleX + 30}px;
+    top: ${bubbleY - 370}px;
+    opacity: 1; // 暂时关闭淡入，直接显示
+    z-index: 9999; // 确保层级最高
+    pointer-events: none;
+  `;
+
+  document.body.appendChild(level2Bubble);
+}
+
+function removeBubble() {
+  if (level2Bubble) {
+    level2Bubble.style.opacity = '0';
+    setTimeout(() => {
+      document.body.removeChild(level2Bubble);
+      level2Bubble = null;
+      bubbleDisplayTime = 0;
+    }, 500);
+  }
+}

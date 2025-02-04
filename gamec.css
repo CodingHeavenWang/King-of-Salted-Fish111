@@ -67,9 +67,9 @@
 
 /* 主角样式 */
 .hero {
-  z-index: 1000; 
-  width: 50px;
-  height: 67px;
+  z-index: 1000;
+  width: 75px;
+  height: 100.5px;
   position: absolute;
   background-image: url("Character/wizard.gif");
   background-size: cover;
@@ -82,35 +82,34 @@
   width: 25px;
   height: 35px;
   position: absolute;
-  background-image: url("Bullet/shot_fireball.png"); /* 子弹图 */
+  background-image: url("Bullet/smallfireball.gif"); /* 子弹图 */
   background-size: cover;
   background-repeat: no-repeat;
 }
 
 /* 怪物样式 */
 .monster {
-  z-index: 4; 
-  width: 50px;
-  height: 50px;
+  z-index: 4;
+  width: 64px;
+  height: 64px;
   position: absolute;
-  background-image: url("Monster/jpg1.png"); /* 怪物图 */
+  background-image: url("Monster/frogger.gif"); /* 怪物图 */
   background-size: cover;
   background-repeat: no-repeat;
 }
 
 /* 第一关怪物图片 */
 .monster.level1 {
-  background-image: url("Monster/jpg1.png");
+  background-image: url("Monster/Slime.gif");
 }
 
 /* 第二关怪物图片 */
 .monster.level2 {
-  background-image: url("Monster/jpg1.png"); /* 替换为你的新图片路径 */
-  border: 2px solid #f70707;
+  background-image: url("Monster/sssbat.gif"); /* 替换为你的新图片路径 */
 }
 
 .monster.level3 {
-  background-image: url("Monster/jpg2.png"); /* 替换为你的新图片路径 */
+  background-image: url("Monster/fireghost.gif"); /* 替换为你的新图片路径 */
 }
 
 .monster.level4 {
@@ -118,7 +117,7 @@
   border: 2px solid #f70707;
 }
 .monster.level5 {
-  background-image: url("Monster/jpg3.png"); /* 替换为你的新图片路径 */
+  background-image: url("Monster/fireghost.gif"); /* 替换为你的新图片路径 */
 }
 .monster.level6 {
   background-image: url("Monster/jpg3.png"); /* 替换为你的新图片路径 */
@@ -493,4 +492,26 @@
   z-index: 1;         /* 确保火墙层级较低 */
   width: 200px;
   height: 30px;
+}
+
+#dialogue-box {
+  font-family: 'Arial', sans-serif;
+  font-size: 18px;
+  text-shadow: 1px 1px 2px black;
+}
+
+#dialogue-text {
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.level-bubble {
+  animation: float 2s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
 }
