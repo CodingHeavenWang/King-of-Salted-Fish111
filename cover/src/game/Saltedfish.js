@@ -273,6 +273,11 @@ function playOpeningAnimation() {
           openingScreen.style.opacity = '0';
           setTimeout(() => {
               openingScreen.style.display = 'none';
+              setTimeout(() => {
+                const overlay = document.getElementById('darkOverlay');
+                overlay.style.backgroundColor = 'rgba(0, 0, 0, 0)'; // 逐渐变亮
+              }, 300); // 等待0.5秒，确保渐变效果完成
+
               startGame();
           }, 500);
           return;
@@ -289,8 +294,8 @@ function playOpeningAnimation() {
           setTimeout(() => {
               currentIndex++;
               showNextImage();
-          }, 500); // 淡出动画时间
-      }, 5000); // 每张图片显示时间
+          }, 700); // 淡出动画时间
+      }, 3000); // 每张图片显示时间
   };
 
   // 开始播放序列
@@ -305,6 +310,10 @@ function playOpeningAnimation() {
               openingScreen.style.opacity = '0';
               setTimeout(() => {
                   openingScreen.style.display = 'none';
+                  setTimeout(() => {
+                    const overlay = document.getElementById('darkOverlay');
+                    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0)'; // 逐渐变亮
+                  }, 300); // 等待0.5秒，确保渐变效果完成
                   startGame();
                   window.removeEventListener('keydown', skipAnimation);
               }, 500);
@@ -313,76 +322,6 @@ function playOpeningAnimation() {
   };
   window.addEventListener('keydown', skipAnimation);
 }
-
-function playEndingAnimation() {
-  const endingScreen = document.getElementById('endingScreen');
-  let currentIndex = 0;
-  let animationSkipped = false;
-
-  // 创建图片容器
-  const img = document.createElement('img');
-  endingScreen.appendChild(img);
-
-  // 预加载图片
-  const endingImages = [
-    'Ending/Ending1.png',
-    'Ending/Ending2.png',
-    'Ending/Ending3.png',
-    'Ending/Ending4.png',
-    'Ending/Ending5.png',
-  ];
-  preloadImages(endingImages);
-
-  // 显示首屏
-  endingScreen.style.display = 'flex';
-
-  const showNextImage = () => {
-    if (currentIndex >= endingImages.length || animationSkipped) {
-      // 动画结束
-      endingScreen.style.opacity = '0';
-      setTimeout(() => {
-        endingScreen.style.display = 'none';
-        showGameOver(); // 显示游戏结束界面
-      }, 500);
-      return;
-    }
-
-    // 更新图片源
-    img.src = endingImages[currentIndex];
-    endingScreen.style.opacity = '1';
-
-    // 设置定时切换
-    setTimeout(() => {
-      if (animationSkipped) return;
-      endingScreen.style.opacity = '0';
-      setTimeout(() => {
-        currentIndex++;
-        showNextImage();
-      }, 500); // 淡出动画时间
-    }, 5000); // 每张图片显示时间
-  };
-
-  // 开始播放序列
-  setTimeout(showNextImage, 100);
-
-  // 跳过动画逻辑
-  const skipAnimation = (event) => {
-    if (event.keyCode === 32) { // 空格键
-      event.preventDefault();
-      if (!animationSkipped) {
-        animationSkipped = true;
-        endingScreen.style.opacity = '0';
-        setTimeout(() => {
-          endingScreen.style.display = 'none';
-          showGameOver();
-          window.removeEventListener('keydown', skipAnimation);
-        }, 500);
-      }
-    }
-  };
-  window.addEventListener('keydown', skipAnimation);
-}
-
 
 /********************
  * 生成子弹
@@ -1901,6 +1840,75 @@ function updateBoss() {
   }
 }
 
+function playEndingAnimation() {
+  const endingScreen = document.getElementById('endingScreen');
+  let currentIndex = 0;
+  let animationSkipped = false;
+
+  // 创建图片容器
+  const img = document.createElement('img');
+  endingScreen.appendChild(img);
+
+  // 预加载图片
+  const endingImages = [
+    'Ending/Ending1.png',
+    'Ending/Ending2.png',
+    'Ending/Ending3.png',
+    'Ending/Ending4.png',
+    'Ending/Ending5.png',
+  ];
+  preloadImages(endingImages);
+
+  // 显示首屏
+  endingScreen.style.display = 'flex';
+
+  const showNextImage = () => {
+    if (currentIndex >= endingImages.length || animationSkipped) {
+      // 动画结束
+      endingScreen.style.opacity = '0';
+      setTimeout(() => {
+        endingScreen.style.display = 'none';
+        showGameOver(); // 显示游戏结束界面
+      }, 500);
+      return;
+    }
+
+    // 更新图片源
+    img.src = endingImages[currentIndex];
+    endingScreen.style.opacity = '1';
+
+    // 设置定时切换
+    setTimeout(() => {
+      if (animationSkipped) return;
+      endingScreen.style.opacity = '0';
+      setTimeout(() => {
+        currentIndex++;
+        showNextImage();
+      }, 500); // 淡出动画时间
+    }, 5000); // 每张图片显示时间
+  };
+
+  // 开始播放序列
+  setTimeout(showNextImage, 100);
+
+  // 跳过动画逻辑
+  const skipAnimation = (event) => {
+    if (event.keyCode === 32) { // 空格键
+      event.preventDefault();
+      if (!animationSkipped) {
+        animationSkipped = true;
+        endingScreen.style.opacity = '0';
+        setTimeout(() => {
+          endingScreen.style.display = 'none';
+          showGameOver();
+          window.removeEventListener('keydown', skipAnimation);
+        }, 500);
+      }
+    }
+  };
+  window.addEventListener('keydown', skipAnimation);
+}
+
 function updateBoss3() {
   if (!boss3.isAlive) return;
 
@@ -2952,12 +2960,28 @@ function startGame() {
   gameLoop();
 }
 /********************
- * 监听“开始游戏”按钮
+ * 监听任意键按下事件
  ********************/
-document.getElementById('startButton').addEventListener('click', (event) => {
-  event.preventDefault(); // 防止按钮触发默认行为
-  document.getElementById('mainMenu').style.display = 'none'; // 隐藏主菜单
-  playOpeningAnimation(); // 播放动画
+document.addEventListener('keydown', (event) => {
+  // 判断是否在主菜单界面
+  if (document.getElementById('mainMenu').style.display !== 'none') {
+    // 隐藏“按任意键开始游戏”字幕
+    const startMessage = document.getElementById('startMessage');
+    startMessage.style.opacity = '0'; // 字幕淡出
+
+    // 在字幕淡出后执行其他操作
+    setTimeout(() => {
+      // 创建并显示遮罩层的渐变效果
+      const overlay = document.getElementById('darkOverlay');
+      overlay.style.backgroundColor = 'rgba(0, 0, 0, 1)'; // 逐渐变暗
+
+      // 在遮罩层变暗后隐藏主菜单并播放开场动画
+      setTimeout(() => {
+        document.getElementById('mainMenu').style.display = 'none'; // 隐藏主菜单
+        playOpeningAnimation(); // 播放动画
+      }, 1000); // 等待1秒，确保渐变效果完成
+    }, 1000); // 等待1秒，确保字幕淡出
+  }
 });
 
 
