@@ -125,8 +125,8 @@ const boss = {
   y: 75,                      // 在顶部
   width: 150,
   height: 150,
-  hp: 100000,                   // Boss的血量
-  initialhp: 100000,
+  hp: 120000,                   // Boss的血量
+  initialhp: 120000,
   isAlive: false,             // Boss是否存活
   bulletSpawnRate: 60,        // Boss发射弹幕的频率
   bulletSpawnCounter: 0,      // Boss弹幕发射计数器
@@ -145,8 +145,8 @@ const boss3 = {
   y: 50,
   width: 40,
   height: 50,
-  hp: 10000,
-  initialhp: 10000,
+  hp: 30000,
+  initialhp: 30000,
   isAlive: false,
   bulletSpawnRate: 60,
   bulletSpawnCounter: 0,
@@ -294,6 +294,11 @@ function playOpeningAnimation() {
           openingScreen.style.opacity = '0';
           setTimeout(() => {
               openingScreen.style.display = 'none';
+              setTimeout(() => {
+                const overlay = document.getElementById('darkOverlay');
+                overlay.style.backgroundColor = 'rgba(0, 0, 0, 0)'; // 逐渐变亮
+              }, 300); // 等待0.5秒，确保渐变效果完成
+
               startGame();
           }, 500);
           return;
@@ -310,8 +315,8 @@ function playOpeningAnimation() {
           setTimeout(() => {
               currentIndex++;
               showNextImage();
-          }, 500); // 淡出动画时间
-      }, 5000); // 每张图片显示时间
+          }, 700); // 淡出动画时间
+      }, 3000); // 每张图片显示时间
   };
 
   // 开始播放序列
@@ -326,6 +331,10 @@ function playOpeningAnimation() {
               openingScreen.style.opacity = '0';
               setTimeout(() => {
                   openingScreen.style.display = 'none';
+                  setTimeout(() => {
+                    const overlay = document.getElementById('darkOverlay');
+                    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0)'; // 逐渐变亮
+                  }, 300); // 等待0.5秒，确保渐变效果完成
                   startGame();
                   window.removeEventListener('keydown', skipAnimation);
               }, 500);
@@ -334,76 +343,6 @@ function playOpeningAnimation() {
   };
   window.addEventListener('keydown', skipAnimation);
 }
-
-function playEndingAnimation() {
-  const endingScreen = document.getElementById('endingScreen');
-  let currentIndex = 0;
-  let animationSkipped = false;
-
-  // 创建图片容器
-  const img = document.createElement('img');
-  endingScreen.appendChild(img);
-
-  // 预加载图片
-  const endingImages = [
-    'Ending/Ending1.png',
-    'Ending/Ending2.png',
-    'Ending/Ending3.png',
-    'Ending/Ending4.png',
-    'Ending/Ending5.png',
-  ];
-  preloadImages(endingImages);
-
-  // 显示首屏
-  endingScreen.style.display = 'flex';
-
-  const showNextImage = () => {
-    if (currentIndex >= endingImages.length || animationSkipped) {
-      // 动画结束
-      endingScreen.style.opacity = '0';
-      setTimeout(() => {
-        endingScreen.style.display = 'none';
-        showGameOver(); // 显示游戏结束界面
-      }, 500);
-      return;
-    }
-
-    // 更新图片源
-    img.src = endingImages[currentIndex];
-    endingScreen.style.opacity = '1';
-
-    // 设置定时切换
-    setTimeout(() => {
-      if (animationSkipped) return;
-      endingScreen.style.opacity = '0';
-      setTimeout(() => {
-        currentIndex++;
-        showNextImage();
-      }, 500); // 淡出动画时间
-    }, 5000); // 每张图片显示时间
-  };
-
-  // 开始播放序列
-  setTimeout(showNextImage, 100);
-
-  // 跳过动画逻辑
-  const skipAnimation = (event) => {
-    if (event.keyCode === 32) { // 空格键
-      event.preventDefault();
-      if (!animationSkipped) {
-        animationSkipped = true;
-        endingScreen.style.opacity = '0';
-        setTimeout(() => {
-          endingScreen.style.display = 'none';
-          showGameOver();
-          window.removeEventListener('keydown', skipAnimation);
-        }, 500);
-      }
-    }
-  };
-  window.addEventListener('keydown', skipAnimation);
-}
-
 
 /********************
  * 生成子弹
@@ -1918,6 +1857,75 @@ function updateBoss() {
   }
 }
 
+function playEndingAnimation() {
+  const endingScreen = document.getElementById('endingScreen');
+  let currentIndex = 0;
+  let animationSkipped = false;
+
+  // 创建图片容器
+  const img = document.createElement('img');
+  endingScreen.appendChild(img);
+
+  // 预加载图片
+  const endingImages = [
+    'Ending/Ending1.png',
+    'Ending/Ending2.png',
+    'Ending/Ending3.png',
+    'Ending/Ending4.png',
+    'Ending/Ending5.png',
+  ];
+  preloadImages(endingImages);
+
+  // 显示首屏
+  endingScreen.style.display = 'flex';
+
+  const showNextImage = () => {
+    if (currentIndex >= endingImages.length || animationSkipped) {
+      // 动画结束
+      endingScreen.style.opacity = '0';
+      setTimeout(() => {
+        endingScreen.style.display = 'none';
+        showGameOver(); // 显示游戏结束界面
+      }, 500);
+      return;
+    }
+
+    // 更新图片源
+    img.src = endingImages[currentIndex];
+    endingScreen.style.opacity = '1';
+
+    // 设置定时切换
+    setTimeout(() => {
+      if (animationSkipped) return;
+      endingScreen.style.opacity = '0';
+      setTimeout(() => {
+        currentIndex++;
+        showNextImage();
+      }, 500); // 淡出动画时间
+    }, 5000); // 每张图片显示时间
+  };
+
+  // 开始播放序列
+  setTimeout(showNextImage, 100);
+
+  // 跳过动画逻辑
+  const skipAnimation = (event) => {
+    if (event.keyCode === 32) { // 空格键
+      event.preventDefault();
+      if (!animationSkipped) {
+        animationSkipped = true;
+        endingScreen.style.opacity = '0';
+        setTimeout(() => {
+          endingScreen.style.display = 'none';
+          showGameOver();
+          window.removeEventListener('keydown', skipAnimation);
+        }, 500);
+      }
+    }
+  };
+  window.addEventListener('keydown', skipAnimation);
+}
+
 function updateBoss3() {
   if (!boss3.isAlive) return;
 
@@ -2781,30 +2789,23 @@ function updateFirewalls() {
   }
 }
 
+const weaponInfo = {
+  0: { name: "Pristine Fury", img: "guns/gun0.gif", color: "#fd7146e6" },
+  1: { name: "Ancient Ice Chunk", img: "guns/gun1.gif", color: "#42eefae6" },
+  2: { name: "Starmada", img: "guns/gun2.png" , color: "#fffb19e6"},
+  3: { name: "Cinders of Lament", img: "guns/gun3.png" , color: "#ff0505e6"},
+  5: { name: "Cosmic Immaterializer", img: "guns/gun5.png" , color: "#1cfd03e6"},
+  // 如有更多武器，请继续添加
+};
+
+
 function updateWeaponDisplay() {
   const weaponImage = document.getElementById('weaponImage');
-  let imgPath = 'guns/gun1.gif';  // 默认图片
-  switch (weapontype) {
-    case 0:
-      imgPath = 'guns/gun0.gif';
-      break;
-    case 1:
-      imgPath = 'guns/gun1.gif';
-      break;
-    case 2:
-      imgPath = 'guns/gun2.png';
-      break;
-    case 3:
-      imgPath = 'guns/gun3.png';
-      break;
-      case 3:
-        imgPath = 'guns/gun5.png';
-        break;
-    default:
-      imgPath = 'guns/gun0.gif';
-      break;
-  }
-  weaponImage.src = imgPath;
+  const weaponTitle = document.querySelector('#weaponDisplay h2');
+  const info = weaponInfo[weapontype] || weaponInfo[0];
+  weaponImage.src = info.img;
+  weaponTitle.textContent = info.name;
+  weaponTitle.style.color = info.color;
 }
 
 // 播放胜利视频
@@ -3065,11 +3066,17 @@ document.addEventListener('keyup', (e) => {
  * 启动游戏
  ********************/
 function startGame() {
+  document.getElementById('weaponDisplay').style.display = 'flex';
+  startMessage.style.display = "none"; // 隐藏提示信息
   // 隐藏主界面
   document.getElementById('mainMenu').style.display = 'none';
   // 显示游戏容器
   gameContainer.style.display = 'block';
+  document.body.style.backgroundImage = "url('Wallpaper/desertforest.png')";
+document.documentElement.style.backgroundImage = "url('Wallpaper/desertforest.png')";
+document.documentElement.style.backgroundSize = "cover";
   //显示bat
+  document.body.classList.add('game-active');
   document.body.classList.add('game-active');
   // 重置游戏状态
   isGameOver = false;
@@ -3102,7 +3109,7 @@ function startGame() {
   // 启动背景音乐
   bgm.currentTime = 0;
   bgm.play().catch(e => console.log("音乐播放需要用户交互"));
-
+  
   // 初始化主角
   initHero();
 
@@ -3110,12 +3117,29 @@ function startGame() {
   gameLoop();
 }
 /********************
- * 监听“开始游戏”按钮
+ * 监听任意键按下事件
  ********************/
-document.getElementById('startButton').addEventListener('click', (event) => {
-  event.preventDefault(); // 防止按钮触发默认行为
-  document.getElementById('mainMenu').style.display = 'none'; // 隐藏主菜单
-  playOpeningAnimation(); // 播放动画
+document.addEventListener('keydown', (event) => {
+  // 判断是否在主菜单界面
+  if (document.getElementById('mainMenu').style.display !== 'none') {
+    // 隐藏“按任意键开始游戏”字幕
+    
+    const startMessage = document.getElementById('startMessage');
+    startMessage.style.opacity = '0'; // 字幕淡出
+
+    // 在字幕淡出后执行其他操作
+    setTimeout(() => {
+      // 创建并显示遮罩层的渐变效果
+      const overlay = document.getElementById('darkOverlay');
+      overlay.style.backgroundColor = 'rgba(0, 0, 0, 1)'; // 逐渐变暗
+
+      // 在遮罩层变暗后隐藏主菜单并播放开场动画
+      setTimeout(() => {
+        document.getElementById('mainMenu').style.display = 'none'; // 隐藏主菜单
+        playOpeningAnimation(); // 播放动画
+      }, 1000); // 等待1秒，确保渐变效果完成
+    }, 1000); // 等待1秒，确保字幕淡出
+  }
 });
 
 

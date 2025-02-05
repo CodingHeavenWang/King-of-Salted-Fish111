@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+
   <meta charset="UTF-8" />
   <title>King of Salted Fish</title>
   <!-- 引入外部 CSS -->
@@ -13,7 +15,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: url("Wallpaper/DesertForest.png") no-repeat center/cover;
+      background: url("Wallpaper/scrolling.gif") no-repeat center/cover;
       background-size: cover;
     }
 
@@ -57,84 +59,8 @@
       margin-bottom: 20px; /* 给图片和其他内容之间添加间距 */
       margin-top: -250px; /* 向上移动图片 */
     }
-    /* 怪兽样式 */
-    .walkingmonster {
-      width: 282px;
-      height: 282px;
-      background: url('Others/walkingmonster.png') 0 0;
-      background-size: 2256px 282px; /* 8帧 x 282px */
-      position: absolute;
-      bottom: 100px;
-      left: 50%;
-      margin-left: -141px; /* 居中定位 */
-      animation: 
-        walk 1.6s steps(8) infinite,
-        move 12s linear infinite;
-      background-repeat: no-repeat;
-      transform-origin: center bottom;
-      z-index: 1; /* 确保在背景上方 */
-    }
+    
 
-    /* 行走动画 */
-    @keyframes walk {
-      100% { 
-        background-position: -2256px 0;
-      }
-    }
-
-    /* 移动动画 */
-    @keyframes move {
-      0% {
-        transform: translateX(calc(-45vw - 141px)) scaleX(1);
-      }
-      48% {
-        transform: translateX(calc(55vw - 141px)) scaleX(1);
-      }
-      50% {
-        transform: translateX(calc(55vw - 141px)) scaleX(-1);
-      }
-      98% {
-        transform: translateX(calc(-45vw - 141px)) scaleX(-1);
-      }
-      100% {
-        transform: translateX(calc(-45vw - 141px)) scaleX(1);
-      }
-    }
-
-    /* 响应式适配 */
-    @media (max-width: 1600px) {
-      .walkingmonster {
-        width: 200px;
-        height: 200px;
-        margin-left: -100px;
-        background-size: 1600px 200px;
-        animation: 
-          walk 2.4s steps(8) infinite,
-          move 18s linear infinite;
-      }
-      
-      @keyframes walk {
-        100% { background-position: -1600px 0; }
-      }
-      
-      @keyframes move {
-        0% {
-          transform: translateX(calc(-40vw - 100px)) scaleX(1);
-        }
-        48% {
-          transform: translateX(calc(60vw - 100px)) scaleX(1);
-        }
-        50% {
-          transform: translateX(calc(50vw - 100px)) scaleX(-1);
-        }
-        98% {
-          transform: translateX(calc(-50vw - 100px)) scaleX(-1);
-        }
-        100% {
-          transform: translateX(calc(-50vw - 100px)) scaleX(1);
-        }
-      }
-    }
   </style>
   <meta charset="UTF-8" />
   <title>King of Salted Fish</title>
@@ -163,15 +89,16 @@
 <body>
   <div id="thunderAnimation"></div>
   <img id="batIcon" src="Others/Bat.gif" alt="Bat Icon">
+      <!-- 遮罩层 -->
+      <div id="darkOverlay"></div>
+
+      <!-- 按任意键开始游戏字幕 -->
+      <div id="startMessage">-- Press any button to start the game --</div>
   <!-- 主界面 -->
   <div id="mainMenu">
-    <img id="titleImage" src="Others/Title.png" alt="Game Title">
-    <button id="startButton">
-      <img src="Others/button.png" alt="Start Game">
-      <span>Start</span>
-    </button>  
     <!-- 添加怪兽 -->
-    <div class="walkingmonster"></div>
+     <!-- 添加 test.gif -->
+    <img id="walkingImage" src="Character/walking.gif" alt="Walking Image">
   </div>
 
   <!-- 游戏主容器 -->
@@ -202,7 +129,7 @@
     <!-- <div id="skillCooldownDisplay">Stop!: ready</div> -->
       <!-- 这里的内容（主角、怪物、子弹、增益、门）会通过 JS 动态创建 -->
     </div>
-    <div id="weaponDisplay">
+    <div id="weaponDisplay" style="display: none;">
       <h2>Current Weapon</h2>
       <img id="weaponImage" src="guns/gun0.gif" alt="Weapon">
     </div>
@@ -250,6 +177,8 @@
       #gameContainer:has(:visible) + #batIcon {
         left: 50px; /* 游戏运行时调整位置 */
       }
+
+    
       /* 闪电容器 */
     #thunderAnimation {
       position: fixed;
