@@ -192,7 +192,7 @@
 .doorRow {
   width: 600px;
   height: 75px;
-  z-index: 5; 
+  z-index: 2; 
   position: absolute;
   background-image: url("Others/door.png");
   display: flex;
@@ -338,6 +338,7 @@
   height: 50px;
   position: absolute;
   background-size: cover;
+  z-index: 1000; 
 }
 
 
@@ -365,6 +366,7 @@
   width: var(--hp-width, 100%);
   background: linear-gradient(to left, #00ff00, #ff0000);
   transition: width 0.3s ease;
+  z-index: 1000; 
 }
 
 #boss3HP::before {
@@ -377,7 +379,7 @@
   font-size: 12px;
   font-weight: bold;
   text-shadow: 1px 1px 2px black;
-  z-index: 1;
+  z-index: 1000; 
 }
 
 /* 血条名称样式 */
@@ -400,6 +402,7 @@
   background-image: url("Bullet/dark_magic.gif"); /* 黑暗魔法球图片 */
   position: absolute;
   background-size: cover;
+  z-index: 3; 
 }
 
 /* Boss3魔法旋风样式 */
@@ -409,6 +412,7 @@
   background-image: url("Bullet/magic_tornado.gif"); /* 魔法旋风图片 */
   position: absolute;
   background-size: cover;
+  z-index: 4; 
 }
 
 /* Boss3红月亮样式 */
@@ -418,6 +422,7 @@
   background-image: url("Monster/redmoon.webp"); /* 红月亮图片 */
   position: absolute;
   background-size: cover;
+  z-index: 2;
 }
 
 /* 灾厄龙卷样式 */
@@ -427,12 +432,14 @@
   background-image: url("Bullet/calamity_whirl.gif"); /* 龙卷图片 */
   background-size: cover;
   position: absolute;
+  z-index: 2;
 }
 
 .boss3Minion {
   position: absolute;
   width: 60px;
   height: 60px;
+  z-index: 1000;
   background-size: cover;
 }
 
@@ -857,7 +864,7 @@ body.game-active #weaponDisplay {
   z-index: 9998;
   pointer-events: none;
   transition: background-color 1s ease; /* 渐变效果 */
-
+}
 .weapon-drop {
   position: absolute;
   background-repeat: no-repeat;
