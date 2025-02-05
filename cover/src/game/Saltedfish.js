@@ -20,6 +20,11 @@ let boss3dialoguebiaoji=0;
 let level2Bubble = null;
 let level3Bubble = null;
 let bubbleDisplayTime = 0;
+let lastDamageTime = 0; // 记录最后一次对Boss造成伤害的时间
+isBossFightStarted = false; // 标记Boss战
+let hasLowHPMessageShown = false; // 标记是否已经显示过低血量提示
+let Trueend=false;
+
 
 const openingScreen = document.createElement('div');
 openingScreen.id = 'openingScreen';
@@ -50,6 +55,9 @@ const boss3Bgm4=new Audio('BGM/StainedBrutalCalamity4.mp3');
 boss3Bgm4.loop = true;
 const boss3Bgm5=new Audio('BGM/StainedBrutalCalamity5.mp3');
 boss3Bgm5.loop = true;
+const storybgm=new Audio('BGM/storybgm.MP3');
+boss3Bgm5.loop = true;
+
 
 // timecount：用于控制怪物生成频率和血量等随时间变化
 let timecount = 0;
@@ -275,7 +283,8 @@ function playOpeningAnimation() {
   const openingScreen = document.getElementById('openingScreen');
   let currentIndex = 0;
   let animationSkipped = false;
-
+  storybgm.currentTime = 0;
+  storybgm.play();
   // 创建图片容器
   const img = document.createElement('img');
   openingScreen.appendChild(img);
@@ -343,7 +352,6 @@ function playOpeningAnimation() {
   };
   window.addEventListener('keydown', skipAnimation);
 }
-
 /********************
  * 生成子弹
  ********************/
@@ -717,7 +725,7 @@ const bossDialogue = [
   "Sun: Needy Yan, Woody Tsu, CSRMMZZYGAG...... ",
   "Salted Fish: For the survival of the kingdom, I must stop you!",
   "Sun: Vansoi!",
-  "Hint: Avoid the bullet barrage! Attack the core weak point!"
+  "Hint: Keep attacking when BOSS.HP < 10%!"
 ];
 let currentDialogueIndex = 0;
 let isInDialogue = false;
@@ -786,6 +794,10 @@ function startRealBossFight() {
   bossHPElement.id = 'bossHP';
   gameContainer.appendChild(bossHPElement);
   updateBossHP();
+
+  boss.isAlive = true;
+  isBossFightStarted = true; // 标记Boss战开始
+  lastDamageTime = Date.now(); // 初始化计时器
   
   // 恢复游戏循环
   if (!frameId) gameLoop();
@@ -806,10 +818,23 @@ function handleDialogueKeyboss3dead(e) {
 }
 
 
+const bossLowHPMessage = "Surrender! I surrender!!!!!!";
 
+function showLowHPMessage() {
+  const messageDiv = document.createElement('div');
+  messageDiv.className = 'low-hp-message';
+  messageDiv.textContent = bossLowHPMessage;
 
+  // 将提示添加到游戏容器中
+  gameContainer.appendChild(messageDiv);
 
-
+  // 1.5秒后移除提示
+  setTimeout(() => {
+    if (messageDiv.parentNode) {
+      messageDiv.parentNode.removeChild(messageDiv);
+    }
+  }, 1500);
+}
 
 
 
@@ -1188,7 +1213,7 @@ function spawnBoss3MinionLeft() {
     y: 300,
     width: 60,
     height: 60,
-    hp: 1000, // 敌怪的血量
+    hp: 3000, // 敌怪的血量
     bulletSpawnRate: 120, // 发射弹幕的频率
     bulletSpawnCounter: 0,
     speed: 1,
@@ -1210,7 +1235,7 @@ function spawnBoss3MinionRight() {
     y: 300,
     width: 60,
     height: 60,
-    hp: 1000, // 敌怪的血量
+    hp: 3000, // 敌怪的血量
     bulletSpawnRate: 120, // 发射弹幕的频率
     bulletSpawnCounter: 0,
     speed: 1,
@@ -1234,6 +1259,15 @@ function gameLoop() {
     return;
   }
   updateAll();
+
+    // 只有在Boss战开始后才检查时间差
+    if (isBossFightStarted && boss.hp <= 0.1 * boss.initialhp) {
+      const currentTime = Date.now();
+      if (currentTime - lastDamageTime > 10000) { // 10秒 = 10000毫秒
+        Trueend=true;
+          playVictoryVideo();
+      }
+  }
   frameId = setTimeout(gameLoop, 1000 / 60);
 }
 
@@ -1466,9 +1500,15 @@ function updateMonstersAll() {
 
     // 碰撞主角
     if (isCollision(hero, m)) {
-      isGameOver = true;
-      showGameOver(); 
-      break;
+      playerHP-=m.hp;
+      flashHeroDamage();
+      if (playerHP <= 0) {
+        isGameOver = true;
+        showGameOver(); 
+      }
+      removeMonster(monsters, i);
+      i--;
+      continue;
     }
   }
 }
@@ -1882,7 +1922,15 @@ function updateBoss() {
         removeGameObject(bullets, i);
         i--;
       }
-      if (boss.hp <= 0) {
+      // 检查Boss血量是否低于10%
+      if (boss.hp <= 0.1 * boss.initialhp && !hasLowHPMessageShown) {
+        showLowHPMessage(); // 显示低血量提示
+        hasLowHPMessageShown = true; // 标记为已显示
+      }
+      lastDamageTime = Date.now();
+      
+
+      if (boss.hp <= 0 && Trueend==false) {
         boss.isAlive = false;
         removeGameObject([boss], 0); // 移除Boss
         score += 100; // 击败Boss加100分
@@ -1892,6 +1940,8 @@ function updateBoss() {
         // 隐藏Boss血条
         bossHPElement.style.display = 'none';
         updateBossHP(); // 更新Boss血条
+
+        endBossFight();
 
         setTimeout(() => {
           // 创建并显示遮罩层的渐变效果
@@ -1909,6 +1959,13 @@ function updateBoss() {
     }
   }
 }
+
+
+function endBossFight() {
+  isBossFightStarted = false; // 标记Boss战结束
+  lastDamageTime = 0; // 重置计时器
+}
+
 
 function updateHomingBullet(bullet) {
   // 判断当前追踪目标是否有效
@@ -1982,6 +2039,7 @@ function isValidTarget(target) {
   // 判断目标是否存在且血量大于 0（或其它判断标准）
   return target && target.hp > 0;
 }
+
 
 
 function playEndingAnimation() {
@@ -2447,9 +2505,9 @@ function updateBoss3Minions() {
 
     // 更新敌怪血条
     if (minion.type === 'left') {
-      updateBoss3MinionHP(boss3MinionLeftHPElement, minion.hp, 1000,'left');
+      updateBoss3MinionHP(boss3MinionLeftHPElement, minion.hp, 3000,'left');
     } else if (minion.type === 'right') {
-      updateBoss3MinionHP(boss3MinionRightHPElement, minion.hp, 1000,'right');
+      updateBoss3MinionHP(boss3MinionRightHPElement, minion.hp, 3000,'right');
     }
 
     // 敌怪发射弹幕
@@ -2879,6 +2937,7 @@ function updateFirewalls() {
 
       // 播放胜利视频
       playVictoryVideo();
+      showGameOver(); // 显示游戏结束界面
      }
   }
   if (boss3.isAlive) {
@@ -3037,6 +3096,7 @@ function showGameOver() {
   boss3Bgm3.pause();
   boss3Bgm4.pause();
   boss3Bgm5.pause();
+  storybgm.pause;
 
   // 重置音频时间
   bgm.currentTime = 0;
@@ -3046,6 +3106,7 @@ function showGameOver() {
   boss3Bgm3.currentTime = 0;
   boss3Bgm4.currentTime = 0;
   boss3Bgm5.currentTime = 0;
+  storybgm.currentTime = 0; 
 
   // 显示游戏结束界面
   const gameOverScreen = document.getElementById('gameOverScreen');
@@ -3059,7 +3120,7 @@ function showGameOver() {
     // 添加确认提示
     if (confirm('确定要重新开始游戏吗？')) {
       // 先暂停所有音频
-      [bgm, bossBgm, boss3Bgm1, boss3Bgm2, boss3Bgm3, boss3Bgm4, boss3Bgm5].forEach(audio => {
+      [bgm, bossBgm, boss3Bgm1, boss3Bgm2, boss3Bgm3, boss3Bgm4, boss3Bgm5,storybgm].forEach(audio => {
         audio.pause();
         audio.currentTime = 0;
       });
@@ -3071,7 +3132,7 @@ function showGameOver() {
 
   document.getElementById('mainMenuButton').onclick = () => {
     // 先停止所有声音
-    [bgm, bossBgm, boss3Bgm1, boss3Bgm2, boss3Bgm3, boss3Bgm4, boss3Bgm5].forEach(audio => {
+    [bgm, bossBgm, boss3Bgm1, boss3Bgm2, boss3Bgm3, boss3Bgm4, boss3Bgm5,storybgm].forEach(audio => {
       audio.pause();
       audio.currentTime = 0;
     });
@@ -3264,6 +3325,7 @@ document.documentElement.style.backgroundSize = "cover";
   updateHeroStats();
 
   // 启动背景音乐
+  storybgm.pause;
   bgm.currentTime = 0;
   bgm.play().catch(e => console.log("音乐播放需要用户交互"));
   
@@ -3279,10 +3341,12 @@ document.documentElement.style.backgroundSize = "cover";
 document.addEventListener('keydown', (event) => {
   // 判断是否在主菜单界面
   if (document.getElementById('mainMenu').style.display !== 'none') {
-    // 隐藏“按任意键开始游戏”字幕
-    
-    const startMessage = document.getElementById('startMessage');
-    startMessage.style.opacity = '0'; // 字幕淡出
+    setTimeout(() => {
+      startMessage.style.opacity = '0'; // 字幕淡出
+      setTimeout(() => {
+        startMessage.style.display = 'none'; // 在淡出后隐藏元素
+      }, 1000); // 等待1秒，确保淡出效果完成
+    }, 0);
 
     // 在字幕淡出后执行其他操作
     setTimeout(() => {
