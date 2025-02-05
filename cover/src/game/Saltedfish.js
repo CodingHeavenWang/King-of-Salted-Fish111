@@ -2155,6 +2155,10 @@ function updateBoss3() {
   if (boss3.hp <= 0.5 * boss3.initialhp && boss3.phase === 1) {
     boss3.phase = 2;
     boss3.element.style.backgroundImage = 'url("Monster/boss3_phase2.png")'; // 更换Boss外观
+    boss3.element.classList.add('boss3-phase-transition'); // 添加转阶段动画
+    setTimeout(() => {
+      boss3.element.classList.remove('boss3-phase-transition'); // 动画结束后移除类
+    }, 1000); // 动画持续1秒
     boss3Bgm2.pause();
     boss3Bgm3.currentTime = 0;
     boss3Bgm3.play();
@@ -2213,9 +2217,11 @@ function updateBoss3() {
         boss3.chargeVelocityY = Math.sin(angle) * boss3.chargeSpeed;
         boss3.isCharging = true; // 开始冲撞
         boss3.chargeCounter = boss3.chargeCooldowntran; // 重置冷却时间
+        
       }
       // 冲撞玩家
       if (boss3.isCharging ) {
+        createChargeTrail();
         // 冲撞逻辑
         boss3.x += boss3.chargeVelocityX;
         boss3.y += boss3.chargeVelocityY;
@@ -2229,10 +2235,12 @@ function updateBoss3() {
             showGameOver(); 
           }
           boss3.isCharging = false; // 停止冲撞
+          
           boss3.isReturning = true; // 开始返回上方
         }
         if (boss3.x < 0 || boss3.x + boss3.width > containerWidth || boss3.y < 0 || boss3.y + boss3.height > containerHeight) {
           boss3.isCharging = false; // 停止冲撞
+          
           boss3.isReturning = true; // 开始返回上方
         }
       } else if (boss3.isReturning) {
@@ -2256,6 +2264,7 @@ function updateBoss3() {
   } else {
     // 正常阶段逻辑
     if (boss3.isCharging) {
+      createChargeTrail();
       // 冲撞逻辑
       boss3.x += boss3.chargeVelocityX;
       boss3.y += boss3.chargeVelocityY;
@@ -2270,10 +2279,12 @@ function updateBoss3() {
           showGameOver(); 
         }
         boss3.isCharging = false; // 停止冲撞
+        
         boss3.isReturning = true; // 开始返回上方
       }
       if (boss3.x < 0 || boss3.x + boss3.width > containerWidth || boss3.y < 0 || boss3.y + boss3.height > containerHeight) {
         boss3.isCharging = false; // 停止冲撞
+        
         boss3.isReturning = true; // 开始返回上方
       }
     } else if (boss3.isReturning) {
@@ -2333,6 +2344,7 @@ function updateBoss3() {
         boss3.chargeVelocityY = Math.sin(angle) * boss3.chargeSpeed;
         boss3.isCharging = true; // 开始冲撞
         boss3.chargeCounter = boss3.chargeCooldown; // 重置冷却时间
+        
       }
     }
   }
@@ -2489,6 +2501,27 @@ function bossChargePlayer() {
   boss3.chargeVelocityX = Math.cos(angle) * boss3.chargeSpeed;
   boss3.chargeVelocityY = Math.sin(angle) * boss3.chargeSpeed;
   boss3.isCharging = true;
+}
+
+function createChargeTrail() {
+  const trailCount = 4; // 残影数量
+  for (let i = 0; i < trailCount; i++) {
+    
+    setTimeout(() => {
+      const trail = document.createElement('div');
+      trail.className = 'boss3-trail';
+      trail.style.left = boss3.x + 'px';
+      trail.style.top = boss3.y + 'px';
+      trail.style.backgroundImage = boss3.element.style.backgroundImage;
+      gameContainer.appendChild(trail);
+
+      // 残影消失
+      setTimeout(() => {
+        trail.remove();
+      }, 180); // 残影持续时间
+    }, i * 50); // 残影间隔时间
+    
+  }
 }
 
 // 全屏弹幕炼狱
