@@ -488,10 +488,10 @@ function spawnPowerup(x, y, level=1) {
   let baseValue;
   let finalValue;
   if (type === 'freq') {
-    baseValue = -2; 
-    finalValue = baseValue - timeScale*0.5;
+    baseValue = -1; 
+    finalValue = baseValue - timeScale*0.125;
   } else {
-    baseValue = 5;
+    baseValue = 3;
     finalValue = baseValue + timeScale*5; 
   }
 
@@ -526,7 +526,7 @@ const rightChoice = possibleDoorEffects[indices[1]];
 let valuel = 0;
 let valuer = 0;
 
-const doorTimeScale = Math.floor(timecount / 600);
+const doorTimeScale = Math.floor(timecount / 900);
 
 if (
   leftChoice.label === 'Attack ++'
@@ -1289,53 +1289,72 @@ function updateAll() {
   }
   // 根据 timecount 动态调整怪物生成、怪物血量
   if(!boss.isAlive && !boss3.isAlive){
-    if (timecount <= 3000) {
+    if (timecount <= 6000) {
       switch (timecount) {
         case 1:
           monsterSpawnRate = 120;
           monsterHP = 100;   // 例：怪物血量变为 200
           break;
         case 600:
-          monsterSpawnRate = 120;
-          monsterHP = 200;   // 例：怪物血量变为 250
+        monsterSpawnRate = 120;
+        monsterHP = 200;   // 例：怪物血量变为 200
+        break;
+        case 1200:
+          monsterSpawnRate = 110;
+          monsterHP =350;   // 例：怪物血量变为 250
           currentLevel++;   // 例：怪物血量变为 250
           console.log("Enter Level 2"); // 添加日志确认代码执行
           if (!level2Bubble) {
             createLevelBubble1();
           }
           break;
-        case 1200:
+        case 1800:
           monsterSpawnRate = 110;
-          monsterHP = 400;   // 例：怪物血量变为 300
-          currentLevel++;    // 例：怪物血量变为 300
+          monsterHP = 500;   // 例：怪物血量变为 300    // 例：怪物血量变为 300
           if (!level3Bubble) {
             createLevelBubble2();
           }
           break;
-        case 1800:
-          monsterSpawnRate = 110;
-          monsterHP = 600;   // 例：怪物血量变为 400
-          currentLevel++;   // 例：怪物血量变为 400
-          break;
         case 2400:
           monsterSpawnRate = 100;
-          monsterHP = 800;   // 例：怪物血量变为 500
+          monsterHP = 750;   // 例：怪物血量变为 400
+          currentLevel++;   // 例：怪物血量变为 400
+          break;
+        case 3000:
+          monsterSpawnRate = 100;
+          monsterHP = 1000;   // 例：怪物血量变为 500  // 例：怪物血量变为 500
+          break;
+          case 3600:
+          monsterSpawnRate = 90;
+          monsterHP = 1350;   // 例：怪物血量变为 500
           currentLevel++;   // 例：怪物血量变为 500
           break;
-        
+          case 4200:
+          monsterSpawnRate = 90;
+          monsterHP = 1700;   // 例：怪物血量变为 500   // 例：怪物血量变为 500
+          break;
+          case 4800:
+          monsterSpawnRate = 80;
+          monsterHP = 2200;   // 例：怪物血量变为 500
+          currentLevel++;   // 例：怪物血量变为 500
+          break;
+          case 5400:
+          monsterSpawnRate = 80;
+          monsterHP = 2700;   // 例：怪物血量变为 500  // 例：怪物血量变为 500
+          break;
       }
     } else {
       currentLevel=6; 
-      monsterSpawnRate = 90;
+      monsterSpawnRate = 80;
       monsterHP = Math.floor(-300 + timecount*0.5);
     }
   }
   
   levelElement.textContent = "Level: " + currentLevel;
-  if (timecount>=4800 &&!boss.isAlive) {
+  if (timecount>=7200 &&!boss.isAlive) {
     initBoss();
   }
-  if (timecount>=1200 && !boss3.isAlive && boss3.initnumber===0) {
+  if (timecount>=3550 && !boss3.isAlive && boss3.initnumber===0) {
     initBoss3();
   }
   if (boss3.hp <= 0&& boss3dialoguebiaoji==0){
@@ -1356,30 +1375,6 @@ function updateAll() {
     }
   }
   );
-  document.addEventListener('keydown', (e) => {
-    if ((e.key === '0' )) {
-      weapontype = 0;
-    }
-  }
-  )
-  document.addEventListener('keydown', (e) => {
-    if ((e.key === '1' )) {
-      weapontype = 1;
-    }
-  }
-  )
-  document.addEventListener('keydown', (e) => {
-    if ((e.key === '2')) {
-      weapontype = 2;
-    }
-  }
-  )
-  document.addEventListener('keydown', (e) => {
-    if ((e.key === '3')) {
-      weapontype = 3;
-    }
-  }
-  )
   updateHero();
   updateBullets();
   updateMonstersAll();
@@ -1390,11 +1385,11 @@ function updateAll() {
   updateHeroHPBar();
   updateHeroStats();
   updateFirewalls();
-  updateBoss3();
-  updateBoss3Bullets(); // 更新Boss3的弹幕
-  updateBoss3Tornadoes(); // 更新Boss3的旋风
-  updateBoss3Whirls(); // 更新Boss3的龙卷
-  updateBoss3redmoon();//更新Boss3的猩红圆月
+  if(boss3.isAlive){updateBoss3();}
+  if(boss3Bullets.length>0){updateBoss3Bullets();} // 更新Boss3的弹幕
+  if(boss3Tornadoes.length>0){updateBoss3Tornadoes();} // 更新Boss3的旋风
+  if(boss3Whirls.length>0){updateBoss3Whirls();} // 更新Boss3的龙卷
+  if(boss3redmoon.length>0){updateBoss3redmoon();}//更新Boss3的猩红圆月
   if (level2Bubble) {
     bubbleDisplayTime++;
     if (bubbleDisplayTime >= 240) { // 60帧/秒 * 4秒
@@ -1933,8 +1928,11 @@ function updateBoss3() {
     boss3MinionLeftHPElement.style.display = 'none'; // 隐藏左上角敌怪血条
     boss3MinionRightHPElement.style.display = 'none'; // 隐藏右上角敌怪血条
   }
-  // 更新敌怪
-  updateBoss3Minions();
+  if(boss3Minions.length>0){
+    // 更新敌怪
+    updateBoss3Minions();
+  }
+  
 
   // 当Boss血量降至50%时，进入二阶段
   if (boss3.hp <= 0.5 * boss3.initialhp && boss3.phase === 1) {
@@ -1946,8 +1944,6 @@ function updateBoss3() {
   }
 
 
-  // 更新敌怪
-  updateBoss3Minions();
 
   // 检测是否进入过渡阶段
   if (!boss3.isTransitioning) {
@@ -2003,9 +1999,19 @@ function updateBoss3() {
         // 冲撞逻辑
         boss3.x += boss3.chargeVelocityX;
         boss3.y += boss3.chargeVelocityY;
-  
         // 检测是否撞到玩家或边界
-        if (isCollision(hero, boss3) || boss3.x < 0 || boss3.x + boss3.width > containerWidth || boss3.y < 0 || boss3.y + boss3.height > containerHeight) {
+        if (isCollision(hero, boss3)) {
+          playerHP -= 30; // 玩家扣血
+          playerHPElement.textContent = `HP: ${playerHP}`;
+          flashHeroDamage();
+          if (playerHP <= 0) {
+            isGameOver = true;
+            showGameOver(); 
+          }
+          boss3.isCharging = false; // 停止冲撞
+          boss3.isReturning = true; // 开始返回上方
+        }
+        if (boss3.x < 0 || boss3.x + boss3.width > containerWidth || boss3.y < 0 || boss3.y + boss3.height > containerHeight) {
           boss3.isCharging = false; // 停止冲撞
           boss3.isReturning = true; // 开始返回上方
         }
@@ -2035,7 +2041,18 @@ function updateBoss3() {
       boss3.y += boss3.chargeVelocityY;
 
       // 检测是否撞到玩家或边界
-      if (isCollision(hero, boss3) || boss3.x < 0 || boss3.x + boss3.width > containerWidth || boss3.y < 0 || boss3.y + boss3.height > containerHeight) {
+      if (isCollision(hero, boss3)) {
+        playerHP -= 30; // 玩家扣血
+        playerHPElement.textContent = `HP: ${playerHP}`;
+        flashHeroDamage();
+        if (playerHP <= 0) {
+          isGameOver = true;
+          showGameOver(); 
+        }
+        boss3.isCharging = false; // 停止冲撞
+        boss3.isReturning = true; // 开始返回上方
+      }
+      if (boss3.x < 0 || boss3.x + boss3.width > containerWidth || boss3.y < 0 || boss3.y + boss3.height > containerHeight) {
         boss3.isCharging = false; // 停止冲撞
         boss3.isReturning = true; // 开始返回上方
       }
@@ -2198,8 +2215,8 @@ function bossChargePlayer() {
 
 // 全屏弹幕炼狱
 function spawnBulletHell() {
-  for (let i = 0; i < 36; i++) {
-    const angle = (Math.PI * 2 / 18) * i;
+  for (let i = 0; i < 12; i++) {
+    const angle = (Math.PI * 2 / 12) * i;
     spawnBoss3Bullettran(angle, 4); // 36个方向的弹幕
   }
 }
@@ -2372,6 +2389,7 @@ function updateBoss3Tornadoes() {
     if (isCollision(hero, t)) {
       playerHP -= 15; // 玩家扣血
       playerHPElement.textContent = `HP: ${playerHP}`;
+      flashHeroDamage();
       if (playerHP <= 0) {
         isGameOver = true;
         showGameOver(); 
@@ -2403,6 +2421,7 @@ function updateBoss3Whirls() {
     if (isCollision(hero, w)) {
       playerHP -= 20; // 玩家扣血
       playerHPElement.textContent = `HP: ${playerHP}`;
+      flashHeroDamage();
       if (playerHP <= 0) {
         isGameOver = true;
         showGameOver(); 
@@ -2433,6 +2452,7 @@ function updateBoss3redmoon() {
     if (isCollision(hero, r)) {
       playerHP -= 15; // 玩家扣血
       playerHPElement.textContent = `HP: ${playerHP}`;
+      flashHeroDamage();
       if (playerHP <= 0) {
         isGameOver = true;
         showGameOver(); 
@@ -2608,6 +2628,33 @@ function updateFirewalls() {
      }
   }
 }
+
+function updateWeaponDisplay() {
+  const weaponImage = document.getElementById('weaponImage');
+  let imgPath = 'guns/gun1.gif';  // 默认图片
+  switch (weapontype) {
+    case 0:
+      imgPath = 'guns/gun0.gif';
+      break;
+    case 1:
+      imgPath = 'guns/gun1.gif';
+      break;
+    case 2:
+      imgPath = 'guns/gun2.png';
+      break;
+    case 3:
+      imgPath = 'guns/gun3.png';
+      break;
+      case 3:
+        imgPath = 'guns/gun5.png';
+        break;
+    default:
+      imgPath = 'guns/gun0.gif';
+      break;
+  }
+  weaponImage.src = imgPath;
+}
+
 // 播放胜利视频
 function playVictoryVideo() {
   const videoContainer = document.getElementById('videoContainer');
@@ -2812,6 +2859,35 @@ document.addEventListener('keydown', (e) => {
 /********************
  * 键盘事件监听
  ********************/
+document.addEventListener('keydown', (e) => {
+  if ((e.key === '0' )) {
+    weapontype = 0;
+    updateWeaponDisplay();
+  }
+}
+)
+document.addEventListener('keydown', (e) => {
+  if ((e.key === '1' )) {
+    weapontype = 1;
+    updateWeaponDisplay();
+  }
+}
+)
+document.addEventListener('keydown', (e) => {
+  if ((e.key === '2')) {
+    weapontype = 2;
+    updateWeaponDisplay();
+  }
+}
+)
+document.addEventListener('keydown', (e) => {
+  if ((e.key === '3')) {
+    weapontype = 3;
+    updateWeaponDisplay();
+  }
+}
+)
+
 document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft') {
     leftPressed = true;
