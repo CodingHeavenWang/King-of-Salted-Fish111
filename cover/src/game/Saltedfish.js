@@ -416,10 +416,10 @@ function spawnPowerup(x, y, level=1) {
   let baseValue;
   let finalValue;
   if (type === 'freq') {
-    baseValue = -2; 
-    finalValue = baseValue - timeScale*0.5;
+    baseValue = -1; 
+    finalValue = baseValue - timeScale*0.125;
   } else {
-    baseValue = 5;
+    baseValue = 3;
     finalValue = baseValue + timeScale*5; 
   }
 
@@ -454,7 +454,7 @@ const rightChoice = possibleDoorEffects[indices[1]];
 let valuel = 0;
 let valuer = 0;
 
-const doorTimeScale = Math.floor(timecount / 600);
+const doorTimeScale = Math.floor(timecount / 900);
 
 if (
   leftChoice.label === 'Attack ++'
@@ -1093,53 +1093,72 @@ function updateAll() {
   }
   // 根据 timecount 动态调整怪物生成、怪物血量
   if(!boss.isAlive && !boss3.isAlive){
-    if (timecount <= 3000) {
+    if (timecount <= 6000) {
       switch (timecount) {
         case 1:
           monsterSpawnRate = 120;
           monsterHP = 100;   // 例：怪物血量变为 200
           break;
         case 600:
-          monsterSpawnRate = 120;
-          monsterHP = 200;   // 例：怪物血量变为 250
+        monsterSpawnRate = 120;
+        monsterHP = 200;   // 例：怪物血量变为 200
+        break;
+        case 1200:
+          monsterSpawnRate = 110;
+          monsterHP =350;   // 例：怪物血量变为 250
           currentLevel++;   // 例：怪物血量变为 250
           console.log("Enter Level 2"); // 添加日志确认代码执行
           if (!level2Bubble) {
             createLevelBubble1();
           }
           break;
-        case 1200:
+        case 1800:
           monsterSpawnRate = 110;
-          monsterHP = 400;   // 例：怪物血量变为 300
-          currentLevel++;    // 例：怪物血量变为 300
+          monsterHP = 500;   // 例：怪物血量变为 300    // 例：怪物血量变为 300
           if (!level3Bubble) {
             createLevelBubble2();
           }
           break;
-        case 1800:
-          monsterSpawnRate = 110;
-          monsterHP = 600;   // 例：怪物血量变为 400
-          currentLevel++;   // 例：怪物血量变为 400
-          break;
         case 2400:
           monsterSpawnRate = 100;
-          monsterHP = 800;   // 例：怪物血量变为 500
+          monsterHP = 750;   // 例：怪物血量变为 400
+          currentLevel++;   // 例：怪物血量变为 400
+          break;
+        case 3000:
+          monsterSpawnRate = 100;
+          monsterHP = 1000;   // 例：怪物血量变为 500  // 例：怪物血量变为 500
+          break;
+          case 3600:
+          monsterSpawnRate = 90;
+          monsterHP = 1350;   // 例：怪物血量变为 500
           currentLevel++;   // 例：怪物血量变为 500
           break;
-        
+          case 4200:
+          monsterSpawnRate = 90;
+          monsterHP = 1700;   // 例：怪物血量变为 500   // 例：怪物血量变为 500
+          break;
+          case 4800:
+          monsterSpawnRate = 80;
+          monsterHP = 2200;   // 例：怪物血量变为 500
+          currentLevel++;   // 例：怪物血量变为 500
+          break;
+          case 5400:
+          monsterSpawnRate = 80;
+          monsterHP = 2700;   // 例：怪物血量变为 500  // 例：怪物血量变为 500
+          break;
       }
     } else {
       currentLevel=6; 
-      monsterSpawnRate = 90;
+      monsterSpawnRate = 80;
       monsterHP = Math.floor(-300 + timecount*0.5);
     }
   }
   
   levelElement.textContent = "Level: " + currentLevel;
-  if (timecount>=4800 &&!boss.isAlive) {
+  if (timecount>=7200 &&!boss.isAlive) {
     initBoss();
   }
-  if (timecount>=1200 && !boss3.isAlive && boss3.initnumber===0) {
+  if (timecount>=3550 && !boss3.isAlive && boss3.initnumber===0) {
     initBoss3();
   }
   document.addEventListener('keydown', (e) => {
@@ -1148,34 +1167,6 @@ function updateAll() {
     }
   }
   );
-  document.addEventListener('keydown', (e) => {
-    if ((e.key === '0' )) {
-      weapontype = 0;
-      updateWeaponDisplay();
-    }
-  }
-  )
-  document.addEventListener('keydown', (e) => {
-    if ((e.key === '1' )) {
-      weapontype = 1;
-      updateWeaponDisplay();
-    }
-  }
-  )
-  document.addEventListener('keydown', (e) => {
-    if ((e.key === '2')) {
-      weapontype = 2;
-      updateWeaponDisplay();
-    }
-  }
-  )
-  document.addEventListener('keydown', (e) => {
-    if ((e.key === '3')) {
-      weapontype = 3;
-      updateWeaponDisplay();
-    }
-  }
-  )
   updateHero();
   updateBullets();
   updateMonstersAll();
@@ -2630,6 +2621,35 @@ document.addEventListener('keydown', (e) => {
 /********************
  * 键盘事件监听
  ********************/
+document.addEventListener('keydown', (e) => {
+  if ((e.key === '0' )) {
+    weapontype = 0;
+    updateWeaponDisplay();
+  }
+}
+)
+document.addEventListener('keydown', (e) => {
+  if ((e.key === '1' )) {
+    weapontype = 1;
+    updateWeaponDisplay();
+  }
+}
+)
+document.addEventListener('keydown', (e) => {
+  if ((e.key === '2')) {
+    weapontype = 2;
+    updateWeaponDisplay();
+  }
+}
+)
+document.addEventListener('keydown', (e) => {
+  if ((e.key === '3')) {
+    weapontype = 3;
+    updateWeaponDisplay();
+  }
+}
+)
+
 document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft') {
     leftPressed = true;
