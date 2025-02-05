@@ -20,6 +20,11 @@ let boss3dialoguebiaoji=0;
 let level2Bubble = null;
 let level3Bubble = null;
 let bubbleDisplayTime = 0;
+let lastDamageTime = 0; // 记录最后一次对Boss造成伤害的时间
+isBossFightStarted = false; // 标记Boss战
+let hasLowHPMessageShown = false; // 标记是否已经显示过低血量提示
+let Trueend=false;
+
 
 const openingScreen = document.createElement('div');
 openingScreen.id = 'openingScreen';
@@ -699,7 +704,7 @@ const bossDialogue = [
   "Sun: Needy Yan, Woody Tsu, CSRMMZZYGAG...... ",
   "Salted Fish: For the survival of the kingdom, I must stop you!",
   "Sun: Vansoi!",
-  "Hint: Avoid the bullet barrage! Attack the core weak point!"
+  "Hint: Keep attacking when BOSS.HP < 10%!"
 ];
 let currentDialogueIndex = 0;
 let isInDialogue = false;
@@ -768,6 +773,10 @@ function startRealBossFight() {
   bossHPElement.id = 'bossHP';
   gameContainer.appendChild(bossHPElement);
   updateBossHP();
+
+  boss.isAlive = true;
+  isBossFightStarted = true; // 标记Boss战开始
+  lastDamageTime = Date.now(); // 初始化计时器
   
   // 恢复游戏循环
   if (!frameId) gameLoop();
@@ -788,10 +797,23 @@ function handleDialogueKeyboss3dead(e) {
 }
 
 
+const bossLowHPMessage = "Surrender! I surrender!!!!!!";
 
+function showLowHPMessage() {
+  const messageDiv = document.createElement('div');
+  messageDiv.className = 'low-hp-message';
+  messageDiv.textContent = bossLowHPMessage;
 
+  // 将提示添加到游戏容器中
+  gameContainer.appendChild(messageDiv);
 
-
+  // 1.5秒后移除提示
+  setTimeout(() => {
+    if (messageDiv.parentNode) {
+      messageDiv.parentNode.removeChild(messageDiv);
+    }
+  }, 1500);
+}
 
 
 
@@ -1214,6 +1236,15 @@ function gameLoop() {
     return;
   }
   updateAll();
+
+    // 只有在Boss战开始后才检查时间差
+    if (isBossFightStarted && boss.hp <= 0.1 * boss.initialhp) {
+      const currentTime = Date.now();
+      if (currentTime - lastDamageTime > 10000) { // 10秒 = 10000毫秒
+        Trueend=true;
+          playVictoryVideo();
+      }
+  }
   frameId = setTimeout(gameLoop, 1000 / 60);
 }
 
@@ -1876,7 +1907,15 @@ function updateBoss() {
         removeGameObject(bullets, i);
         i--;
       }
-      if (boss.hp <= 0) {
+      // 检查Boss血量是否低于10%
+      if (boss.hp <= 0.1 * boss.initialhp && !hasLowHPMessageShown) {
+        showLowHPMessage(); // 显示低血量提示
+        hasLowHPMessageShown = true; // 标记为已显示
+      }
+      lastDamageTime = Date.now();
+      
+
+      if (boss.hp <= 0 && Trueend==false) {
         boss.isAlive = false;
         removeGameObject([boss], 0); // 移除Boss
         score += 100; // 击败Boss加100分
@@ -1886,6 +1925,8 @@ function updateBoss() {
         // 隐藏Boss血条
         bossHPElement.style.display = 'none';
         updateBossHP(); // 更新Boss血条
+
+        endBossFight();
 
         setTimeout(() => {
           // 创建并显示遮罩层的渐变效果
@@ -1902,6 +1943,11 @@ function updateBoss() {
        }
     }
   }
+}
+
+function endBossFight() {
+  isBossFightStarted = false; // 标记Boss战结束
+  lastDamageTime = 0; // 重置计时器
 }
 
 function playEndingAnimation() {
@@ -2727,6 +2773,7 @@ function updateFirewalls() {
 
       // 播放胜利视频
       playVictoryVideo();
+      showGameOver(); // 显示游戏结束界面
      }
   }
   if (boss3.isAlive) {
@@ -3100,10 +3147,12 @@ document.documentElement.style.backgroundSize = "cover";
 document.addEventListener('keydown', (event) => {
   // 判断是否在主菜单界面
   if (document.getElementById('mainMenu').style.display !== 'none') {
-    // 隐藏“按任意键开始游戏”字幕
-    
-    const startMessage = document.getElementById('startMessage');
-    startMessage.style.opacity = '0'; // 字幕淡出
+    setTimeout(() => {
+      startMessage.style.opacity = '0'; // 字幕淡出
+      setTimeout(() => {
+        startMessage.style.display = 'none'; // 在淡出后隐藏元素
+      }, 1000); // 等待1秒，确保淡出效果完成
+    }, 0);
 
     // 在字幕淡出后执行其他操作
     setTimeout(() => {

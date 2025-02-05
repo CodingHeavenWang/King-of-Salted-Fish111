@@ -839,7 +839,7 @@
     z-index: 9999;
     pointer-events: none; /* 禁止点击 */
     opacity: 1;
-    transition: opacity 1s ease, transform 0.5s ease; /* 添加文字缩放和淡出效果 */
+    transition: opacity 1s ease-in-out;
   }
   
   #startMessage:hover {
@@ -915,4 +915,41 @@
   background: black;
   z-index: 9999; /* 确保遮罩在最上层 */
   display: none;
+}
+
+.low-hp-message {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 18px;
+  z-index: 1000;
+  animation: fadeInOut 1.5s ease-in-out;
+}
+
+.low-hp-message {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 18px;
+  z-index: 1000;
+  animation: fadeInOut 1.5s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
 }
