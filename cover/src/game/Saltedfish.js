@@ -165,6 +165,15 @@ const boss3Whirls = []; // 灾厄龙卷
 const boss3redmoon = [];// 猩红圆月
 const boss3Minions = []; // 用于存储敌怪的数组
 
+//兄弟重生血条
+const boss3MinionLeftHPElement = document.createElement('div');
+const boss3MinionRightHPElement = document.createElement('div');
+boss3MinionLeftHPElement.id = 'boss3MinionLeftHP';
+boss3MinionRightHPElement.id = 'boss3MinionRightHP';
+
+// 将血条添加到游戏容器中
+gameContainer.appendChild(boss3MinionLeftHPElement);
+gameContainer.appendChild(boss3MinionRightHPElement);
 
 // 玩家血量
 let playerHP = 10000;
@@ -1351,6 +1360,11 @@ function updateBullets() {
           // //
           if (minion.hp <= 0) {
             scoreElement.textContent = `Score: ${score}`;
+            if (minion.type === 'left') {
+              boss3MinionLeftHPElement.style.display = 'none'; // 隐藏左上角敌怪血条
+            } else if (minion.type === 'right') {
+              boss3MinionRightHPElement.style.display = 'none'; // 隐藏右上角敌怪血条
+            }
             removeMonster(boss3Minions, j);
             j--;
           }
@@ -1688,10 +1702,17 @@ function updateBoss3() {
     boss3Bgm3.pause();
     boss3Bgm4.currentTime = 0;
     boss3Bgm4.play();
+    // 隐藏Boss3血条，显示敌怪血条
+    boss3HPElement.style.display = 'none';
+    boss3MinionLeftHPElement.style.display = 'block';
+    boss3MinionRightHPElement.style.display = 'block';
   }
   if (boss3Minions.length===0){
     boss3.bulletSpawnRate=60;
     boss3.isInvincible = false;
+    boss3HPElement.style.display = 'block'; // 显示Boss3血条
+    boss3MinionLeftHPElement.style.display = 'none'; // 隐藏左上角敌怪血条
+    boss3MinionRightHPElement.style.display = 'none'; // 隐藏右上角敌怪血条
   }
   // 更新敌怪
   updateBoss3Minions();
@@ -1727,11 +1748,14 @@ function updateBoss3() {
   if (boss3.isTransitioning) {
     boss3.transitionTimer--;
 
+    
     // 过渡阶段结束
     if (boss3.transitionTimer <= 0) {
       boss3.isTransitioning = false;
       boss3.isInvincible = false;
       boss3.tranphase++; // 进入下一阶段
+      // 移除盾的背景图
+      
       if(boss3.hp >0.5*boss3.initialhp){
         boss3.element.style.backgroundImage = 'url("Monster/boss3_phase1.png")'
       }else{
@@ -1938,6 +1962,7 @@ function updateBoss3() {
 // 开始过渡阶段
 function startTransition(newPhase) {
   boss3.isTransitioning = true;
+  boss3.isInvincible = true;
   boss3.transitionTimer = 600; // 10秒（60帧/秒）
   boss3.tranphase = newPhase;
   boss3.element.style.backgroundImage = `url("Monster/boss3_tranphase.png")`; // 更换Boss贴图
@@ -1964,6 +1989,13 @@ function updateBoss3Minions() {
   for (let i = 0; i < boss3Minions.length; i++) {
     const minion = boss3Minions[i];
 
+    // 更新敌怪血条
+    if (minion.type === 'left') {
+      updateBoss3MinionHP(boss3MinionLeftHPElement, minion.hp, 1000,'left');
+    } else if (minion.type === 'right') {
+      updateBoss3MinionHP(boss3MinionRightHPElement, minion.hp, 1000,'right');
+    }
+
     // 敌怪发射弹幕
     minion.bulletSpawnCounter++;
     if (minion.bulletSpawnCounter >= minion.bulletSpawnRate) {
@@ -1984,12 +2016,37 @@ function updateBoss3Minions() {
       }
       // 检测敌怪血量
       if (minion.hp <= 0) {
+        // 更新敌怪血条
+        if (minion.type === 'left') {
+          boss3MinionLeftHPElement.style.display = 'none'; // 隐藏左上角敌怪血条
+        } else if (minion.type === 'right') {
+          boss3MinionRightHPElement.style.display = 'none'; // 隐藏右上角敌怪血条
+        }
         removeGameObject(boss3Minions, i);
         i--;
         continue;
       }
     }
   }
+}
+
+// 更新敌怪血条的函数
+function updateBoss3MinionHP(hpElement, hp, maxHP, minionType) {
+  const hpPercentage = (hp / maxHP) * 100; // 计算血量百分比
+  hpElement.style.setProperty('--hp-width', `${hpPercentage}%`); // 更新血条宽度
+
+  // 根据敌怪类型设置名称
+  const minionName = minionType === 'left' ? 'Cataclysm' : 'Catastrophe';
+  hpElement.setAttribute('data-hp', `${minionName}: ${Math.round(hpPercentage)}%`); // 更新血量百分比显示，并添加敌怪名称
+
+  // 更新血条中的百分比文字
+  let percentageText = hpElement.querySelector('.hp-percentage');
+  if (!percentageText) {
+    percentageText = document.createElement('div');
+    percentageText.className = 'hp-percentage';
+    hpElement.appendChild(percentageText);
+  }
+  percentageText.textContent = `${minionName}: ${Math.round(hpPercentage)}%`; // 显示敌怪名称和剩余百分比
 }
 
 // 左上角敌怪的弹幕
@@ -2065,6 +2122,7 @@ function updateBoss3Bullets() {
     if (isCollision(hero, b)) {
       playerHP -= 10; // 玩家扣血
       playerHPElement.textContent = `HP: ${playerHP}`;
+      flashHeroDamage();
       if (playerHP <= 0) {
         isGameOver = true;
       }
@@ -2168,7 +2226,7 @@ function updateBoss3redmoon() {
 function updateBoss3HP() {
   const hpPercentage = (boss3.hp / boss3.initialhp) * 100; // 计算血量百分比
   boss3HPElement.style.setProperty('--hp-width', `${hpPercentage}%`); // 根据血量百分比调整血条宽度
-  boss3HPElement.setAttribute('data-hp', `${Math.round(hpPercentage)}%`); // 更新血量百分比显示
+  boss3HPElement.setAttribute('data-hp', `Calamitas:${Math.round(hpPercentage)}%`); // 更新血量百分比显示
 }
 
 
@@ -2379,7 +2437,7 @@ function updateBossBullets() {
 function updateBossHP() {
   const hpPercentage = (boss.hp / boss.initialhp) * 100; // 计算血量百分比
   bossHPElement.style.setProperty('--hp-width', `${hpPercentage}%`); // 根据血量百分比调整血条宽度
-  bossHPElement.setAttribute('data-hp', `${Math.round(hpPercentage)}%`); // 更新血量百分比显示
+  bossHPElement.setAttribute('data-hp', `threesuns:${Math.round(hpPercentage)}%`); // 更新血量百分比显示
 }
 //更新属性栏
 function updateHeroStats() {

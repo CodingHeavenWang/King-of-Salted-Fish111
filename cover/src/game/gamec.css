@@ -340,6 +340,8 @@
   background-size: cover;
 }
 
+
+
 /* Boss3血条样式 */
 #boss3HP {
   position: absolute;
@@ -376,6 +378,19 @@
   font-weight: bold;
   text-shadow: 1px 1px 2px black;
   z-index: 1;
+}
+
+/* 血条名称样式 */
+.hp-name {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px black;
 }
 
 /* Boss3弹幕样式 */
@@ -442,6 +457,50 @@
 
 .rightBullet {
   background-image: url('Bullet/minion_bullet_right.gif');
+}
+
+
+/* 敌怪血条样式 */
+#boss3MinionLeftHP,
+#boss3MinionRightHP {
+  position: absolute;
+  top: 10px; /* 左上角敌怪血条位置 */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 250px;
+  height: 15px;
+  background-color: #444;
+  border: 1px solid #000;
+  display: none; /* 默认隐藏 */
+}
+
+#boss3MinionLeftHP {
+  top: 10px; /* 左上角敌怪血条位置 */
+}
+
+#boss3MinionRightHP {
+  top: 30px; /* 右上角敌怪血条位置 */
+}
+
+#boss3MinionLeftHP::before,
+#boss3MinionRightHP::before {
+  content: '';
+  display: block;
+  height: 100%;
+  width: var(--hp-width, 100%);
+  background-color: orange;
+}
+
+/* 血条百分比文字样式 */
+.hp-percentage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px black;
 }
 
 /* 角色基础样式 */
