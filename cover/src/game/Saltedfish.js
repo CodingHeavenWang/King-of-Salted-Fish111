@@ -15,6 +15,8 @@ const hitSounds = {
   // 添加更多音效...
 };
 
+let boss3dialoguebiaoji=0;
+
 let level2Bubble = null;
 let level3Bubble = null;
 let bubbleDisplayTime = 0;
@@ -76,7 +78,7 @@ let score = 0;
 // 子弹
 const bullets = [];
 let bulletSpeed = 5;       // 子弹向上移动速度
-let bulletAttack = 25;     // 子弹伤害
+let bulletAttack = 25000000000;     // 子弹伤害
 let bulletSpawnRate = 60;  // 子弹发射频率(帧数间隔越小越快)
 let bulletSpawnCounter = 0;
 
@@ -757,6 +759,25 @@ function handleDialogueKey(e) {
   }
 }
 
+function handleDialogueKeyboss3dead(e) {
+  if (e.code === 'Space') {
+    e.preventDefault();
+    updateDialogueboss3dead();
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function removeAllMonstersNoReward() {
   for (let i = monsters.length - 1; i >= 0; i--) {
@@ -877,8 +898,98 @@ function spawnBossBulletsPhase3() {
   spawnBossBulletHoming(angleToHero, 4); // 速度更快
 }
 
-// 初始化第三个Boss
+
+
+const boss3Dialogue = [
+  "Calamitas: Do you enjoy going through hell?",
+  "Calamitas: If you're looking for some fourth-degree burns, you've got the right person."
+];
+
+const boss3Dialoguedead = [
+"I have no future if I lose here.",
+"Once you have bested me, you will only have one path forward.",
+"And that path... also has no future."
+];
+
+
+
 function initBoss3() {
+  // 暂停游戏
+  isInDialogue = true;
+  
+  // 显示对话框
+  const dialogueBox = document.getElementById('boss-dialogue');
+  dialogueBox.style.display = 'block';
+  currentDialogueIndex = 0;
+  updateDialogueboss3();
+  
+  // 绑定空格键事件
+  document.addEventListener('keydown', handleDialogueKeyboss3);
+}
+
+function updateDialogueboss3() {
+  const textElement = document.getElementById('dialogue-text');
+  if (currentDialogueIndex < boss3Dialogue.length) {
+    textElement.textContent = boss3Dialogue[currentDialogueIndex];
+    currentDialogueIndex++;
+  } else {
+    // 对话结束
+    const dialogueBox = document.getElementById('boss-dialogue');
+    dialogueBox.style.display = 'none';
+    isInDialogue = false;
+    
+    // 解除按键监听
+    document.removeEventListener('keydown', handleDialogueKeyboss3);
+    
+    // 正式启动Boss战
+    startRealBoss3Fight();
+  }
+}
+
+function updateDialogueboss3dead() {
+  const textElement = document.getElementById('dialogue-text');
+  if (currentDialogueIndex < boss3Dialoguedead.length) {
+    textElement.textContent = boss3Dialoguedead[currentDialogueIndex];
+    currentDialogueIndex++;
+  } else {
+    // 对话结束
+    const dialogueBox = document.getElementById('boss-dialogue');
+    dialogueBox.style.display = 'none';
+    isInDialogue = false;
+    // 恢复游戏循环
+
+    
+    // 解除按键监听
+    document.removeEventListener('keydown', handleDialogueKeyboss3dead);
+    boss3dialoguebiaoji=1;
+    if (!frameId) gameLoop();
+  }
+}
+
+
+
+
+
+function boss3dead(){
+    // 暂停游戏
+    isInDialogue = true;
+  
+    // 显示对话框
+    const dialogueBox = document.getElementById('boss-dialogue');
+    dialogueBox.style.display = 'block';
+    currentDialogueIndex = 0;
+    updateDialogueboss3dead();
+
+      // 绑定空格键事件
+  document.addEventListener('keydown', handleDialogueKeyboss3dead);
+  
+  
+
+}
+
+
+// 初始化第三个Boss
+function startRealBoss3Fight() {
   boss3.initnumber+=1;
   removeAllMonstersNoReward();
   // 暂停当前背景音乐，播放Boss战斗音乐
@@ -906,7 +1017,22 @@ function initBoss3() {
 
   // 初始化Boss血条
   updateBoss3HP();
+    // 恢复游戏循环
+    if (!frameId) gameLoop();
 }
+
+
+function handleDialogueKeyboss3(e) {
+  if (e.code === 'Space') {
+    e.preventDefault();
+    updateDialogueboss3();
+  }
+}
+
+
+
+
+
 // 第一阶段弹幕：黑暗魔法球
 function spawnBoss3BulletsPhase1() {
   for (let i = 0; i < 8; i++) {
@@ -1142,6 +1268,18 @@ function updateAll() {
   if (timecount>=1200 && !boss3.isAlive && boss3.initnumber===0) {
     initBoss3();
   }
+  if (boss3.hp <= 0&& boss3dialoguebiaoji==0){
+    boss3dead();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === 'p' || e.key === 'P') && !boss.isAlive) {
+      initBoss3();
+    }
+  }
+  );
+
+
   document.addEventListener('keydown', (e) => {
     if ((e.key === 'o' || e.key === 'O') && !boss.isAlive) {
       initBoss();
