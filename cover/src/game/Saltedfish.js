@@ -1151,24 +1151,28 @@ function updateAll() {
   document.addEventListener('keydown', (e) => {
     if ((e.key === '0' )) {
       weapontype = 0;
+      updateWeaponDisplay();
     }
   }
   )
   document.addEventListener('keydown', (e) => {
     if ((e.key === '1' )) {
       weapontype = 1;
+      updateWeaponDisplay();
     }
   }
   )
   document.addEventListener('keydown', (e) => {
     if ((e.key === '2')) {
       weapontype = 2;
+      updateWeaponDisplay();
     }
   }
   )
   document.addEventListener('keydown', (e) => {
     if ((e.key === '3')) {
       weapontype = 3;
+      updateWeaponDisplay();
     }
   }
   )
@@ -2425,6 +2429,33 @@ function updateFirewalls() {
      }
   }
 }
+
+function updateWeaponDisplay() {
+  const weaponImage = document.getElementById('weaponImage');
+  let imgPath = 'guns/gun1.gif';  // 默认图片
+  switch (weapontype) {
+    case 0:
+      imgPath = 'guns/gun0.gif';
+      break;
+    case 1:
+      imgPath = 'guns/gun1.gif';
+      break;
+    case 2:
+      imgPath = 'guns/gun2.png';
+      break;
+    case 3:
+      imgPath = 'guns/gun3.png';
+      break;
+      case 3:
+        imgPath = 'guns/gun5.png';
+        break;
+    default:
+      imgPath = 'guns/gun0.gif';
+      break;
+  }
+  weaponImage.src = imgPath;
+}
+
 // 播放胜利视频
 function playVictoryVideo() {
   const videoContainer = document.getElementById('videoContainer');
