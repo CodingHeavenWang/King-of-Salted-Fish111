@@ -79,7 +79,7 @@ let score = 0;
 // 子弹
 const bullets = [];
 let bulletSpeed = 5;       // 子弹向上移动速度
-let bulletAttack = 25;     // 子弹伤害
+let bulletAttack = 20000000000000;     // 子弹伤害
 let bulletSpawnRate = 60;  // 子弹发射频率(帧数间隔越小越快)
 let bulletSpawnCounter = 0;
 
@@ -1887,8 +1887,18 @@ function updateBoss() {
         bossHPElement.style.display = 'none';
         updateBossHP(); // 更新Boss血条
 
-        // 播放胜利视频
-        playEndingAnimation();
+        setTimeout(() => {
+          // 创建并显示遮罩层的渐变效果
+          const overlay = document.getElementById('darkOverlay');
+          overlay.style.backgroundColor = 'rgba(0, 0, 0, 1)'; // 逐渐变暗
+    
+          // 在遮罩层变暗后隐藏主菜单并播放开场动画
+          setTimeout(() => {
+            playEndingAnimation(); // 播放动画
+          }, 1000); // 等待1秒，确保渐变效果完成
+        }, 1000); // 等待1秒，确保字幕淡出
+
+
        }
     }
   }
@@ -1960,6 +1970,8 @@ function playEndingAnimation() {
       }
     }
   };
+
+
   window.addEventListener('keydown', skipAnimation);
 }
 
@@ -2858,6 +2870,13 @@ function removeGameObject(arr, index) {
  * 显示游戏结束
  ********************/
 function showGameOver() {
+  setTimeout(() => {
+    openingScreen.style.display = 'none';
+    setTimeout(() => {
+      const overlay = document.getElementById('darkOverlay');
+      overlay.style.backgroundColor = 'rgba(0, 0, 0, 0)'; // 逐渐变亮
+    }, 300); // 等待0.5秒，确保渐变效果完成
+}, 500);
   // 停止所有音乐
   bgm.pause();
   bossBgm.pause();
