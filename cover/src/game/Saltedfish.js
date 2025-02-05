@@ -3025,6 +3025,7 @@ document.addEventListener('keyup', (e) => {
  * 启动游戏
  ********************/
 function startGame() {
+  document.getElementById('weaponDisplay').style.display = 'flex';
   startMessage.style.display = "none"; // 隐藏提示信息
   // 隐藏主界面
   document.getElementById('mainMenu').style.display = 'none';
