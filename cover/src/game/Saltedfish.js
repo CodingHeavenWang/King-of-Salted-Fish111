@@ -15,6 +15,8 @@ const hitSounds = {
   // 添加更多音效...
 };
 
+let boss3dialoguebiaoji=0;
+
 let level2Bubble = null;
 let level3Bubble = null;
 let bubbleDisplayTime = 0;
@@ -324,6 +326,76 @@ function playOpeningAnimation() {
   window.addEventListener('keydown', skipAnimation);
 }
 
+function playEndingAnimation() {
+  const endingScreen = document.getElementById('endingScreen');
+  let currentIndex = 0;
+  let animationSkipped = false;
+
+  // 创建图片容器
+  const img = document.createElement('img');
+  endingScreen.appendChild(img);
+
+  // 预加载图片
+  const endingImages = [
+    'Ending/Ending1.png',
+    'Ending/Ending2.png',
+    'Ending/Ending3.png',
+    'Ending/Ending4.png',
+    'Ending/Ending5.png',
+  ];
+  preloadImages(endingImages);
+
+  // 显示首屏
+  endingScreen.style.display = 'flex';
+
+  const showNextImage = () => {
+    if (currentIndex >= endingImages.length || animationSkipped) {
+      // 动画结束
+      endingScreen.style.opacity = '0';
+      setTimeout(() => {
+        endingScreen.style.display = 'none';
+        showGameOver(); // 显示游戏结束界面
+      }, 500);
+      return;
+    }
+
+    // 更新图片源
+    img.src = endingImages[currentIndex];
+    endingScreen.style.opacity = '1';
+
+    // 设置定时切换
+    setTimeout(() => {
+      if (animationSkipped) return;
+      endingScreen.style.opacity = '0';
+      setTimeout(() => {
+        currentIndex++;
+        showNextImage();
+      }, 500); // 淡出动画时间
+    }, 5000); // 每张图片显示时间
+  };
+
+  // 开始播放序列
+  setTimeout(showNextImage, 100);
+
+  // 跳过动画逻辑
+  const skipAnimation = (event) => {
+    if (event.keyCode === 32) { // 空格键
+      event.preventDefault();
+      if (!animationSkipped) {
+        animationSkipped = true;
+        endingScreen.style.opacity = '0';
+        setTimeout(() => {
+          endingScreen.style.display = 'none';
+          showGameOver();
+          window.removeEventListener('keydown', skipAnimation);
+        }, 500);
+      }
+    }
+  };
+  window.addEventListener('keydown', skipAnimation);
+}
+
+
 /********************
  * 生成子弹
  ********************/
@@ -428,10 +500,10 @@ function spawnPowerup(x, y, level=1) {
   let baseValue;
   let finalValue;
   if (type === 'freq') {
-    baseValue = -2; 
-    finalValue = baseValue - timeScale*0.5;
+    baseValue = -1; 
+    finalValue = baseValue - timeScale*0.125;
   } else {
-    baseValue = 5;
+    baseValue = 3;
     finalValue = baseValue + timeScale*5; 
   }
 
@@ -466,7 +538,7 @@ const rightChoice = possibleDoorEffects[indices[1]];
 let valuel = 0;
 let valuer = 0;
 
-const doorTimeScale = Math.floor(timecount / 600);
+const doorTimeScale = Math.floor(timecount / 900);
 
 if (
   leftChoice.label === 'Attack ++'
@@ -769,6 +841,25 @@ function handleDialogueKey(e) {
   }
 }
 
+function handleDialogueKeyboss3dead(e) {
+  if (e.code === 'Space') {
+    e.preventDefault();
+    updateDialogueboss3dead();
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function removeAllMonstersNoReward() {
   for (let i = monsters.length - 1; i >= 0; i--) {
@@ -889,8 +980,98 @@ function spawnBossBulletsPhase3() {
   spawnBossBulletHoming(angleToHero, 4); // 速度更快
 }
 
-// 初始化第三个Boss
+
+
+const boss3Dialogue = [
+  "Calamitas: Do you enjoy going through hell?",
+  "Calamitas: If you're looking for some fourth-degree burns, you've got the right person."
+];
+
+const boss3Dialoguedead = [
+"I have no future if I lose here.",
+"Once you have bested me, you will only have one path forward.",
+"And that path... also has no future."
+];
+
+
+
 function initBoss3() {
+  // 暂停游戏
+  isInDialogue = true;
+  
+  // 显示对话框
+  const dialogueBox = document.getElementById('boss-dialogue');
+  dialogueBox.style.display = 'block';
+  currentDialogueIndex = 0;
+  updateDialogueboss3();
+  
+  // 绑定空格键事件
+  document.addEventListener('keydown', handleDialogueKeyboss3);
+}
+
+function updateDialogueboss3() {
+  const textElement = document.getElementById('dialogue-text');
+  if (currentDialogueIndex < boss3Dialogue.length) {
+    textElement.textContent = boss3Dialogue[currentDialogueIndex];
+    currentDialogueIndex++;
+  } else {
+    // 对话结束
+    const dialogueBox = document.getElementById('boss-dialogue');
+    dialogueBox.style.display = 'none';
+    isInDialogue = false;
+    
+    // 解除按键监听
+    document.removeEventListener('keydown', handleDialogueKeyboss3);
+    
+    // 正式启动Boss战
+    startRealBoss3Fight();
+  }
+}
+
+function updateDialogueboss3dead() {
+  const textElement = document.getElementById('dialogue-text');
+  if (currentDialogueIndex < boss3Dialoguedead.length) {
+    textElement.textContent = boss3Dialoguedead[currentDialogueIndex];
+    currentDialogueIndex++;
+  } else {
+    // 对话结束
+    const dialogueBox = document.getElementById('boss-dialogue');
+    dialogueBox.style.display = 'none';
+    isInDialogue = false;
+    // 恢复游戏循环
+
+    
+    // 解除按键监听
+    document.removeEventListener('keydown', handleDialogueKeyboss3dead);
+    boss3dialoguebiaoji=1;
+    if (!frameId) gameLoop();
+  }
+}
+
+
+
+
+
+function boss3dead(){
+    // 暂停游戏
+    isInDialogue = true;
+  
+    // 显示对话框
+    const dialogueBox = document.getElementById('boss-dialogue');
+    dialogueBox.style.display = 'block';
+    currentDialogueIndex = 0;
+    updateDialogueboss3dead();
+
+      // 绑定空格键事件
+  document.addEventListener('keydown', handleDialogueKeyboss3dead);
+  
+  
+
+}
+
+
+// 初始化第三个Boss
+function startRealBoss3Fight() {
   boss3.initnumber+=1;
   removeAllMonstersNoReward();
   // 暂停当前背景音乐，播放Boss战斗音乐
@@ -918,7 +1099,22 @@ function initBoss3() {
 
   // 初始化Boss血条
   updateBoss3HP();
+    // 恢复游戏循环
+    if (!frameId) gameLoop();
 }
+
+
+function handleDialogueKeyboss3(e) {
+  if (e.code === 'Space') {
+    e.preventDefault();
+    updateDialogueboss3();
+  }
+}
+
+
+
+
+
 // 第一阶段弹幕：黑暗魔法球
 function spawnBoss3BulletsPhase1() {
   for (let i = 0; i < 8; i++) {
@@ -1105,55 +1301,86 @@ function updateAll() {
   }
   // 根据 timecount 动态调整怪物生成、怪物血量
   if(!boss.isAlive && !boss3.isAlive){
-    if (timecount <= 3000) {
+    if (timecount <= 6000) {
       switch (timecount) {
         case 1:
           monsterSpawnRate = 120;
           monsterHP = 100;   // 例：怪物血量变为 200
           break;
         case 600:
-          monsterSpawnRate = 120;
-          monsterHP = 200;   // 例：怪物血量变为 250
+        monsterSpawnRate = 120;
+        monsterHP = 200;   // 例：怪物血量变为 200
+        break;
+        case 1200:
+          monsterSpawnRate = 110;
+          monsterHP =350;   // 例：怪物血量变为 250
           currentLevel++;   // 例：怪物血量变为 250
           console.log("Enter Level 2"); // 添加日志确认代码执行
           if (!level2Bubble) {
             createLevelBubble1();
           }
           break;
-        case 1200:
+        case 1800:
           monsterSpawnRate = 110;
-          monsterHP = 400;   // 例：怪物血量变为 300
-          currentLevel++;    // 例：怪物血量变为 300
+          monsterHP = 500;   // 例：怪物血量变为 300    // 例：怪物血量变为 300
           if (!level3Bubble) {
             createLevelBubble2();
           }
           break;
-        case 1800:
-          monsterSpawnRate = 110;
-          monsterHP = 600;   // 例：怪物血量变为 400
-          currentLevel++;   // 例：怪物血量变为 400
-          break;
         case 2400:
           monsterSpawnRate = 100;
-          monsterHP = 800;   // 例：怪物血量变为 500
+          monsterHP = 750;   // 例：怪物血量变为 400
+          currentLevel++;   // 例：怪物血量变为 400
+          break;
+        case 3000:
+          monsterSpawnRate = 100;
+          monsterHP = 1000;   // 例：怪物血量变为 500  // 例：怪物血量变为 500
+          break;
+          case 3600:
+          monsterSpawnRate = 90;
+          monsterHP = 1350;   // 例：怪物血量变为 500
           currentLevel++;   // 例：怪物血量变为 500
           break;
-        
+          case 4200:
+          monsterSpawnRate = 90;
+          monsterHP = 1700;   // 例：怪物血量变为 500   // 例：怪物血量变为 500
+          break;
+          case 4800:
+          monsterSpawnRate = 80;
+          monsterHP = 2200;   // 例：怪物血量变为 500
+          currentLevel++;   // 例：怪物血量变为 500
+          break;
+          case 5400:
+          monsterSpawnRate = 80;
+          monsterHP = 2700;   // 例：怪物血量变为 500  // 例：怪物血量变为 500
+          break;
       }
     } else {
       currentLevel=6; 
-      monsterSpawnRate = 90;
+      monsterSpawnRate = 80;
       monsterHP = Math.floor(-300 + timecount*0.5);
     }
   }
   
   levelElement.textContent = "Level: " + currentLevel;
-  if (timecount>=4800 &&!boss.isAlive) {
+  if (timecount>=7200 &&!boss.isAlive) {
     initBoss();
   }
-  if (timecount>=2450 && !boss3.isAlive && boss3.initnumber===0) {
+  if (timecount>=3550 && !boss3.isAlive && boss3.initnumber===0) {
     initBoss3();
   }
+  if (boss3.hp <= 0&& boss3dialoguebiaoji==0){
+    boss3dead();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === 'p' || e.key === 'P') && !boss.isAlive) {
+      initBoss3();
+    }
+  }
+  );
+
+
   document.addEventListener('keydown', (e) => {
     if ((e.key === 'o' || e.key === 'O') && !boss.isAlive) {
       initBoss();
@@ -1722,7 +1949,7 @@ function updateBoss() {
         updateBossHP(); // 更新Boss血条
 
         // 播放胜利视频
-        playVictoryVideo();
+        playEndingAnimation();
        }
     }
   }
@@ -2630,7 +2857,7 @@ function removeGameObject(arr, index) {
  * 显示游戏结束
  ********************/
 function showGameOver() {
-  // 停止所有音乐（重要！防止刷新后音乐继续播放）
+  // 停止所有音乐
   bgm.pause();
   bossBgm.pause();
   boss3Bgm1.pause();
@@ -2639,12 +2866,16 @@ function showGameOver() {
   boss3Bgm4.pause();
   boss3Bgm5.pause();
 
-  // 立即重置音频时间（针对某些浏览器的自动播放策略）
+  // 重置音频时间
   bgm.currentTime = 0;
   bossBgm.currentTime = 0;
-  // ...其他bgm同理...
+  boss3Bgm1.currentTime = 0;
+  boss3Bgm2.currentTime = 0;
+  boss3Bgm3.currentTime = 0;
+  boss3Bgm4.currentTime = 0;
+  boss3Bgm5.currentTime = 0;
 
-  // 显示死亡界面
+  // 显示游戏结束界面
   const gameOverScreen = document.getElementById('gameOverScreen');
   const finalScoreElement = document.getElementById('finalScore');
   
@@ -2654,6 +2885,7 @@ function showGameOver() {
   // 修改按钮事件监听
   document.getElementById('retryButton').onclick = () => {
     // 添加确认提示
+    if (confirm('确定要重新开始游戏吗？')) {
       // 先暂停所有音频
       [bgm, bossBgm, boss3Bgm1, boss3Bgm2, boss3Bgm3, boss3Bgm4, boss3Bgm5].forEach(audio => {
         audio.pause();
@@ -2662,7 +2894,7 @@ function showGameOver() {
       
       // 使用true强制从服务器重新加载（绕过缓存）
       window.location.reload(true);
-
+    }
   };
 
   document.getElementById('mainMenuButton').onclick = () => {
@@ -2744,6 +2976,35 @@ document.addEventListener('keydown', (e) => {
 /********************
  * 键盘事件监听
  ********************/
+document.addEventListener('keydown', (e) => {
+  if ((e.key === '0' )) {
+    weapontype = 0;
+    updateWeaponDisplay();
+  }
+}
+)
+document.addEventListener('keydown', (e) => {
+  if ((e.key === '1' )) {
+    weapontype = 1;
+    updateWeaponDisplay();
+  }
+}
+)
+document.addEventListener('keydown', (e) => {
+  if ((e.key === '2')) {
+    weapontype = 2;
+    updateWeaponDisplay();
+  }
+}
+)
+document.addEventListener('keydown', (e) => {
+  if ((e.key === '3')) {
+    weapontype = 3;
+    updateWeaponDisplay();
+  }
+}
+)
+
 document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft') {
     leftPressed = true;
