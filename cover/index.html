@@ -213,7 +213,131 @@
                 Players can earn points by defeating monsters and bosses, challenging their own high score records. At the same time, a hidden endings awaits players to explore.
             </p>
             <h3>🎮 Controls<h3>
-            ----------------------jhs/zhf----------------------
+            <h2>🙎‍♂️ Authors </h2>
+            <style>
+                .authors-section {
+                  max-width: 1200px;
+                  margin: 4rem auto;
+                  padding: 0 20px;
+                }
+                
+                .authors-grid {
+                  display: grid;
+                  grid-template-columns: repeat(4, 1fr);
+                  gap: 2rem;
+                  margin-top: 2rem;
+                }
+                
+                .author-card {
+                  text-align: center;
+                  transition: transform 0.3s ease;
+                }
+                
+                .author-card:hover {
+                  transform: translateY(-8px);
+                }
+                
+                .author-avatar {
+                  width: 180px;
+                  height: 180px;
+                  margin: 0 auto;
+                  border-radius: 50%;
+                  overflow: hidden;
+                  border: 3px solid #6c5ce7;
+                  box-shadow: 0 8px 24px rgba(108, 92, 231, 0.2);
+                }
+                
+                .author-avatar img {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;
+                  filter: grayscale(20%);
+                  transition: all 0.3s ease;
+                }
+                
+                .author-card:hover img {
+                  filter: grayscale(0%);
+                  transform: scale(1.05);
+                }
+                
+                .author-name {
+                  font-size: 2rem;
+                  font-weight: 600;
+                  color: #e5e520;
+                  margin-top: 1.5rem;
+                  position: relative;
+                }
+                
+                .author-name::after {
+                  content: "";
+                  display: block;
+                  width: 30px;
+                  height: 2px;
+                  background: #6c5ce7;
+                  margin: 0.5rem auto;
+                  opacity: 0;
+                  transition: opacity 0.3s ease;
+                }
+                
+                .author-card:hover .author-name::after {
+                  opacity: 1;
+                }
+                
+                @media (max-width: 768px) {
+                  .authors-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 1.5rem;
+                  }
+                  
+                  .author-avatar {
+                    width: 140px;
+                    height: 140px;
+                  }
+                }
+                
+                @media (max-width: 480px) {
+                  .authors-grid {
+                    grid-template-columns: 1fr;
+                  }
+                }
+                </style>
+                
+                <section class="authors-section">
+                  <div class="authors-grid">
+                    <!-- 作者1 -->
+                    <div class="author-card">
+                      <div class="author-avatar">
+                        <img src="images\jhs.jpg" alt="Heshun Jiang">
+                      </div>
+                      <h3 class="author-name">Heshun Jiang</h3>
+                    </div>
+                
+                    <!-- 作者2 -->
+                    <div class="author-card">
+                      <div class="author-avatar">
+                        <img src="images/zhf.jpg" alt="Maria Gomez">
+                      </div>
+                      <h3 class="author-name">Hongfei Zhu</h3>
+                    </div>
+                
+                    <!-- 作者3 -->
+                    <div class="author-card">
+                      <div class="author-avatar">
+                        <img src="images/ylz.jpg" alt="James Yamamoto">
+                      </div>
+                      <h3 class="author-name">Lezhi Yu</h3>
+                    </div>
+                
+                    <!-- 作者4 -->
+                    <div class="author-card">
+                      <div class="author-avatar">
+                        <img src="images/wzy.jpg" alt="Fatima Al-Mansoori">
+                      </div>
+                      <h3 class="author-name">Ziyin Wang</h3>
+                    </div>
+                  </div>
+                </section>
+
             <h2>🎨 Artwork </h2>
             <style>
                 .webpage-section {
