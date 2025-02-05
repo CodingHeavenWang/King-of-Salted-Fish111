@@ -702,3 +702,51 @@
   50% { transform: translateY(-10px); }
   100% { transform: translateY(0); }
 }
+
+.game-over-screen {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.9);
+  padding: 2rem;
+  border-radius: 10px;
+  text-align: center;
+  color: white;
+  z-index: 1000;
+  display: none;
+}
+
+.game-over-screen h2 {
+  color: #e74c3c;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.button-container {
+  margin-top: 1.5rem;
+}
+
+.button-container button {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  margin: 0 0.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: background 0.3s;
+}
+
+.button-container button:hover {
+  background: #2980b9;
+}
+
+.button-container button#mainMenuButton {
+  background: #e67e22;
+}
+
+.button-container button#mainMenuButton:hover {
+  background: #d35400;
+}

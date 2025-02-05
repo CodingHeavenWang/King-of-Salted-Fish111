@@ -16,6 +16,7 @@ const hitSounds = {
 };
 
 let level2Bubble = null;
+let level3Bubble = null;
 let bubbleDisplayTime = 0;
 
 const openingScreen = document.createElement('div');
@@ -1104,13 +1105,16 @@ function updateAll() {
           currentLevel++;   // 例：怪物血量变为 250
           console.log("Enter Level 2"); // 添加日志确认代码执行
           if (!level2Bubble) {
-            createLevelBubble();
+            createLevelBubble1();
           }
           break;
         case 1200:
           monsterSpawnRate = 110;
           monsterHP = 400;   // 例：怪物血量变为 300
           currentLevel++;    // 例：怪物血量变为 300
+          if (!level3Bubble) {
+            createLevelBubble2();
+          }
           break;
         case 1800:
           monsterSpawnRate = 110;
@@ -1186,7 +1190,13 @@ function updateAll() {
   if (level2Bubble) {
     bubbleDisplayTime++;
     if (bubbleDisplayTime >= 240) { // 60帧/秒 * 4秒
-      removeBubble();
+      removeBubble1();
+    }
+  }
+  if (level3Bubble) {
+    bubbleDisplayTime++;
+    if (bubbleDisplayTime >= 240) { // 60帧/秒 * 4秒
+      removeBubble2();
     }
   }
 }
@@ -1285,6 +1295,7 @@ function updateMonstersAll() {
     // 碰撞主角
     if (isCollision(hero, m)) {
       isGameOver = true;
+      showGameOver(); 
       break;
     }
   }
@@ -2125,6 +2136,7 @@ function updateBoss3Bullets() {
       flashHeroDamage();
       if (playerHP <= 0) {
         isGameOver = true;
+        showGameOver(); 
       }
       removeGameObject(boss3Bullets, i);
       i--;
@@ -2154,6 +2166,7 @@ function updateBoss3Tornadoes() {
       playerHPElement.textContent = `HP: ${playerHP}`;
       if (playerHP <= 0) {
         isGameOver = true;
+        showGameOver(); 
       }
       removeGameObject(boss3Tornadoes, i);
       i--;
@@ -2184,6 +2197,7 @@ function updateBoss3Whirls() {
       playerHPElement.textContent = `HP: ${playerHP}`;
       if (playerHP <= 0) {
         isGameOver = true;
+        showGameOver(); 
       }
       removeGameObject(boss3Whirls, i);
       i--;
@@ -2213,6 +2227,7 @@ function updateBoss3redmoon() {
       playerHPElement.textContent = `HP: ${playerHP}`;
       if (playerHP <= 0) {
         isGameOver = true;
+        showGameOver(); 
       }
       removeGameObject(boss3redmoon, i);
       i--;
@@ -2425,6 +2440,7 @@ function updateBossBullets() {
       flashHeroDamage();
       if (playerHP <= 0) {
         isGameOver = true;
+        showGameOver(); 
       }
       removeGameObject(bossBullets, i);
       i--;
@@ -2469,23 +2485,60 @@ function removeGameObject(arr, index) {
  * 显示游戏结束
  ********************/
 function showGameOver() {
-  const gameoverDiv = document.createElement('div');
-  gameoverDiv.className = 'gameover';
-  gameoverDiv.innerText = 'Game Over!';
-  gameContainer.appendChild(gameoverDiv);
-
-  // 停止背景音乐
+  // 停止所有音乐（重要！防止刷新后音乐继续播放）
   bgm.pause();
   bossBgm.pause();
-  bossHPElement.style.display = 'none';
-}
+  boss3Bgm1.pause();
+  boss3Bgm2.pause();
+  boss3Bgm3.pause();
+  boss3Bgm4.pause();
+  boss3Bgm5.pause();
 
-// 暂停所有怪物的移动
-function freezeMonsters() {
-  for (let i = 0; i < monsters.length; i++) {
-    monsters[i].isFrozen = true; // 标记怪物为冻结状态
+  // 立即重置音频时间（针对某些浏览器的自动播放策略）
+  bgm.currentTime = 0;
+  bossBgm.currentTime = 0;
+  // ...其他bgm同理...
+
+  // 显示死亡界面
+  const gameOverScreen = document.getElementById('gameOverScreen');
+  const finalScoreElement = document.getElementById('finalScore');
+  
+  finalScoreElement.textContent = score;
+  gameOverScreen.style.display = 'block';
+
+  // 修改按钮事件监听
+  document.getElementById('retryButton').onclick = () => {
+    // 添加确认提示
+      // 先暂停所有音频
+      [bgm, bossBgm, boss3Bgm1, boss3Bgm2, boss3Bgm3, boss3Bgm4, boss3Bgm5].forEach(audio => {
+        audio.pause();
+        audio.currentTime = 0;
+      });
+      
+      // 使用true强制从服务器重新加载（绕过缓存）
+      window.location.reload(true);
+
+  };
+
+  document.getElementById('mainMenuButton').onclick = () => {
+    // 先停止所有声音
+    [bgm, bossBgm, boss3Bgm1, boss3Bgm2, boss3Bgm3, boss3Bgm4, boss3Bgm5].forEach(audio => {
+      audio.pause();
+      audio.currentTime = 0;
+    });
+    
+    // 使用replaceState防止后退
+    window.history.replaceState(null, '', window.location.href);
+    window.location.href = window.location.href; // 重新加载页面
+  };
+
+  // 强制取消所有动画帧
+  while(frameId) {
+    cancelAnimationFrame(frameId);
+    frameId = null;
   }
 }
+
 
 // 恢复所有怪物的移动 
 function unfreezeMonsters() {
@@ -2619,7 +2672,7 @@ document.getElementById('startButton').addEventListener('click', (event) => {
 });
 
 
-function createLevelBubble() {
+function createLevelBubble1() {
   level2Bubble = document.createElement('div');
   level2Bubble.className = 'level-bubble';
 
@@ -2648,7 +2701,36 @@ function createLevelBubble() {
   document.body.appendChild(level2Bubble);
 }
 
-function removeBubble() {
+function createLevelBubble2() {
+  level3Bubble = document.createElement('div');
+  level3Bubble.className = 'level-bubble';
+
+  // 获取游戏容器的位置（相对于视口）
+  const gameRect = gameContainer.getBoundingClientRect();
+  
+  // 计算气泡位置（左侧偏移262px + 20px间距）
+  const bubbleX = gameRect.left - 450; 
+  // 根据主角的Y坐标（需转换为页面坐标）
+  const bubbleY = gameRect.top + hero.y - 100; 
+
+  // 设置样式
+  level3Bubble.style.cssText = `
+    position: fixed;
+    width: 205px;
+    height: 223px;
+    background-image: url('Others/Chatbox2.png'); // 测试用占位图
+    background-size: cover;
+    left: ${bubbleX + 40}px;
+    top: ${bubbleY - 340}px;
+    opacity: 1; // 暂时关闭淡入，直接显示
+    z-index: 9999; // 确保层级最高
+    pointer-events: none;
+  `;
+
+  document.body.appendChild(level3Bubble);
+}
+
+function removeBubble1() {
   if (level2Bubble) {
     level2Bubble.style.opacity = '0';
     setTimeout(() => {
@@ -2657,4 +2739,43 @@ function removeBubble() {
       bubbleDisplayTime = 0;
     }, 500);
   }
+}
+
+
+function removeBubble2() { // 需要正确定义
+  if (level3Bubble) {
+    level3Bubble.style.opacity = '0';
+    setTimeout(() => {
+      document.body.removeChild(level3Bubble);
+      level3Bubble = null;
+      bubbleDisplayTime = 0;
+    }, 500);
+  }
+}
+
+function resetGameState() {
+  // 移除所有游戏对象
+  bullets.length = 0;
+  monsters.length = 0;
+  powerups.length = 0;
+  doors.length = 0;
+  bossBullets.length = 0;
+  boss3Bullets.length = 0;
+  boss3Tornadoes.length = 0;
+  boss3Whirls.length = 0;
+  boss3redmoon.length = 0;
+  boss3Minions.length = 0;
+  firewalls.length = 0;
+
+  // 重置Boss状态
+  boss.isAlive = false;
+  boss3.isAlive = false;
+
+  // 重置玩家状态
+  playerHP = playerHPinitial;
+  hero.x = containerWidth / 2 - 30;
+  hero.y = containerHeight;
+  
+  // 移除所有DOM元素
+  document.querySelectorAll('.bullet, .monster, .powerup, .doorRow, .boss, .boss3').forEach(el => el.remove());
 }
