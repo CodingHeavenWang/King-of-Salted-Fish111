@@ -848,4 +848,22 @@
   z-index: 9998;
   pointer-events: none;
   transition: background-color 1s ease; /* 渐变效果 */
+
+.weapon-drop {
+  position: absolute;
+  background-repeat: no-repeat;
+  background-position: center;
+  pointer-events: none;
+  z-index: 1000; /* 确保武器显示在其他元素上方 */
+}
+
+.game-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  color: white;
+  text-shadow: 2px 2px 4px black;
+  z-index: 1000; /* 确保提示信息显示在其他元素上方 */
 }
