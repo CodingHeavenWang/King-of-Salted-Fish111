@@ -18,11 +18,450 @@
     border-radius: 5px;
     cursor: pointer;
   }
-  
-  #startButton:hover {
-    background-color: #45a049;
+/* 子弹样式 */
+.bullet {
+  z-index: 11; 
+  width: 37.5px;
+  height: 45px;
+  position: absolute;
+  background-image: url("Bullet/smallfireball.gif"); /* 子弹图 */
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* 怪物样式 */
+.monster {
+  z-index: 4;
+  width: 88px;
+  height: 88px;
+  position: absolute;
+  background-image: url("Monster/frogger.gif"); /* 怪物图 */
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* 第一关怪物图片 */
+.monster.level1 {
+  background-image: url("Monster/Slime.gif");
+}
+
+/* 第二关怪物图片 */
+.monster.level2 {
+  background-image: url("Monster/mushroom.gif"); /* 替换为你的新图片路径 */
+}
+
+.monster.level3 {
+  background-image: url("Monster/sssbat.gif"); /* 替换为你的新图片路径 */
+}
+
+.monster.level4 {
+  background-image: url("Monster/NightBorne.gif"); /* 替换为你的新图片路径 */
+}
+.monster.level5 {
+  background-image: url("Monster/fireghost.gif"); /* 替换为你的新图片路径 */
+}
+.monster.level6 {
+  background-image: url("Monster/Bringer_of_Death.gif"); /* 替换为你的新图片路径  */
+}
+.monster.frozen {
+  filter: hue-rotate(180deg); /* 示例：色相偏移让它发蓝色 */
+}
+.monster.burning {
+  filter: brightness(0.8) sepia(1) hue-rotate(-20deg) saturate(5);
+}
+/* 怪物血量文字样式：显示在怪物顶部 */
+.monsterHP {
+  z-index: 5;
+  position: absolute;
+  color: red;
+  font-weight: bold;
+  font-size: 20px;
+  text-align: center;
+  width: 88px;    /* 与怪物宽度一致 */
+  pointer-events: none; /* 避免干扰点击或碰撞 */
+}
+
+/* 增益样式 */
+.powerup {
+  width: 40px;
+  height: 40px;
+  z-index: 3; 
+  position: absolute;
+  background-image: url("treasurebags/treasure1.png"); /* 增益图 */
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.powerup.level1 {
+  background-image: url("treasurebags/treasure1.png");
+}
+
+/* 第二关怪物图片 */
+.powerup.level2 {
+  background-image: url("treasurebags/treasure2.png"); /* 替换为你的新图片路径 */
+}
+
+.powerup.level3 {
+  background-image: url("treasurebags/treasure3.png"); /* 替换为你的新图片路径 */
+}
+
+.powerup.level4 {
+  background-image: url("treasurebags/treasure4.png"); /* 替换为你的新图片路径 */
+}
+.powerup.level5 {
+  background-image: url("treasurebags/treasure5.png"); /* 替换为你的新图片路径 */
+}
+.powerup.level6 {
+  background-image: url("treasurebags/treasure6.png"); /* 替换为你的新图片路径 */
+}
+
+/* “门”整行容器：占据 400px 宽 */
+.doorRow {
+  width: 600px;
+  height: 75px;
+  z-index: 5; 
+  position: absolute;
+  background-image: url("Others/door.png");
+  display: flex;
+  flex-direction: row;
+  background-repeat: no-repeat; /* 禁止重复 */
+  background-size: cover;       /* 图片覆盖整个容器 */
+  background-position: center;  /* 图片居中显示 */
+}
+
+/* 门的左半 / 右半选项 */
+.doorOption {
+  flex: 1;                /* 两侧平均分 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #fcf571;
+  cursor: default;
+  border-right: 1px solid #999; /* 中间加个分隔线 */
+}
+.doorOption:last-child {
+  border-right: none; /* 最右侧不再画右边线 */
+}
+
+/* 游戏结束样式 */
+.gameover {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 36px;
+  color: red;
+  text-align: center;
+}
+
+
+/* 新增计分板样式 */
+#scoreBoard {
+  position: absolute;
+  top: 50px;
+  left: 12.5px;
+  color: white;
+  font-size: 36px;
+  font-weight: bold;
+  text-shadow: 2px 2px 2px black;
+  z-index: 1000;
+}
+
+/* 新增关卡显示样式 */
+#levelBoard {
+  position: absolute;
+  top: 100px;      /* 在计分板下方留出空间 */
+  left: 12.5px;
+  color: white;
+  font-size: 36px;
+  font-weight: bold;
+  text-shadow: 2px 2px 2px black;
+  z-index: 1000;
+}
+
+/* Boss样式 */
+.boss {
+  width: 150px;
+  height: 150px;
+  position: absolute;
+  background-size: cover;
+  z-index: 1000; 
+}
+
+
+/* Boss弹幕样式 */
+.bossBullet {
+  width: 20px;
+  height: 20px;
+  background-image: url("Bullet/sun.png");
+  position: absolute;
+  background-size: cover;
+  z-index: 10; 
+}
+
+/* 螺旋弹幕样式 */
+.spiral {
+  width: 42px;
+  height: 14px;
+  background-image: url("Bullet/cry.png"); /* 假设有螺旋弹幕的图片 */
+  position: absolute;
+  background-size: cover;
+  z-index: 10; 
+}
+
+/* 追踪弹幕样式 */
+.homing {
+  width: 42px;
+  height: 14px;
+  background-image: url("Bullet/cry.png"); /* 假设有追踪弹幕的图片 */
+  position: absolute;
+  background-size: cover;
+  z-index: 10; 
+}
+
+/* Boss血条样式 */
+/* 修改Boss血条样式 */
+#bossHP {
+  position: absolute;
+  top: 20px; /* 将血条下移，避免遮挡计分板 */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 375px;  /* 减小血条宽度 */
+  height: 18.75px;  /* 减小血条高度 */
+  background-color: #444; /* 血条背景色 */
+  border: 2px solid #000; /* 血条边框 */
+  border-radius: 10px; /* 圆角边框 */
+  overflow: hidden; /* 隐藏超出部分 */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* 添加阴影 */
+  z-index: 1000;
+}
+
+#bossHP::after {
+  content: '';
+  display: block;
+  height: 100%;
+  width: var(--hp-width, 100%); /* 动态宽度 */
+  background: linear-gradient(to left, #00ff00, #ff0000); /* 渐变色：从绿到红 */
+  transition: width 0.3s ease; /* 平滑过渡效果 */
+}
+
+#bossHP::before {
+  content: attr(data-hp); /* 显示血量百分比 */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 居中显示 */
+  color: white;
+  font-size: 18px; /* 减小字体大小 */
+  font-weight: bold;
+  text-shadow: 1px 1px 2px black; /* 文字阴影 */
+  z-index: 1000; 
+}
+
+/* Boss3样式 */
+.boss3 {
+  width: 40px;
+  height: 50px;
+  position: absolute;
+  background-size: cover;
+  z-index: 10;
+}
+
+
+
+/* Boss3血条样式 */
+#boss3HP {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 250px;
+  height: 15px;
+  background-color: #444;
+  border: 2px solid #000;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+#boss3HP::after {
+  content: '';
+  display: block;
+  height: 100%;
+  width: var(--hp-width, 100%);
+  background: linear-gradient(to left, #00ff00, #ff0000);
+  transition: width 0.3s ease;
+}
+
+#boss3HP::before {
+  content: attr(data-hp);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px black;
+  z-index: 1;
+}
+
+/* 血条名称样式 */
+.hp-name {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px black;
+}
+
+/* Boss3弹幕样式 */
+.boss3Bullet {
+  width: 20px;
+  height: 20px;
+  background-image: url("Bullet/dark_magic.gif"); /* 黑暗魔法球图片 */
+  position: absolute;
+  background-size: cover;
+}
+
+/* Boss3魔法旋风样式 */
+.magicTornado {
+  width: 50px;
+  height: 50px;
+  background-image: url("Bullet/magic_tornado.gif"); /* 魔法旋风图片 */
+  position: absolute;
+  background-size: cover;
+}
+
+/* Boss3红月亮样式 */
+.redmoon {
+  width: 80px;
+  height: 80px;
+  background-image: url("Monster/redmoon.webp"); /* 红月亮图片 */
+  position: absolute;
+  background-size: cover;
+}
+
+/* 灾厄龙卷样式 */
+.calamityWhirl {
+  width: 50px;
+  height: 30px;
+  background-image: url("Bullet/calamity_whirl.gif"); /* 龙卷图片 */
+  background-size: cover;
+  position: absolute;
+}
+
+.boss3Minion {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background-size: cover;
+}
+
+.leftMinion {
+  background-image: url('Monster/zaihuo.png');
+}
+
+.rightMinion {
+  background-image: url('Monster/zainan.png');
+}
+
+.boss3MinionBullet {
+  position: absolute;
+  width: 50px;
+  height: 20px;
+  background-size: cover;
+}
+
+.leftBullet {
+  background-image: url('Bullet/minion_bullet_left.gif');
+}
+
+.rightBullet {
+  background-image: url('Bullet/minion_bullet_right.gif');
+}
+
+
+/* 敌怪血条样式 */
+#boss3MinionLeftHP,
+#boss3MinionRightHP {
+  position: absolute;
+  top: 10px; /* 左上角敌怪血条位置 */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 250px;
+  height: 15px;
+  background-color: #444;
+  border: 1px solid #000;
+  display: none; /* 默认隐藏 */
+}
+
+#boss3MinionLeftHP {
+  top: 10px; /* 左上角敌怪血条位置 */
+}
+
+#boss3MinionRightHP {
+  top: 30px; /* 右上角敌怪血条位置 */
+}
+
+#boss3MinionLeftHP::before,
+#boss3MinionRightHP::before {
+  content: '';
+  display: block;
+  height: 100%;
+  width: var(--hp-width, 100%);
+  background-color: orange;
+}
+
+/* 血条百分比文字样式 */
+.hp-percentage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px black;
+}
+
+/* 角色基础样式 */
+#hero {
+  transition: transform 0.2s ease-in-out; /* 平滑翻转动画 */
+  transform-origin: center; /* 确保以中心为翻转轴 */
+  will-change: transform; /* 优化渲染性能 */
+}
+
+/* 移动时添加动画效果 */
+.hero-moving {
+  animation: walkCycle 0.6s steps(4) infinite;
+}
+
+@keyframes walkCycle {
+  from { background-position: 0 0; }
+  to { background-position: -400% 0; }
+}
+
+/* Boss转阶段动画 */
+@keyframes bossPhaseTransition {
+  0% {
+    transform: scale(1);
+    opacity: 1;
   }
-  
+  50% {
+    transform: scale(1.2);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
   /* 游戏容器样式 */
   /* 游戏容器样式 */
   #gameContainer {
@@ -903,5 +1342,169 @@
   text-align: center;
   z-index: 500; /* 确保在上层 */
 
-  animation: blink 1s infinite; /* 每秒闪烁一次，循环播放 */
+.game-over-screen h2 {
+  color: #e74c3c;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+}
+
+.button-container {
+  margin-top: 1.5rem;
+}
+
+.button-container button {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  margin: 0 0.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: background 0.3s;
+}
+
+.button-container button:hover {
+  background: #2980b9;
+}
+
+.button-container button#mainMenuButton {
+  background: #e67e22;
+}
+
+.button-container button#mainMenuButton:hover {
+  background: #d35400;
+}
+
+.ending-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.ending-screen img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* 当前武器显示区域 */
+#weaponDisplay {
+  position: fixed;                /* 固定定位，可使其始终显示在视口中 */
+  top: 50%;                       /* 垂直居中 */
+  right: 150px;                    /* 距离视口右边 10px */
+  transform: translateY(-50%);    /* 垂直居中对齐 */
+  width: 300px;                   /* 固定宽度 200px */
+  height: 300px;                  /* 固定高度 200px */
+  background: url('Others/exhibit.png') no-repeat center/cover; /* 背景图片 */
+  padding: 10px;                  /* 内边距 */
+  box-sizing: border-box;         /* 包括内边距在内计算宽高 */
+  display: flex;
+  flex-direction: column;
+  text-align: center;             /* 内容居中 */
+  color: rgb(255, 255, 255);                 /* 文字颜色 */
+}
+
+#weaponDisplay h2 {
+  margin: 0;
+  font-size: 32px;
+  height: 30px;
+  line-height: 30px;
+}
+
+#weaponDisplay img {
+  flex: 1; /* 图片部分占满剩余空间 */
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* 保证图片不会超过剩余空间 */
+}
+
+.weapon-drop {
+  position: absolute;
+  background-repeat: no-repeat;
+  background-position: center;
+  pointer-events: none;
+  z-index: 1000; /* 确保武器显示在其他元素上方 */
+}
+
+.game-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 32px; /* 更大的字体 */
+  font-weight: bold; /* 加粗 */
+  color: #ffcc00; /* 金色文字 */
+  text-shadow: 
+    0 0 5px #ffcc00, 
+    0 0 10px #ffcc00, 
+    0 0 20px #ffcc00, 
+    0 0 40px #ff6600, 
+    0 0 80px #ff6600; /* 发光效果 */
+  background: rgba(0, 0, 0, 0.7); /* 半透明黑色背景 */
+  padding: 15px 30px; /* 内边距 */
+  border-radius: 10px; /* 圆角 */
+  border: 2px solid #ffcc00; /* 金色边框 */
+  animation: floatUp 1.5s ease-out forwards; /* 上浮动画 */
+  z-index: 1000; /* 确保显示在最上层 */
+}
+
+@keyframes floatUp {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -40%);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+  80% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+}
+
+.weapon-icon {
+  animation: spin 2s linear infinite; /* 旋转动画 */
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.blur-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
+  backdrop-filter: blur(5px); /* 背景模糊效果 */
+  z-index: 999; /* 确保在提示信息下方 */
+}
+
+.boss3-shield {
+  position: absolute;
+  background-repeat: no-repeat;
+  background-position: center;
+  pointer-events: none; /* 防止护盾阻挡点击事件 */
+  opacity: 1; /* 护盾的透明度 */
 }
