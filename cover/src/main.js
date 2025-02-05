@@ -75,7 +75,7 @@ scene.background = spaceTexture;
   scene.add(monster);
   return monster;
 }
-const monsters = Array(120).fill().map(addMonster);
+const monsters = Array(20).fill().map(addMonster);
 
 
 // Load the GLTF model

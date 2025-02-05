@@ -129,3 +129,14 @@ button:hover {
   background-color: #333333;
   transform: scale(1.1);
 }
+
+.quote-container {
+  text-align: center; /* Center all content */
+}
+
+.above-button-image {
+  width: 60px;  /* Adjusted size for a smaller image */
+  height: auto;  /* Maintain aspect ratio */
+  margin-bottom: 10px; /* Space between the image and the button */
+}
+
