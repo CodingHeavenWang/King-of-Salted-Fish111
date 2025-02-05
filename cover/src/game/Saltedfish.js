@@ -113,8 +113,8 @@ const boss = {
   y: 75,                      // 在顶部
   width: 150,
   height: 150,
-  hp: 100000,                   // Boss的血量
-  initialhp: 100000,
+  hp: 120000,                   // Boss的血量
+  initialhp: 120000,
   isAlive: false,             // Boss是否存活
   bulletSpawnRate: 60,        // Boss发射弹幕的频率
   bulletSpawnCounter: 0,      // Boss弹幕发射计数器
@@ -133,8 +133,8 @@ const boss3 = {
   y: 50,
   width: 40,
   height: 50,
-  hp: 10000,
-  initialhp: 10000,
+  hp: 30000,
+  initialhp: 30000,
   isAlive: false,
   bulletSpawnRate: 60,
   bulletSpawnCounter: 0,
@@ -2559,30 +2559,23 @@ function updateFirewalls() {
   }
 }
 
+const weaponInfo = {
+  0: { name: "Pristine Fury", img: "guns/gun0.gif", color: "#fd7146e6" },
+  1: { name: "Ancient Ice Chunk", img: "guns/gun1.gif", color: "#42eefae6" },
+  2: { name: "Starmada", img: "guns/gun2.png" , color: "#fffb19e6"},
+  3: { name: "Cinders of Lament", img: "guns/gun3.png" , color: "#ff0505e6"},
+  5: { name: "Cosmic Immaterializer", img: "guns/gun5.png" , color: "#1cfd03e6"},
+  // 如有更多武器，请继续添加
+};
+
+
 function updateWeaponDisplay() {
   const weaponImage = document.getElementById('weaponImage');
-  let imgPath = 'guns/gun1.gif';  // 默认图片
-  switch (weapontype) {
-    case 0:
-      imgPath = 'guns/gun0.gif';
-      break;
-    case 1:
-      imgPath = 'guns/gun1.gif';
-      break;
-    case 2:
-      imgPath = 'guns/gun2.png';
-      break;
-    case 3:
-      imgPath = 'guns/gun3.png';
-      break;
-      case 3:
-        imgPath = 'guns/gun5.png';
-        break;
-    default:
-      imgPath = 'guns/gun0.gif';
-      break;
-  }
-  weaponImage.src = imgPath;
+  const weaponTitle = document.querySelector('#weaponDisplay h2');
+  const info = weaponInfo[weapontype] || weaponInfo[0];
+  weaponImage.src = info.img;
+  weaponTitle.textContent = info.name;
+  weaponTitle.style.color = info.color;
 }
 
 // 播放胜利视频
@@ -2837,6 +2830,7 @@ function startGame() {
   // 显示游戏容器
   gameContainer.style.display = 'block';
   //显示bat
+  document.body.classList.add('game-active');
   document.body.classList.add('game-active');
   // 重置游戏状态
   isGameOver = false;
