@@ -3025,10 +3025,14 @@ document.addEventListener('keyup', (e) => {
  * 启动游戏
  ********************/
 function startGame() {
+  startMessage.style.display = "none"; // 隐藏提示信息
   // 隐藏主界面
   document.getElementById('mainMenu').style.display = 'none';
   // 显示游戏容器
   gameContainer.style.display = 'block';
+  document.body.style.backgroundImage = "url('Wallpaper/desertforest.png')";
+document.documentElement.style.backgroundImage = "url('Wallpaper/desertforest.png')";
+document.documentElement.style.backgroundSize = "cover";
   //显示bat
   document.body.classList.add('game-active');
   document.body.classList.add('game-active');
@@ -3063,7 +3067,7 @@ function startGame() {
   // 启动背景音乐
   bgm.currentTime = 0;
   bgm.play().catch(e => console.log("音乐播放需要用户交互"));
-
+  
   // 初始化主角
   initHero();
 
@@ -3077,6 +3081,7 @@ document.addEventListener('keydown', (event) => {
   // 判断是否在主菜单界面
   if (document.getElementById('mainMenu').style.display !== 'none') {
     // 隐藏“按任意键开始游戏”字幕
+    
     const startMessage = document.getElementById('startMessage');
     startMessage.style.opacity = '0'; // 字幕淡出
 
