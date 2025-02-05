@@ -56,6 +56,7 @@ let isSkillActive = false; // 技能是否激活
 let skillCooldown = 600; // 技能冷却时间（10秒）
 let lastSkillTime = 0; // 上次使用技能的时间
 let weapontype = 0;
+let unlocktype3 = false;
 // 主角
 const hero = {
   element: null,
@@ -79,6 +80,17 @@ let bulletSpeed = 5;       // 子弹向上移动速度
 let bulletAttack = 25;     // 子弹伤害
 let bulletSpawnRate = 60;  // 子弹发射频率(帧数间隔越小越快)
 let bulletSpawnCounter = 0;
+
+const weaponDrop = {
+  element: null, // 武器的DOM元素
+  x: containerWidth / 2 - 25, // 初始位置在屏幕中心
+  y: 250, // 从顶部开始下落
+  width: 80,
+  height: 80,
+  speed: 2, // 下落速度
+  isFalling: false, // 是否正在下落
+  type: 'newWeapon', // 武器类型
+};
 
 // 怪物
 const monsters = [];
@@ -1170,12 +1182,26 @@ function updateAll() {
   }
   )
   document.addEventListener('keydown', (e) => {
-    if ((e.key === '3')) {
+    if ((e.key === '3') && unlocktype3) {
       weapontype = 3;
       updateWeaponDisplay();
     }
   }
   )
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === '9')) {
+      weapontype = 3;
+      updateWeaponDisplay();
+    }
+  }
+  )
+
+  // 更新武器掉落
+  if (weaponDrop.isFalling) {
+    updateWeaponDrop();
+  }
+
   updateHero();
   updateBullets();
   updateMonstersAll();
@@ -1990,10 +2016,31 @@ function updateBoss3() {
           // 隐藏Boss血条
           boss3HPElement.style.display = 'none';
           updateBoss3HP(); // 更新Boss血条
+
+          // 生成武器掉落
+          spawnWeaponDrop();
          }
       }
     }
   }
+}
+
+function spawnWeaponDrop() {
+  // 创建武器的DOM元素
+  const weaponDiv = document.createElement('div');
+  weaponDiv.className = 'weapon-drop';
+  weaponDiv.style.backgroundImage = 'url("guns/gun3.png")'; // 武器的图片
+  weaponDiv.style.backgroundSize = 'cover';
+  weaponDiv.style.position = 'absolute';
+  weaponDiv.style.width = `${weaponDrop.width}px`;
+  weaponDiv.style.height = `${weaponDrop.height}px`;
+  weaponDiv.style.left = `${weaponDrop.x}px`;
+  weaponDiv.style.top = `${weaponDrop.y}px`;
+  gameContainer.appendChild(weaponDiv);
+
+  // 更新武器对象
+  weaponDrop.element = weaponDiv;
+  weaponDrop.isFalling = true;
 }
 
 // 开始过渡阶段
@@ -2126,7 +2173,48 @@ function spawnBoss3MinionBulletRight(x, y, angle) {
   boss3Bullets.push(bulletObj);
 }
 
+function updateWeaponDrop() {
+  if (!weaponDrop.isFalling) return;
 
+  // 更新武器的位置
+  weaponDrop.y += weaponDrop.speed;
+  weaponDrop.element.style.top = `${weaponDrop.y}px`;
+
+  // 检测武器是否超出屏幕
+  if (weaponDrop.y > containerHeight) {
+    removeWeaponDrop(); // 移除武器
+    return;
+  }
+
+  // 检测玩家是否接住武器
+  if (isCollision(hero, weaponDrop)) {
+    showMessage('New Weapon Unlocked: Fireball!');
+    unlocktype3=true;
+    removeWeaponDrop(); // 移除武器
+  }
+}
+
+function removeWeaponDrop() {
+  if (weaponDrop.element && weaponDrop.element.parentNode) {
+    weaponDrop.element.parentNode.removeChild(weaponDrop.element);
+  }
+  weaponDrop.element = null;
+  weaponDrop.isFalling = false;
+}
+
+function showMessage(message) {
+  const messageDiv = document.createElement('div');
+  messageDiv.className = 'game-message';
+  messageDiv.textContent = message;
+  gameContainer.appendChild(messageDiv);
+
+  // 2秒后移除提示信息
+  setTimeout(() => {
+    if (messageDiv.parentNode) {
+      messageDiv.parentNode.removeChild(messageDiv);
+    }
+  }, 2000);
+}
 
 // 更新Boss3的弹幕
 function updateBoss3Bullets() {
@@ -2419,7 +2507,8 @@ function updateFirewalls() {
       removeGameObject([boss3], 0); // 移除Boss3
       score += 100; // 击败Boss3加100分
       scoreElement.textContent = `Score: ${score}`;
-
+      // 生成武器掉落
+      spawnWeaponDrop();
       // 隐藏Boss3血条
       boss3HPElement.style.display = 'none';
       updateBoss3HP(); // 更新Boss3血条
