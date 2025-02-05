@@ -1988,7 +1988,7 @@ function updateHomingBullet(bullet) {
     if (boss.isAlive && (boss.y + boss.height < hero.y)) {
       potentialTargets.push(boss);
     }
-    if (boss3.isAlive && (boss3.y + boss3.height < hero.y)) {
+    if (boss3.isAlive && (boss3.y + boss3.height < hero.y) && !boss3.isInvincible) {
       potentialTargets.push(boss3);
     }
     if (potentialTargets.length > 0) {
@@ -2504,7 +2504,7 @@ function bossChargePlayer() {
 }
 
 function createChargeTrail() {
-  const trailCount = 4; // 残影数量
+  const trailCount = 5; // 残影数量
   for (let i = 0; i < trailCount; i++) {
     
     setTimeout(() => {
@@ -2519,7 +2519,7 @@ function createChargeTrail() {
       setTimeout(() => {
         trail.remove();
       }, 180); // 残影持续时间
-    }, i * 50); // 残影间隔时间
+    }, i * 35); // 残影间隔时间
     
   }
 }

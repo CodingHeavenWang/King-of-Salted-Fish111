@@ -835,11 +835,11 @@
   background-size: cover;
   opacity: 0.5;
   z-index: 999;
-  animation: fadeOut 0.1s ease-out;
+  animation: fadeOut 0.3s ease-out;
 }
 
 @keyframes fadeOut {
-  from { opacity: 0.3; }
+  from { opacity: 0.5; }
   to { opacity: 0; }
 }
   
