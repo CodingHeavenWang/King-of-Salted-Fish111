@@ -10,23 +10,32 @@
 </head>
 
 <body>
-
+    <audio id="bgm" autoplay loop>
+        <source src="menubgm.MP3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+    <script>
+        document.addEventListener('click', function () {
+            let bgm = document.getElementById('bgm');
+            if (bgm.paused) {
+                bgm.play().catch(error => console.log("Autoplay blocked: ", error));
+            }
+        });
+    </script>
     <canvas id="bg"></canvas>
 
     <main>
 
-        <header>
-            <h1>The King of Salted Fish</h1>
-            <p> Author: JiangHeshun WangZiyin YuLezhi ZhuHongfei</p>
-        </header>
-
-
-        <blockquote>
-            <p>The King of salted fish, can you beat the evil three suns?</p>
-        </blockquote>
-
+        <!-- Combined header and section into a single block with reduced spacing -->
         <section>
-            <div style="display: flex; justify-content: center;">
+            <header style="margin-bottom: 10px;">
+                <img src="images/menuword.png" alt="Menu" style="vertical-align: middle; height: 110px; display: inline-block;">
+                <img src="images/menupic.png" alt="Menu" style="vertical-align: middle; height: 250px; display: inline-block;">
+            </header>
+            
+
+            <div class="quote-container">
+                <img src="images/menugif.gif" alt="Menu Animation" class="menu-gif">
                 <button onclick="window.location.href='src/game/game.html'">The journey begins!</button>
             </div>
 
@@ -43,11 +52,55 @@
             <p>
                 Cunning monsters roam the labyrinth, creating obstacles for the road runner. Players must use their skills to evade these creatures and reach the keys and the exit door without getting caught.
             </p>
+            
+            <!-- Monster Gallery -->
+            <div class="monster-gallery">
+                <div class="monster">
+                    <img src="src\game\Monster\Slime.gif" alt="Monster 1" class="monster-image">
+                    <p>Slime</p>
+                </div>
+                <div class="monster">
+                    <img src="src\game\Monster\mushroom.gif" alt="Monster 2" class="monster-image">
+                    <p>Mushroom</p>
+                </div>
+                <div class="monster">
+                    <img src="src\game\Monster\sssbat.gif" alt="Monster 3" class="monster-image">
+                    <p>Devil</p>
+                </div>
+                <div class="monster">
+                    <img src="src\game\Monster\fireghost.gif" alt="Monster 4" class="monster-image">
+                    <p>Fire Demon</p>
+                </div>
+            </div>
+            
+            <style>
+                .monster-gallery {
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr); /* 2 columns */
+                    grid-template-rows: repeat(2, auto);   /* 2 rows */
+                    gap: 20px; /* space between images */
+                    justify-items: center; /* center items horizontally */
+                    align-items: center;   /* center items vertically */
+                }
+            
+                .monster {
+                    text-align: center;
+                }
+            
+                .monster-image {
+                    width: 150px; /* adjust size as needed */
+                    height: auto;
+                }
+            
+                .monster p {
+                    margin-top: 10px;
+                    font-weight: bold;
+                }
+            </style>
             <h3>🚪 Unlocking the Exit Door</h3>
             <p>
                 After collecting the required keys, players must navigate to the exit door. The game utilizes JavaScript logic to dynamically track key collection and door unlocking, providing a sense of accomplishment as players progress.
             </p>
-
         </section>
 
     </main>
