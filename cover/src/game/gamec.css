@@ -750,3 +750,34 @@
 .button-container button#mainMenuButton:hover {
   background: #d35400;
 }
+
+/* 当前武器显示区域 */
+#weaponDisplay {
+  position: fixed;                /* 固定定位，可使其始终显示在视口中 */
+  top: 50%;                       /* 垂直居中 */
+  right: 150px;                    /* 距离视口右边 10px */
+  transform: translateY(-50%);    /* 垂直居中对齐 */
+  width: 300px;                   /* 固定宽度 200px */
+  height: 300px;                  /* 固定高度 200px */
+  background: url('Others/exhibit.png') no-repeat center/cover; /* 背景图片 */
+  padding: 10px;                  /* 内边距 */
+  box-sizing: border-box;         /* 包括内边距在内计算宽高 */
+  display: flex;
+  flex-direction: column;
+  text-align: center;             /* 内容居中 */
+  color: rgb(255, 255, 255);                 /* 文字颜色 */
+}
+
+#weaponDisplay h2 {
+  margin: 0;
+  font-size: 32px;
+  height: 30px;
+  line-height: 30px;
+}
+
+#weaponDisplay img {
+  flex: 1; /* 图片部分占满剩余空间 */
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* 保证图片不会超过剩余空间 */
+}
