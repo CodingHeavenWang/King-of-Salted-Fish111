@@ -1139,7 +1139,7 @@ function updateAll() {
   if (timecount>=4800 &&!boss.isAlive) {
     initBoss();
   }
-  if (timecount>=1200 && !boss3.isAlive && boss3.initnumber===0) {
+  if (timecount>=2450 && !boss3.isAlive && boss3.initnumber===0) {
     initBoss3();
   }
   document.addEventListener('keydown', (e) => {
@@ -1182,11 +1182,11 @@ function updateAll() {
   updateHeroHPBar();
   updateHeroStats();
   updateFirewalls();
-  updateBoss3();
-  updateBoss3Bullets(); // 更新Boss3的弹幕
-  updateBoss3Tornadoes(); // 更新Boss3的旋风
-  updateBoss3Whirls(); // 更新Boss3的龙卷
-  updateBoss3redmoon();//更新Boss3的猩红圆月
+  if(boss3.isAlive){updateBoss3();}
+  if(boss3Bullets.length>0){updateBoss3Bullets();} // 更新Boss3的弹幕
+  if(boss3Tornadoes.length>0){updateBoss3Tornadoes();} // 更新Boss3的旋风
+  if(boss3Whirls.length>0){updateBoss3Whirls();} // 更新Boss3的龙卷
+  if(boss3redmoon.length>0){updateBoss3redmoon();}//更新Boss3的猩红圆月
   if (level2Bubble) {
     bubbleDisplayTime++;
     if (bubbleDisplayTime >= 240) { // 60帧/秒 * 4秒
@@ -1725,8 +1725,11 @@ function updateBoss3() {
     boss3MinionLeftHPElement.style.display = 'none'; // 隐藏左上角敌怪血条
     boss3MinionRightHPElement.style.display = 'none'; // 隐藏右上角敌怪血条
   }
-  // 更新敌怪
-  updateBoss3Minions();
+  if(boss3Minions.length>0){
+    // 更新敌怪
+    updateBoss3Minions();
+  }
+  
 
   // 当Boss血量降至50%时，进入二阶段
   if (boss3.hp <= 0.5 * boss3.initialhp && boss3.phase === 1) {
@@ -1738,8 +1741,6 @@ function updateBoss3() {
   }
 
 
-  // 更新敌怪
-  updateBoss3Minions();
 
   // 检测是否进入过渡阶段
   if (!boss3.isTransitioning) {
@@ -1795,9 +1796,19 @@ function updateBoss3() {
         // 冲撞逻辑
         boss3.x += boss3.chargeVelocityX;
         boss3.y += boss3.chargeVelocityY;
-  
         // 检测是否撞到玩家或边界
-        if (isCollision(hero, boss3) || boss3.x < 0 || boss3.x + boss3.width > containerWidth || boss3.y < 0 || boss3.y + boss3.height > containerHeight) {
+        if (isCollision(hero, boss3)) {
+          playerHP -= 30; // 玩家扣血
+          playerHPElement.textContent = `HP: ${playerHP}`;
+          flashHeroDamage();
+          if (playerHP <= 0) {
+            isGameOver = true;
+            showGameOver(); 
+          }
+          boss3.isCharging = false; // 停止冲撞
+          boss3.isReturning = true; // 开始返回上方
+        }
+        if (boss3.x < 0 || boss3.x + boss3.width > containerWidth || boss3.y < 0 || boss3.y + boss3.height > containerHeight) {
           boss3.isCharging = false; // 停止冲撞
           boss3.isReturning = true; // 开始返回上方
         }
@@ -1827,7 +1838,18 @@ function updateBoss3() {
       boss3.y += boss3.chargeVelocityY;
 
       // 检测是否撞到玩家或边界
-      if (isCollision(hero, boss3) || boss3.x < 0 || boss3.x + boss3.width > containerWidth || boss3.y < 0 || boss3.y + boss3.height > containerHeight) {
+      if (isCollision(hero, boss3)) {
+        playerHP -= 30; // 玩家扣血
+        playerHPElement.textContent = `HP: ${playerHP}`;
+        flashHeroDamage();
+        if (playerHP <= 0) {
+          isGameOver = true;
+          showGameOver(); 
+        }
+        boss3.isCharging = false; // 停止冲撞
+        boss3.isReturning = true; // 开始返回上方
+      }
+      if (boss3.x < 0 || boss3.x + boss3.width > containerWidth || boss3.y < 0 || boss3.y + boss3.height > containerHeight) {
         boss3.isCharging = false; // 停止冲撞
         boss3.isReturning = true; // 开始返回上方
       }
@@ -1990,8 +2012,8 @@ function bossChargePlayer() {
 
 // 全屏弹幕炼狱
 function spawnBulletHell() {
-  for (let i = 0; i < 36; i++) {
-    const angle = (Math.PI * 2 / 18) * i;
+  for (let i = 0; i < 12; i++) {
+    const angle = (Math.PI * 2 / 12) * i;
     spawnBoss3Bullettran(angle, 4); // 36个方向的弹幕
   }
 }
@@ -2164,6 +2186,7 @@ function updateBoss3Tornadoes() {
     if (isCollision(hero, t)) {
       playerHP -= 15; // 玩家扣血
       playerHPElement.textContent = `HP: ${playerHP}`;
+      flashHeroDamage();
       if (playerHP <= 0) {
         isGameOver = true;
         showGameOver(); 
@@ -2195,6 +2218,7 @@ function updateBoss3Whirls() {
     if (isCollision(hero, w)) {
       playerHP -= 20; // 玩家扣血
       playerHPElement.textContent = `HP: ${playerHP}`;
+      flashHeroDamage();
       if (playerHP <= 0) {
         isGameOver = true;
         showGameOver(); 
@@ -2225,6 +2249,7 @@ function updateBoss3redmoon() {
     if (isCollision(hero, r)) {
       playerHP -= 15; // 玩家扣血
       playerHPElement.textContent = `HP: ${playerHP}`;
+      flashHeroDamage();
       if (playerHP <= 0) {
         isGameOver = true;
         showGameOver(); 
