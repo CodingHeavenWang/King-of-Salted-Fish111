@@ -50,6 +50,9 @@ const boss3Bgm4=new Audio('BGM/StainedBrutalCalamity4.mp3');
 boss3Bgm4.loop = true;
 const boss3Bgm5=new Audio('BGM/StainedBrutalCalamity5.mp3');
 boss3Bgm5.loop = true;
+const storybgm=new Audio('BGM/storybgm.MP3');
+boss3Bgm5.loop = true;
+
 
 // timecount：用于控制怪物生成频率和血量等随时间变化
 let timecount = 0;
@@ -125,8 +128,8 @@ const boss = {
   y: 75,                      // 在顶部
   width: 150,
   height: 150,
-  hp: 120000,                   // Boss的血量
-  initialhp: 120000,
+  hp: 300000,                   // Boss的血量
+  initialhp: 300000,
   isAlive: false,             // Boss是否存活
   bulletSpawnRate: 60,        // Boss发射弹幕的频率
   bulletSpawnCounter: 0,      // Boss弹幕发射计数器
@@ -145,8 +148,8 @@ const boss3 = {
   y: 50,
   width: 40,
   height: 50,
-  hp: 30000,
-  initialhp: 30000,
+  hp: 40000,
+  initialhp: 40000,
   isAlive: false,
   bulletSpawnRate: 60,
   bulletSpawnCounter: 0,
@@ -275,7 +278,8 @@ function playOpeningAnimation() {
   const openingScreen = document.getElementById('openingScreen');
   let currentIndex = 0;
   let animationSkipped = false;
-
+  storybgm.currentTime = 0;
+  storybgm.play();
   // 创建图片容器
   const img = document.createElement('img');
   openingScreen.appendChild(img);
@@ -622,6 +626,15 @@ function pickTwoDistinctIndices(n) {
  * 更新“门”下落 + 碰撞
  ********************/
 function updateDoors() {
+  if (boss.isAlive || boss3.isAlive) {
+    for (let i = doors.length - 1; i >= 0; i--) {
+      if (doors[i].parent && doors[i].parent.parentNode) {
+        doors[i].parent.parentNode.removeChild(doors[i].parent);
+      }
+      removeGameObject(doors, i);
+    }
+    return;
+  }
   for (let i = 0; i < doors.length; i++) {
     const d = doors[i];
     // 门下落
@@ -1178,7 +1191,7 @@ function spawnBoss3MinionLeft() {
     y: 300,
     width: 60,
     height: 60,
-    hp: 1000, // 敌怪的血量
+    hp: 3000, // 敌怪的血量
     bulletSpawnRate: 120, // 发射弹幕的频率
     bulletSpawnCounter: 0,
     speed: 1,
@@ -1200,7 +1213,7 @@ function spawnBoss3MinionRight() {
     y: 300,
     width: 60,
     height: 60,
-    hp: 1000, // 敌怪的血量
+    hp: 3000, // 敌怪的血量
     bulletSpawnRate: 120, // 发射弹幕的频率
     bulletSpawnCounter: 0,
     speed: 1,
@@ -1322,7 +1335,20 @@ function updateAll() {
     boss3dead();
   }
 
+  //document.addEventListener('keydown', (e) => {
+  //  if ((e.key === 'p' || e.key === 'P') && !boss.isAlive) {
+  //    initBoss3();
+  //  }
+  //}
+  //);
 
+
+  //document.addEventListener('keydown', (e) => {
+  //  if ((e.key === 'o' || e.key === 'O') && !boss.isAlive) {
+  //    initBoss();
+  //  }
+  //}
+  //);
   
 
   // 更新武器掉落
@@ -1403,7 +1429,11 @@ function updateHero() {
   // 子弹发射
   bulletSpawnCounter++;
   if (bulletSpawnCounter >= effectiveSpawnRate) {
-    spawnBullet();
+    if (weapontype === 5) {
+      spawnHomingBullet();
+    } else {
+      spawnBullet();
+    }
     bulletSpawnCounter = 0;
   }
 }
@@ -1452,9 +1482,15 @@ function updateMonstersAll() {
 
     // 碰撞主角
     if (isCollision(hero, m)) {
-      isGameOver = true;
-      showGameOver(); 
-      break;
+      playerHP-=m.hp;
+      flashHeroDamage();
+      if (playerHP <= 0) {
+        isGameOver = true;
+        showGameOver(); 
+      }
+      removeMonster(monsters, i);
+      i--;
+      continue;
     }
   }
 }
@@ -1465,6 +1501,10 @@ function updateMonstersAll() {
 function updateBullets() {
   for (let i = 0; i < bullets.length; i++) {
     const b = bullets[i];
+    if (b.weaponTypeAtFire === 5) {
+      updateHomingBullet(b);
+      continue; // 处理完追踪弹后跳过下面的常规子弹更新逻辑
+    }
     if (!b.hasHit) {
       b.y -= bulletSpeed;
       updatePosition(b);
@@ -1693,6 +1733,32 @@ function updatePowerups() {
   }
 }
 
+function spawnHomingBullet() {
+  const bulletDiv = document.createElement('div');
+  bulletDiv.className = 'bullet homingBullet';
+  // 使用指定的贴图
+  bulletDiv.style.backgroundImage = 'url("Bullet/trace.gif")';
+  bulletDiv.style.backgroundSize = 'cover';
+  
+  // 设置子弹初始位置（从主角正中上方发射）
+  const bulletX = hero.x + hero.width / 2 - 17.5;  // 假设子弹宽度为20
+  const bulletY = hero.y - 20;                   // 子弹从主角上方一定距离发射
+  
+  const bulletObj = {
+    element: bulletDiv,
+    x: bulletX,
+    y: bulletY,
+    width: 35,
+    height: 45,
+    weaponTypeAtFire: 5,  // 新武器类型
+    speed: bulletSpeed,   // 可根据需要调整追踪子弹速度
+    damage: bulletAttack,
+    target: null          // 当前追踪目标，初始为 null
+  };
+  bullets.push(bulletObj);
+  gameContainer.appendChild(bulletDiv);
+  updatePosition(bulletObj);
+}
 /********************
  * 移除怪物 (包括血量文本)
  ********************/
@@ -1849,12 +1915,96 @@ function updateBoss() {
         bossHPElement.style.display = 'none';
         updateBossHP(); // 更新Boss血条
 
-        // 播放胜利视频
-        playEndingAnimation();
+        setTimeout(() => {
+          // 创建并显示遮罩层的渐变效果
+          const overlay = document.getElementById('darkOverlay');
+          overlay.style.backgroundColor = 'rgba(0, 0, 0, 1)'; // 逐渐变暗
+    
+          // 在遮罩层变暗后隐藏主菜单并播放开场动画
+          setTimeout(() => {
+            playEndingAnimation(); // 播放动画
+          }, 1000); // 等待1秒，确保渐变效果完成
+        }, 1000); // 等待1秒，确保字幕淡出
+
+
        }
     }
   }
 }
+
+function updateHomingBullet(bullet) {
+  // 判断当前追踪目标是否有效
+  if (!bullet.target || !isValidTarget(bullet.target)) {
+    // 搜索目标：在画布中找所有在主角上方（即 target 的底部小于 hero.y）的敌人，
+    // 并选择其中 y 坐标最大（即最靠近主角但仍在其上方）的作为目标
+    let potentialTargets = [];
+    // 搜索所有小怪
+    monsters.forEach(m => {
+      if (m.y + m.height < hero.y) {
+        potentialTargets.push(m);
+      }
+    });
+    boss3Minions.forEach(m => {
+      if (m.y + m.height < hero.y) {
+        potentialTargets.push(m);
+      }
+    });
+    // 搜索 Boss（如果存活且在主角上方）
+    if (boss.isAlive && (boss.y + boss.height < hero.y)) {
+      potentialTargets.push(boss);
+    }
+    if (boss3.isAlive && (boss3.y + boss3.height < hero.y)) {
+      potentialTargets.push(boss3);
+    }
+    if (potentialTargets.length > 0) {
+      let chosen = potentialTargets[0];
+      potentialTargets.forEach(t => {
+        if (t.y > chosen.y) {
+          chosen = t;
+        }
+      });
+      bullet.target = chosen;
+    } else {
+      bullet.target = null;
+    }
+  }
+  // 如果有目标，则追踪
+  if (bullet.target) {
+    // 计算子弹中心与目标中心之间的差值
+    const targetCenterX = bullet.target.x + bullet.target.width / 2;
+    const targetCenterY = bullet.target.y + bullet.target.height / 2;
+    const bulletCenterX = bullet.x + bullet.width / 2;
+    const bulletCenterY = bullet.y + bullet.height / 2;
+    const dx = targetCenterX - bulletCenterX;
+    const dy = targetCenterY - bulletCenterY;
+    const angle = Math.atan2(dy, dx);
+    // 按照计算角度更新子弹位置
+    bullet.x += bullet.speed * Math.cos(angle);
+    bullet.y += bullet.speed * Math.sin(angle);
+    if (isCollision(bullet, bullet.target)) {
+      hitSounds.default.currentTime = 0;
+      hitSounds.default.play();
+      bullet.target.hp -= bullet.damage*0.8;
+      bullet.target.hp = Math.floor(bullet.target.hp);
+      removeGameObject(bullets, bullets.indexOf(bullet));
+      return;
+    }
+  } else {
+    // 如果没有目标，则子弹沿垂直向上移动
+    bullet.y -= bullet.speed;
+  }
+  updatePosition(bullet);
+  // 如果子弹超出画布，则移除
+  if (bullet.y + bullet.height < 0 || bullet.x < 0 || bullet.x > containerWidth) {
+    removeGameObject(bullets, bullets.indexOf(bullet));
+  }
+}
+
+function isValidTarget(target) {
+  // 判断目标是否存在且血量大于 0（或其它判断标准）
+  return target && target.hp > 0;
+}
+
 
 function playEndingAnimation() {
   const endingScreen = document.getElementById('endingScreen');
@@ -1922,6 +2072,8 @@ function playEndingAnimation() {
       }
     }
   };
+
+
   window.addEventListener('keydown', skipAnimation);
 }
 
@@ -2317,9 +2469,9 @@ function updateBoss3Minions() {
 
     // 更新敌怪血条
     if (minion.type === 'left') {
-      updateBoss3MinionHP(boss3MinionLeftHPElement, minion.hp, 1000,'left');
+      updateBoss3MinionHP(boss3MinionLeftHPElement, minion.hp, 3000,'left');
     } else if (minion.type === 'right') {
-      updateBoss3MinionHP(boss3MinionRightHPElement, minion.hp, 1000,'right');
+      updateBoss3MinionHP(boss3MinionRightHPElement, minion.hp, 3000,'right');
     }
 
     // 敌怪发射弹幕
@@ -2892,6 +3044,13 @@ function removeGameObject(arr, index) {
  * 显示游戏结束
  ********************/
 function showGameOver() {
+  setTimeout(() => {
+    openingScreen.style.display = 'none';
+    setTimeout(() => {
+      const overlay = document.getElementById('darkOverlay');
+      overlay.style.backgroundColor = 'rgba(0, 0, 0, 0)'; // 逐渐变亮
+    }, 300); // 等待0.5秒，确保渐变效果完成
+}, 500);
   // 停止所有音乐
   bgm.pause();
   bossBgm.pause();
@@ -2900,6 +3059,7 @@ function showGameOver() {
   boss3Bgm3.pause();
   boss3Bgm4.pause();
   boss3Bgm5.pause();
+  storybgm.pause;
 
   // 重置音频时间
   bgm.currentTime = 0;
@@ -2909,6 +3069,7 @@ function showGameOver() {
   boss3Bgm3.currentTime = 0;
   boss3Bgm4.currentTime = 0;
   boss3Bgm5.currentTime = 0;
+  storybgm.currentTime = 0; 
 
   // 显示游戏结束界面
   const gameOverScreen = document.getElementById('gameOverScreen');
@@ -2922,7 +3083,7 @@ function showGameOver() {
     // 添加确认提示
     if (confirm('确定要重新开始游戏吗？')) {
       // 先暂停所有音频
-      [bgm, bossBgm, boss3Bgm1, boss3Bgm2, boss3Bgm3, boss3Bgm4, boss3Bgm5].forEach(audio => {
+      [bgm, bossBgm, boss3Bgm1, boss3Bgm2, boss3Bgm3, boss3Bgm4, boss3Bgm5,storybgm].forEach(audio => {
         audio.pause();
         audio.currentTime = 0;
       });
@@ -2934,7 +3095,7 @@ function showGameOver() {
 
   document.getElementById('mainMenuButton').onclick = () => {
     // 先停止所有声音
-    [bgm, bossBgm, boss3Bgm1, boss3Bgm2, boss3Bgm3, boss3Bgm4, boss3Bgm5].forEach(audio => {
+    [bgm, bossBgm, boss3Bgm1, boss3Bgm2, boss3Bgm3, boss3Bgm4, boss3Bgm5,storybgm].forEach(audio => {
       audio.pause();
       audio.currentTime = 0;
     });
@@ -3047,6 +3208,13 @@ document.addEventListener('keydown', (e) => {
 })
 
 document.addEventListener('keydown', (e) => {
+  if ((e.key === '5')) {
+    weapontype = 5;
+    updateWeaponDisplay();
+  }
+}
+)
+document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft') {
     leftPressed = true;
   } else if (e.key === 'ArrowRight') {
@@ -3106,6 +3274,7 @@ document.documentElement.style.backgroundSize = "cover";
   updateHeroStats();
 
   // 启动背景音乐
+  storybgm.pause;
   bgm.currentTime = 0;
   bgm.play().catch(e => console.log("音乐播放需要用户交互"));
   
