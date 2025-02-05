@@ -65,7 +65,7 @@ const hero = {
   x: containerWidth / 2 - 30, // 初始居中 (50px 宽的一半)
   y: containerHeight,    // 在底部
   width: 60,
-  height: 75,
+  height: 60,
   speed: 2.25,
   isAlive: true,
   element: document.createElement('div'),
@@ -189,6 +189,15 @@ boss3MinionRightHPElement.id = 'boss3MinionRightHP';
 // 将血条添加到游戏容器中
 gameContainer.appendChild(boss3MinionLeftHPElement);
 gameContainer.appendChild(boss3MinionRightHPElement);
+
+const boss3Shield = {
+  element: null, // 护盾的DOM元素
+  x: 0, // 护盾的X坐标
+  y: 0, // 护盾的Y坐标
+  width: 150, // 护盾的宽度
+  height: 150, // 护盾的高度
+  isActive: false, // 护盾是否激活
+};
 
 // 玩家血量
 let playerHP = 10000;
@@ -759,7 +768,7 @@ function updateDialogue() {
 function startRealBossFight() {
   // 原有initBoss的内容
   boss.originalBulletSpawnRate = boss.bulletSpawnRate; 
-  bgm.pause();
+  boss3Bgm5.pause();
   bossBgm.currentTime = 0;
   bossBgm.play();
   removeAllMonstersNoReward();
@@ -992,7 +1001,9 @@ function updateDialogueboss3dead() {
     // 解除按键监听
     document.removeEventListener('keydown', handleDialogueKeyboss3dead);
     boss3dialoguebiaoji=1;
-    if (!frameId) gameLoop();
+    if (!frameId) {
+      gameLoop();
+    }
   }
 }
 
@@ -1895,8 +1906,18 @@ function updateBoss() {
         bossHPElement.style.display = 'none';
         updateBossHP(); // 更新Boss血条
 
-        // 播放胜利视频
-        playEndingAnimation();
+        setTimeout(() => {
+          // 创建并显示遮罩层的渐变效果
+          const overlay = document.getElementById('darkOverlay');
+          overlay.style.backgroundColor = 'rgba(0, 0, 0, 1)'; // 逐渐变暗
+    
+          // 在遮罩层变暗后隐藏主菜单并播放开场动画
+          setTimeout(() => {
+            playEndingAnimation(); // 播放动画
+          }, 1000); // 等待1秒，确保渐变效果完成
+        }, 1000); // 等待1秒，确保字幕淡出
+
+
        }
     }
   }
@@ -2042,6 +2063,8 @@ function playEndingAnimation() {
       }
     }
   };
+
+
   window.addEventListener('keydown', skipAnimation);
 }
 
@@ -2064,6 +2087,8 @@ function updateBoss3() {
     boss3HPElement.style.display = 'none';
     boss3MinionLeftHPElement.style.display = 'block';
     boss3MinionRightHPElement.style.display = 'block';
+    // 生成护盾
+    spawnBoss3Shield();
   }
   if (boss3Minions.length===0){
     boss3.bulletSpawnRate=60;
@@ -2076,8 +2101,11 @@ function updateBoss3() {
     // 更新敌怪
     updateBoss3Minions();
   }
+  // 更新护盾位置
+  if (boss3Shield.isActive) {
+    updateBoss3Shield();
+  }
   
-
   // 当Boss血量降至50%时，进入二阶段
   if (boss3.hp <= 0.5 * boss3.initialhp && boss3.phase === 1) {
     boss3.phase = 2;
@@ -2086,8 +2114,12 @@ function updateBoss3() {
     boss3Bgm3.currentTime = 0;
     boss3Bgm3.play();
   }
-
-
+  if (boss3Minions.length === 0) {
+    boss3.bulletSpawnRate = 60;
+    boss3.isInvincible = false;
+    // 移除护盾
+    removeBoss3Shield();
+  }
 
   // 检测是否进入过渡阶段
   if (!boss3.isTransitioning) {
@@ -2113,7 +2145,6 @@ function updateBoss3() {
       boss3.isTransitioning = false;
       boss3.isInvincible = false;
       boss3.tranphase++; // 进入下一阶段
-      // 移除盾的背景图
       
       if(boss3.hp >0.5*boss3.initialhp){
         boss3.element.style.backgroundImage = 'url("Monster/boss3_phase1.png")'
@@ -2342,6 +2373,43 @@ function updateBoss3() {
   }
 }
 
+function spawnBoss3Shield() {
+  // 创建护盾的DOM元素
+  const shieldDiv = document.createElement('div');
+  shieldDiv.className = 'boss3-shield';
+  shieldDiv.style.backgroundImage = 'url("Monster/Calamitas_shield.gif")'; // 护盾的图片
+  shieldDiv.style.backgroundSize = 'cover';
+  shieldDiv.style.position = 'absolute';
+  shieldDiv.style.width = `${boss3Shield.width}px`;
+  shieldDiv.style.height = `${boss3Shield.height}px`;
+  shieldDiv.style.left = `${boss3.x - (boss3Shield.width - boss3.width) / 2}px`; // 居中
+  shieldDiv.style.top = `${boss3.y - (boss3Shield.height - boss3.height) / 2}px`;
+  shieldDiv.style.zIndex = '-1'; // 确保护盾在Boss背后
+  gameContainer.appendChild(shieldDiv);
+
+  // 更新护盾对象
+  boss3Shield.element = shieldDiv;
+  boss3Shield.isActive = true;
+}
+
+function updateBoss3Shield() {
+  if (!boss3Shield.isActive || !boss3Shield.element) return;
+
+  // 更新护盾的位置
+  boss3Shield.x = boss3.x - (boss3Shield.width - boss3.width) / 2;
+  boss3Shield.y = boss3.y - (boss3Shield.height - boss3.height) / 2;
+  boss3Shield.element.style.left = `${boss3Shield.x}px`;
+  boss3Shield.element.style.top = `${boss3Shield.y}px`;
+}
+
+function removeBoss3Shield() {
+  if (boss3Shield.element && boss3Shield.element.parentNode) {
+    boss3Shield.element.parentNode.removeChild(boss3Shield.element);
+  }
+  boss3Shield.element = null;
+  boss3Shield.isActive = false;
+}
+
 function spawnWeaponDrop() {
   // 创建武器的DOM元素
   const weaponDiv = document.createElement('div');
@@ -2505,7 +2573,7 @@ function updateWeaponDrop() {
 
   // 检测玩家是否接住武器
   if (isCollision(hero, weaponDrop)) {
-    showMessage('New Weapon Unlocked: Fireball!');
+    showMessage('New Weapon Unlocked: Cinders of Lament!');
     unlocktype3=true;
     removeWeaponDrop(); // 移除武器
   }
@@ -2520,15 +2588,42 @@ function removeWeaponDrop() {
 }
 
 function showMessage(message) {
+  // 添加背景模糊
+  const blurOverlay = document.createElement('div');
+  blurOverlay.className = 'blur-overlay';
+  gameContainer.appendChild(blurOverlay);
+
+  // 创建提示信息
   const messageDiv = document.createElement('div');
   messageDiv.className = 'game-message';
-  messageDiv.textContent = message;
+
+  // 添加武器图标和文字
+  const iconDiv = document.createElement('div');
+  iconDiv.className = 'weapon-icon';
+  iconDiv.style.backgroundImage = 'url("Weapon/new_weapon_icon.png")';
+  iconDiv.style.backgroundSize = 'cover';
+  iconDiv.style.width = '40px';
+  iconDiv.style.height = '40px';
+  iconDiv.style.display = 'inline-block';
+  iconDiv.style.marginRight = '10px';
+  iconDiv.style.animation = 'spin 2s linear infinite';
+
+  const textDiv = document.createElement('div');
+  textDiv.textContent = message;
+  textDiv.style.display = 'inline-block';
+
+  messageDiv.appendChild(iconDiv);
+  messageDiv.appendChild(textDiv);
+
   gameContainer.appendChild(messageDiv);
 
-  // 2秒后移除提示信息
+  // 2秒后移除提示信息和背景模糊
   setTimeout(() => {
     if (messageDiv.parentNode) {
       messageDiv.parentNode.removeChild(messageDiv);
+    }
+    if (blurOverlay.parentNode) {
+      blurOverlay.parentNode.removeChild(blurOverlay);
     }
   }, 2000);
 }
@@ -2913,7 +3008,7 @@ function updateBossHP() {
 //更新属性栏
 function updateHeroStats() {
   document.getElementById('heroAttack').textContent = bulletAttack;
-  document.getElementById('heroAttackSpeed').textContent = bulletSpawnRate;
+  document.getElementById('heroAttackSpeed').textContent = (60/bulletSpawnRate).toFixed(2)+"times/s";
   document.getElementById('heroMoveSpeed').textContent = hero.speed; // 更新移动速度
 }
 
@@ -2940,6 +3035,13 @@ function removeGameObject(arr, index) {
  * 显示游戏结束
  ********************/
 function showGameOver() {
+  setTimeout(() => {
+    openingScreen.style.display = 'none';
+    setTimeout(() => {
+      const overlay = document.getElementById('darkOverlay');
+      overlay.style.backgroundColor = 'rgba(0, 0, 0, 0)'; // 逐渐变亮
+    }, 300); // 等待0.5秒，确保渐变效果完成
+}, 500);
   // 停止所有音乐
   bgm.pause();
   bossBgm.pause();
@@ -3087,6 +3189,12 @@ document.addEventListener('keydown', (e) => {
   }
 }
 )
+document.addEventListener('keydown', (e) => {
+  if ((e.key === '9')) {
+    weapontype = 3;
+    updateWeaponDisplay();
+  }
+})
 
 document.addEventListener('keydown', (e) => {
   if ((e.key === '5')) {
@@ -3114,10 +3222,15 @@ document.addEventListener('keyup', (e) => {
  * 启动游戏
  ********************/
 function startGame() {
+  document.getElementById('weaponDisplay').style.display = 'flex';
+  startMessage.style.display = "none"; // 隐藏提示信息
   // 隐藏主界面
   document.getElementById('mainMenu').style.display = 'none';
   // 显示游戏容器
   gameContainer.style.display = 'block';
+  document.body.style.backgroundImage = "url('Wallpaper/desertforest.png')";
+document.documentElement.style.backgroundImage = "url('Wallpaper/desertforest.png')";
+document.documentElement.style.backgroundSize = "cover";
   //显示bat
   document.body.classList.add('game-active');
   document.body.classList.add('game-active');
@@ -3152,7 +3265,7 @@ function startGame() {
   // 启动背景音乐
   bgm.currentTime = 0;
   bgm.play().catch(e => console.log("音乐播放需要用户交互"));
-
+  
   // 初始化主角
   initHero();
 
@@ -3166,6 +3279,7 @@ document.addEventListener('keydown', (event) => {
   // 判断是否在主菜单界面
   if (document.getElementById('mainMenu').style.display !== 'none') {
     // 隐藏“按任意键开始游戏”字幕
+    
     const startMessage = document.getElementById('startMessage');
     startMessage.style.opacity = '0'; // 字幕淡出
 
