@@ -750,13 +750,3 @@
 .button-container button#mainMenuButton:hover {
   background: #d35400;
 }
-
-#boss3-dialogue {
-  background-image: url('UI/calamitas_dialogue_bg.png');
-  border-color: #8b0000;
-}
-
-#boss3-dialogue .dialogue-text {
-  color: #ff4500;
-  text-shadow: 2px 2px #4b0000;
-}
