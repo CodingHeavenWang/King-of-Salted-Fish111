@@ -58,6 +58,7 @@ let isSkillActive = false; // 技能是否激活
 let skillCooldown = 600; // 技能冷却时间（10秒）
 let lastSkillTime = 0; // 上次使用技能的时间
 let weapontype = 0;
+let unlocktype3 = false;
 // 主角
 const hero = {
   element: null,
@@ -81,6 +82,17 @@ let bulletSpeed = 5;       // 子弹向上移动速度
 let bulletAttack = 25;     // 子弹伤害
 let bulletSpawnRate = 60;  // 子弹发射频率(帧数间隔越小越快)
 let bulletSpawnCounter = 0;
+
+const weaponDrop = {
+  element: null, // 武器的DOM元素
+  x: containerWidth / 2 - 25, // 初始位置在屏幕中心
+  y: 250, // 从顶部开始下落
+  width: 80,
+  height: 80,
+  speed: 2, // 下落速度
+  isFalling: false, // 是否正在下落
+  type: 'newWeapon', // 武器类型
+};
 
 // 怪物
 const monsters = [];
@@ -313,6 +325,76 @@ function playOpeningAnimation() {
   };
   window.addEventListener('keydown', skipAnimation);
 }
+
+function playEndingAnimation() {
+  const endingScreen = document.getElementById('endingScreen');
+  let currentIndex = 0;
+  let animationSkipped = false;
+
+  // 创建图片容器
+  const img = document.createElement('img');
+  endingScreen.appendChild(img);
+
+  // 预加载图片
+  const endingImages = [
+    'Ending/Ending1.png',
+    'Ending/Ending2.png',
+    'Ending/Ending3.png',
+    'Ending/Ending4.png',
+    'Ending/Ending5.png',
+  ];
+  preloadImages(endingImages);
+
+  // 显示首屏
+  endingScreen.style.display = 'flex';
+
+  const showNextImage = () => {
+    if (currentIndex >= endingImages.length || animationSkipped) {
+      // 动画结束
+      endingScreen.style.opacity = '0';
+      setTimeout(() => {
+        endingScreen.style.display = 'none';
+        showGameOver(); // 显示游戏结束界面
+      }, 500);
+      return;
+    }
+
+    // 更新图片源
+    img.src = endingImages[currentIndex];
+    endingScreen.style.opacity = '1';
+
+    // 设置定时切换
+    setTimeout(() => {
+      if (animationSkipped) return;
+      endingScreen.style.opacity = '0';
+      setTimeout(() => {
+        currentIndex++;
+        showNextImage();
+      }, 500); // 淡出动画时间
+    }, 5000); // 每张图片显示时间
+  };
+
+  // 开始播放序列
+  setTimeout(showNextImage, 100);
+
+  // 跳过动画逻辑
+  const skipAnimation = (event) => {
+    if (event.keyCode === 32) { // 空格键
+      event.preventDefault();
+      if (!animationSkipped) {
+        animationSkipped = true;
+        endingScreen.style.opacity = '0';
+        setTimeout(() => {
+          endingScreen.style.display = 'none';
+          showGameOver();
+          window.removeEventListener('keydown', skipAnimation);
+        }, 500);
+      }
+    }
+  };
+  window.addEventListener('keydown', skipAnimation);
+}
+
 
 /********************
  * 生成子弹
@@ -1305,6 +1387,48 @@ function updateAll() {
     }
   }
   );
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === '0' )) {
+      weapontype = 0;
+      updateWeaponDisplay();
+    }
+  }
+  )
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === '1' )) {
+      weapontype = 1;
+      updateWeaponDisplay();
+    }
+  }
+  )
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === '2')) {
+      weapontype = 2;
+      updateWeaponDisplay();
+    }
+  }
+  )
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === '3') && unlocktype3) {
+      weapontype = 3;
+      updateWeaponDisplay();
+    }
+  }
+  )
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === '9')) {
+      weapontype = 3;
+      updateWeaponDisplay();
+    }
+  }
+  )
+
+  // 更新武器掉落
+  if (weaponDrop.isFalling) {
+    updateWeaponDrop();
+  }
+
   updateHero();
   updateBullets();
   updateMonstersAll();
@@ -1825,7 +1949,7 @@ function updateBoss() {
         updateBossHP(); // 更新Boss血条
 
         // 播放胜利视频
-        playVictoryVideo();
+        playEndingAnimation();
        }
     }
   }
@@ -2119,10 +2243,31 @@ function updateBoss3() {
           // 隐藏Boss血条
           boss3HPElement.style.display = 'none';
           updateBoss3HP(); // 更新Boss血条
+
+          // 生成武器掉落
+          spawnWeaponDrop();
          }
       }
     }
   }
+}
+
+function spawnWeaponDrop() {
+  // 创建武器的DOM元素
+  const weaponDiv = document.createElement('div');
+  weaponDiv.className = 'weapon-drop';
+  weaponDiv.style.backgroundImage = 'url("guns/gun3.png")'; // 武器的图片
+  weaponDiv.style.backgroundSize = 'cover';
+  weaponDiv.style.position = 'absolute';
+  weaponDiv.style.width = `${weaponDrop.width}px`;
+  weaponDiv.style.height = `${weaponDrop.height}px`;
+  weaponDiv.style.left = `${weaponDrop.x}px`;
+  weaponDiv.style.top = `${weaponDrop.y}px`;
+  gameContainer.appendChild(weaponDiv);
+
+  // 更新武器对象
+  weaponDrop.element = weaponDiv;
+  weaponDrop.isFalling = true;
 }
 
 // 开始过渡阶段
@@ -2255,7 +2400,48 @@ function spawnBoss3MinionBulletRight(x, y, angle) {
   boss3Bullets.push(bulletObj);
 }
 
+function updateWeaponDrop() {
+  if (!weaponDrop.isFalling) return;
 
+  // 更新武器的位置
+  weaponDrop.y += weaponDrop.speed;
+  weaponDrop.element.style.top = `${weaponDrop.y}px`;
+
+  // 检测武器是否超出屏幕
+  if (weaponDrop.y > containerHeight) {
+    removeWeaponDrop(); // 移除武器
+    return;
+  }
+
+  // 检测玩家是否接住武器
+  if (isCollision(hero, weaponDrop)) {
+    showMessage('New Weapon Unlocked: Fireball!');
+    unlocktype3=true;
+    removeWeaponDrop(); // 移除武器
+  }
+}
+
+function removeWeaponDrop() {
+  if (weaponDrop.element && weaponDrop.element.parentNode) {
+    weaponDrop.element.parentNode.removeChild(weaponDrop.element);
+  }
+  weaponDrop.element = null;
+  weaponDrop.isFalling = false;
+}
+
+function showMessage(message) {
+  const messageDiv = document.createElement('div');
+  messageDiv.className = 'game-message';
+  messageDiv.textContent = message;
+  gameContainer.appendChild(messageDiv);
+
+  // 2秒后移除提示信息
+  setTimeout(() => {
+    if (messageDiv.parentNode) {
+      messageDiv.parentNode.removeChild(messageDiv);
+    }
+  }, 2000);
+}
 
 // 更新Boss3的弹幕
 function updateBoss3Bullets() {
@@ -2548,7 +2734,8 @@ function updateFirewalls() {
       removeGameObject([boss3], 0); // 移除Boss3
       score += 100; // 击败Boss3加100分
       scoreElement.textContent = `Score: ${score}`;
-
+      // 生成武器掉落
+      spawnWeaponDrop();
       // 隐藏Boss3血条
       boss3HPElement.style.display = 'none';
       updateBoss3HP(); // 更新Boss3血条
@@ -2670,7 +2857,7 @@ function removeGameObject(arr, index) {
  * 显示游戏结束
  ********************/
 function showGameOver() {
-  // 停止所有音乐（重要！防止刷新后音乐继续播放）
+  // 停止所有音乐
   bgm.pause();
   bossBgm.pause();
   boss3Bgm1.pause();
@@ -2679,12 +2866,16 @@ function showGameOver() {
   boss3Bgm4.pause();
   boss3Bgm5.pause();
 
-  // 立即重置音频时间（针对某些浏览器的自动播放策略）
+  // 重置音频时间
   bgm.currentTime = 0;
   bossBgm.currentTime = 0;
-  // ...其他bgm同理...
+  boss3Bgm1.currentTime = 0;
+  boss3Bgm2.currentTime = 0;
+  boss3Bgm3.currentTime = 0;
+  boss3Bgm4.currentTime = 0;
+  boss3Bgm5.currentTime = 0;
 
-  // 显示死亡界面
+  // 显示游戏结束界面
   const gameOverScreen = document.getElementById('gameOverScreen');
   const finalScoreElement = document.getElementById('finalScore');
   
@@ -2694,6 +2885,7 @@ function showGameOver() {
   // 修改按钮事件监听
   document.getElementById('retryButton').onclick = () => {
     // 添加确认提示
+    if (confirm('确定要重新开始游戏吗？')) {
       // 先暂停所有音频
       [bgm, bossBgm, boss3Bgm1, boss3Bgm2, boss3Bgm3, boss3Bgm4, boss3Bgm5].forEach(audio => {
         audio.pause();
@@ -2702,7 +2894,7 @@ function showGameOver() {
       
       // 使用true强制从服务器重新加载（绕过缓存）
       window.location.reload(true);
-
+    }
   };
 
   document.getElementById('mainMenuButton').onclick = () => {
