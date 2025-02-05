@@ -50,6 +50,9 @@ const boss3Bgm4=new Audio('BGM/StainedBrutalCalamity4.mp3');
 boss3Bgm4.loop = true;
 const boss3Bgm5=new Audio('BGM/StainedBrutalCalamity5.mp3');
 boss3Bgm5.loop = true;
+const storybgm=new Audio('BGM/storybgm.MP3');
+boss3Bgm5.loop = true;
+
 
 // timecount：用于控制怪物生成频率和血量等随时间变化
 let timecount = 0;
@@ -145,8 +148,8 @@ const boss3 = {
   y: 50,
   width: 40,
   height: 50,
-  hp: 30000,
-  initialhp: 30000,
+  hp: 40000,
+  initialhp: 40000,
   isAlive: false,
   bulletSpawnRate: 60,
   bulletSpawnCounter: 0,
@@ -275,7 +278,8 @@ function playOpeningAnimation() {
   const openingScreen = document.getElementById('openingScreen');
   let currentIndex = 0;
   let animationSkipped = false;
-
+  storybgm.currentTime = 0;
+  storybgm.play();
   // 创建图片容器
   const img = document.createElement('img');
   openingScreen.appendChild(img);
@@ -1179,7 +1183,7 @@ function spawnBoss3MinionLeft() {
     y: 300,
     width: 60,
     height: 60,
-    hp: 1000, // 敌怪的血量
+    hp: 3000, // 敌怪的血量
     bulletSpawnRate: 120, // 发射弹幕的频率
     bulletSpawnCounter: 0,
     speed: 1,
@@ -1201,7 +1205,7 @@ function spawnBoss3MinionRight() {
     y: 300,
     width: 60,
     height: 60,
-    hp: 1000, // 敌怪的血量
+    hp: 3000, // 敌怪的血量
     bulletSpawnRate: 120, // 发射弹幕的频率
     bulletSpawnCounter: 0,
     speed: 1,
@@ -1453,9 +1457,15 @@ function updateMonstersAll() {
 
     // 碰撞主角
     if (isCollision(hero, m)) {
-      isGameOver = true;
-      showGameOver(); 
-      break;
+      playerHP-=m.hp;
+      flashHeroDamage();
+      if (playerHP <= 0) {
+        isGameOver = true;
+        showGameOver(); 
+      }
+      removeMonster(monsters, i);
+      i--;
+      continue;
     }
   }
 }
@@ -2318,9 +2328,9 @@ function updateBoss3Minions() {
 
     // 更新敌怪血条
     if (minion.type === 'left') {
-      updateBoss3MinionHP(boss3MinionLeftHPElement, minion.hp, 1000,'left');
+      updateBoss3MinionHP(boss3MinionLeftHPElement, minion.hp, 3000,'left');
     } else if (minion.type === 'right') {
-      updateBoss3MinionHP(boss3MinionRightHPElement, minion.hp, 1000,'right');
+      updateBoss3MinionHP(boss3MinionRightHPElement, minion.hp, 3000,'right');
     }
 
     // 敌怪发射弹幕
@@ -2901,6 +2911,7 @@ function showGameOver() {
   boss3Bgm3.pause();
   boss3Bgm4.pause();
   boss3Bgm5.pause();
+  storybgm.pause;
 
   // 重置音频时间
   bgm.currentTime = 0;
@@ -2910,6 +2921,7 @@ function showGameOver() {
   boss3Bgm3.currentTime = 0;
   boss3Bgm4.currentTime = 0;
   boss3Bgm5.currentTime = 0;
+  storybgm.currentTime = 0; 
 
   // 显示游戏结束界面
   const gameOverScreen = document.getElementById('gameOverScreen');
@@ -2923,7 +2935,7 @@ function showGameOver() {
     // 添加确认提示
     if (confirm('确定要重新开始游戏吗？')) {
       // 先暂停所有音频
-      [bgm, bossBgm, boss3Bgm1, boss3Bgm2, boss3Bgm3, boss3Bgm4, boss3Bgm5].forEach(audio => {
+      [bgm, bossBgm, boss3Bgm1, boss3Bgm2, boss3Bgm3, boss3Bgm4, boss3Bgm5,storybgm].forEach(audio => {
         audio.pause();
         audio.currentTime = 0;
       });
@@ -2935,7 +2947,7 @@ function showGameOver() {
 
   document.getElementById('mainMenuButton').onclick = () => {
     // 先停止所有声音
-    [bgm, bossBgm, boss3Bgm1, boss3Bgm2, boss3Bgm3, boss3Bgm4, boss3Bgm5].forEach(audio => {
+    [bgm, bossBgm, boss3Bgm1, boss3Bgm2, boss3Bgm3, boss3Bgm4, boss3Bgm5,storybgm].forEach(audio => {
       audio.pause();
       audio.currentTime = 0;
     });
@@ -3107,6 +3119,7 @@ document.documentElement.style.backgroundSize = "cover";
   updateHeroStats();
 
   // 启动背景音乐
+  storybgm.pause;
   bgm.currentTime = 0;
   bgm.play().catch(e => console.log("音乐播放需要用户交互"));
   
