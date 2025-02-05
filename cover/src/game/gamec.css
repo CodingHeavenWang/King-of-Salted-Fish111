@@ -1275,21 +1275,38 @@
   }
   
   #startMessage {
-    font-family: 'Times New Roman', Times, serif; /* 如果 Times New Roman 不可用，则使用 Times 或 serif */
-    position: fixed;
-    top: 50%;
+    /* 原有样式保持不变 */
+    font-family: 'Times New Roman', Times, serif;
+    position: absolute;
+    top: 60%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 36px; /* 增大字体 */
-    font-family: 'Arial', sans-serif; /* 设置字体 */
+    transform: translate(-60%, -50%);
+    font-size: 36px;
     font-weight: bold;
-    color: #ffffff; /* 黄色文字 */
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); /* 添加文字阴影 */
+    color: #ffffff;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
     z-index: 9999;
-    pointer-events: none; /* 禁止点击 */
-    opacity: 1;
-    transition: opacity 1s ease-in-out;
-  }
+    pointer-events: none;
+    
+    /* 新增呼吸效果 */
+    opacity: 0.3; /* 初始透明度 */
+    animation: breathingEffect 2s ease-in-out infinite;
+}
+
+@keyframes breathingEffect {
+    0% {
+        opacity: 0.1;
+        transform: translate(-50%, -50%) scale(0.99);
+    }
+    50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.01);
+    }
+    100% {
+        opacity: 0.1;
+        transform: translate(-50%, -50%) scale(0.99);
+    }
+}
   
   #startMessage:hover {
     transform: translate(-50%, -50%) scale(1.1); /* 鼠标悬停时，字体放大 */
