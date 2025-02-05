@@ -160,7 +160,10 @@ button:hover {
 .fake-textbox {
   margin-top: 10px;
   width: 80%;
-  padding: 8px;
+  padding: 12px; /* 增大内边距 */
   text-align: center;
   background: none;
+  font-size: 1.15rem; /* 原0.95rem改为1.15rem */
+  line-height: 1.5;  /* 新增行高设置 */
+  letter-spacing: 0.5px; /* 添加字间距 */
 }

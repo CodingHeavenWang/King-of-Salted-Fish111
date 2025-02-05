@@ -343,7 +343,6 @@ function playOpeningAnimation() {
   };
   window.addEventListener('keydown', skipAnimation);
 }
-
 /********************
  * 生成子弹
  ********************/

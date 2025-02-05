@@ -113,31 +113,259 @@
             <h3>🎮 Controls<h3>
             ----------------------jhs/zhf----------------------
             <h2>🎨 Artwork </h2>
-            <h3>💻 Webpage</h3>
-            <div class="image-container">
-                <div class="image-item">
-                    <img src="images\web1.jpg" alt="Image 1">
-                    <p>Home Page</p>
-                    <div class="fake-textbox">The homepage features the combination of 2D and 3D. 
+            <style>
+                .webpage-section {
+                  padding: 4rem 0;
+                  background: transparent;
+                }
+                
+                .image-container {
+                  display: grid;
+                  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                  gap: 2.5rem;
+                  max-width: 1200px;
+                  margin: 0 auto;
+                  padding: 0 20px;
+                }
+                
+                .image-item {
+                  position: relative;
+                  border-radius: 16px;
+                  overflow: hidden;
+                  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+                  background: rgba(255,255,255,0.05);
+                  border: 1px solid rgba(108, 92, 231, 0.1);
+                }
+                
+                .image-item:hover {
+                  transform: translateY(-8px);
+                  background: rgba(108, 92, 231, 0.03);
+                  box-shadow: 0 12px 32px rgba(108, 92, 231, 0.08);
+                }
+                
+                .image-item img {
+                  width: 100%;
+                  height: 250px;
+                  object-fit: cover;
+                  transition: transform 0.4s ease;
+                  filter: grayscale(15%);
+                }
+                
+                .image-item:hover img {
+                  transform: scale(1.03);
+                  filter: grayscale(0%);
+                }
+                
+                .image-item p {
+                  font-size: 1.4rem;
+                  font-weight: 700;
+                  color: #e3e3e3; /* 浅色文字 */
+                  text-align: center;
+                  margin: 1.2rem 0;
+                  position: relative;
+                  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                }
+                
+                .fake-textbox {
+                  padding: 1.5rem;
+                  font-size: 0.95rem;
+                  line-height: 1.6;
+                  color: #e3e3e3;
+                  text-align: center;
+                  opacity: 0;
+                  transform: translateY(20px);
+                  transition: all 0.4s ease;
+                  position: absolute;
+                  bottom: 0;
+                  left: 0;
+                  right: 0;
+                  background: rgba(0,0,0,0.7);
+                  backdrop-filter: blur(8px);
+                }
+                
+                .image-item:hover .fake-textbox {
+                  opacity: 1;
+                  transform: translateY(0);
+                }
+                
+                @media (max-width: 768px) {
+                  .image-container {
+                    grid-template-columns: 1fr;
+                  }
+                  
+                  .image-item img {
+                    height: 200px;
+                  }
+                }
+                </style>
+                
+                <section class="webpage-section">
+                  <h3 class="section-title">💻 Webpage</h3>
+                  <div class="image-container">
+                    <div class="image-item">
+                      <img src="images/web1.jpg" alt="Home Page">
+                      <p>Home Page</p>
+                      <div class="fake-textbox">
+                        The homepage features the combination of 2D and 3D. 
                         The turntable spins with the scrolling of the mouse wheel.
+                      </div>
                     </div>
-                </div>
-                <div class="image-item">
-                    <img src="images\web2.jpg" alt="Image 2">
-                    <p>Game Cover</p>
-                    <div class="fake-textbox">The game cover is also a transition page.
+                    <div class="image-item">
+                      <img src="images/web2.jpg" alt="Game Cover">
+                      <p>Game Cover</p>
+                      <div class="fake-textbox">
+                        The game cover is also a transition page.
                         Your hero is in the center of the screen, waiting for you to start the game.
+                      </div>
                     </div>
-                </div>
-                <div class="image-item">
-                    <img src="images\web3.jpg" alt="Image 3">
-                    <p>Game Page</p>
-                    <div class="fake-textbox">The game container is vertically centered, 
+                    <div class="image-item">
+                      <img src="images/web3.jpg" alt="Game Page">
+                      <p>Game Page</p>
+                      <div class="fake-textbox">
+                        The game container is vertically centered, 
                         with a wallpaper behind it.
+                      </div>
                     </div>
+                  </div>
+                </section>
+            <h3>🎧 Music</h3>
+            <style>
+                .music-list {
+                  display: grid;
+                  grid-template-columns: repeat(2, 1fr);
+                  gap: 2rem;
+                  max-width: 1200px;
+                  margin: 2rem auto;
+                  padding: 0 20px;
+                }
+                
+                .music-item {
+                  display: flex;
+                  gap: 1.5rem;
+                  background: #ffffff;
+                  border-radius: 12px;
+                  padding: 1.2rem;
+                  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                  transition: transform 0.3s ease;
+                }
+                
+                .music-item:hover {
+                  transform: translateY(-5px);
+                }
+                
+                .album-cover {
+                  width: 120px;
+                  height: 120px;
+                  border-radius: 8px;
+                  overflow: hidden;
+                  flex-shrink: 0;
+                }
+                
+                .album-cover img {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;
+                }
+                
+                .song-info {
+                  flex: 1;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                }
+                
+                .song-title {
+                  font-size: 1.2rem;
+                  font-weight: 600;
+                  color: #2d3436;
+                  margin-bottom: 0.4rem;
+                }
+                
+                .artist {
+                  font-size: 0.95rem;
+                  color: #636e72;
+                  margin-bottom: 0.8rem;
+                }
+                
+                .duration {
+                  font-size: 0.9rem;
+                  color: #636e72;
+                  margin-top: 0.5rem;
+                }
+                
+                .progress-bar {
+                  width: 100%;
+                  height: 4px;
+                  background: #f0f0f0;
+                  border-radius: 2px;
+                  margin: 0.6rem 0;
+                }
+                
+                .progress {
+                  width: 60%;
+                  height: 100%;
+                  background: #6c5ce7;
+                  border-radius: 2px;
+                }
+                
+                @media (max-width: 768px) {
+                  .music-list {
+                    grid-template-columns: 1fr;
+                  }
+                  
+                  .album-cover {
+                    width: 100px;
+                    height: 100px;
+                  }
+                }
+                </style>
+                
+                <div class="music-list">
+                  <!-- 第1首 -->
+                  <div class="music-item">
+                    <div class="album-cover">
+                      <img src="images\hades.jpg" alt="Album Cover">
+                    </div>
+                    <div class="song-info">
+                      <h3 class="song-title">Song of the Deep</h3>
+                      <p class="artist">Darren Korb</p>
+                      <div class="progress-bar">
+                        <div class="progress"></div>
+                      </div>
+                      <span class="duration">3:24</span>
+                    </div>
+                  </div>
+                
+                  <!-- 第2首 -->
+                  <div class="music-item">
+                    <div class="album-cover">
+                      <img src="images\album2.png" alt="Album Cover">
+                    </div>
+                    <div class="song-info">
+                      <h3 class="song-title">Stained, Brutal Calamity</h3>
+                      <p class="artist">DM DOKURO</p>
+                      <div class="progress-bar">
+                        <div class="progress" style="width: 45%"></div>
+                      </div>
+                      <span class="duration">4:12</span>
+                    </div>
+                  </div>
+                
+                  <!-- 第3首 -->
+                  <div class="music-item">
+                    <div class="album-cover">
+                      <img src="images\hades.jpg" alt="Album Cover">
+                    </div>
+                    <div class="song-info">
+                      <h3 class="song-title">Ocean Breeze</h3>
+                      <p class="artist">The Tidal Waves</p>
+                      <div class="progress-bar">
+                        <div class="progress" style="width: 80%"></div>
+                      </div>
+                      <span class="duration">5:02</span>
+                    </div>
+                  </div>
                 </div>
-            </div>
-
 
         </section>
 
