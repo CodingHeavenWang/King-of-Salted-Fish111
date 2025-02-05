@@ -129,13 +129,13 @@
 }
 
 .monster.level4 {
-  background-image: url("Monster/fireghost.gif"); /* 替换为你的新图片路径 */
+  background-image: url("Monster/NightBorne.gif"); /* 替换为你的新图片路径 */
 }
 .monster.level5 {
   background-image: url("Monster/fireghost.gif"); /* 替换为你的新图片路径 */
 }
 .monster.level6 {
-  background-image: url("Monster/alien.gif"); /* 替换为你的新图片路径  */
+  background-image: url("Monster/Bringer_of_Death.gif"); /* 替换为你的新图片路径  */
 }
 .monster.frozen {
   filter: hue-rotate(180deg); /* 示例：色相偏移让它发蓝色 */
@@ -685,6 +685,7 @@
   font-family: 'Arial', sans-serif;
   font-size: 18px;
   text-shadow: 1px 1px 2px black;
+  z-index: 100005;
 }
 
 #dialogue-text {
@@ -692,6 +693,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 100006;
 }
 .level-bubble {
   animation: float 2s ease-in-out infinite;
@@ -751,6 +753,26 @@
   background: #d35400;
 }
 
+.ending-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.ending-screen img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
 /* 当前武器显示区域 */
 #weaponDisplay {
   display: none;
@@ -789,4 +811,68 @@ body.game-active #weaponDisplay {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain; /* 保证图片不会超过剩余空间 */
+}
+
+#darkOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0); /* 初始透明 */
+  z-index: 9998;
+  pointer-events: none;
+  transition: background-color 1s ease; /* 渐变效果 */
+}
+
+#startMessage {
+  font-family: 'Times New Roman', Times, serif; /* 如果 Times New Roman 不可用，则使用 Times 或 serif */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 36px; /* 增大字体 */
+  font-family: 'Arial', sans-serif; /* 设置字体 */
+  font-weight: bold;
+  color: #ffffff; /* 黄色文字 */
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); /* 添加文字阴影 */
+  z-index: 9999;
+  pointer-events: none; /* 禁止点击 */
+  opacity: 1;
+  transition: opacity 1s ease, transform 0.5s ease; /* 添加文字缩放和淡出效果 */
+}
+
+#startMessage:hover {
+  transform: translate(-50%, -50%) scale(1.1); /* 鼠标悬停时，字体放大 */
+}
+
+
+#darkOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0); /* 初始透明 */
+  z-index: 9998;
+  pointer-events: none;
+  transition: background-color 1s ease; /* 渐变效果 */
+
+.weapon-drop {
+  position: absolute;
+  background-repeat: no-repeat;
+  background-position: center;
+  pointer-events: none;
+  z-index: 1000; /* 确保武器显示在其他元素上方 */
+}
+
+.game-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  color: white;
+  text-shadow: 2px 2px 4px black;
+  z-index: 1000; /* 确保提示信息显示在其他元素上方 */
 }

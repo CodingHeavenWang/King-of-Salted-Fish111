@@ -54,7 +54,7 @@ canvas {
     background: url('path/to/your/header-bg.jpg') no-repeat center/cover;
   background-color: rgba(15, 15, 15, 0.7);
   background-blend-mode: overlay;
-  grid-column: 2 / span 5;
+  grid-column: 2 / span 10;
   font-size: 2.5rem;
   padding: 2rem;
   margin-bottom: var(--spacing);
@@ -65,7 +65,7 @@ canvas {
   }
 
   section {
-    grid-column: 2 / 8;
+    grid-column: 2 / span 10;
   padding: 1rem;
   background: url('path/to/your/section-bg.jpg') no-repeat center/cover;
   background-color: rgba(15, 15, 15, 0.7);
@@ -78,7 +78,7 @@ canvas {
   blockquote {
     margin: 0;
     padding: 0;
-    grid-column: 2 / span 9;
+    grid-column: 2 / span 10;
     margin-bottom: var(--spacing);
   }
 
@@ -94,25 +94,49 @@ canvas {
   }
 
   .left {
-    grid-column: 6 / 12;
+    grid-column: 2 / span 10;
   }
 
   /* @import url("https://use.typekit.net/jmk3xov.css"); */
 
-  button {
-    background-color: #000000;
-    background: url('game\Others\button.png') no-repeat center/cover;
-    color: rgb(248, 248, 248);
-    padding: 50px 50px;
-    border: none;
-    border-radius: 5px;
-    font-size: 3rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
+  .quote-container {
+    display: flex;
+    align-items: center; /* 让文字和 GIF 垂直居中 */
+    justify-content: center; /* 居中对齐 */
+    gap:1px; /* 调整间距 */
+    position: relative; /* 确保内部元素可以调整位置 */
+}
 
-  button:hover {
-    background-color: #333333;
-    background: url('game\Others\button.png') no-repeat center/cover;
-    transform: scale(1.05);
-  }
+.menu-gif {
+  width: 600px;
+  height: auto;
+}
+
+button {
+  background-color: #000000;
+  background: url('game/Others/button.png') no-repeat center/cover;
+  color: rgb(248, 248, 248);
+  padding: 50px 80px;
+  border: none;
+  border-radius: 10px;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 180px; /* 让按钮往下移动 */
+}
+
+button:hover {
+  background-color: #333333;
+  transform: scale(1.1);
+}
+
+.quote-container {
+  text-align: center; /* Center all content */
+}
+
+.above-button-image {
+  width: 60px;  /* Adjusted size for a smaller image */
+  height: auto;  /* Maintain aspect ratio */
+  margin-bottom: 10px; /* Space between the image and the button */
+}
+
