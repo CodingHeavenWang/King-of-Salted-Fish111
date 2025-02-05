@@ -1230,6 +1230,7 @@
     background: url('Others/exhibit.png') no-repeat center/cover;
     padding: 10px;
     box-sizing: border-box;
+    position: relative;
     flex-direction: column;
     align-items: center;
     text-align: center;
@@ -1242,12 +1243,15 @@
   }
   
   #weaponDisplay h2 {
-    margin: -50px 0 10px 0; /* 向上移动 20px */
-    font-size: 30px;
-    line-height: 30px; /* 适当调整行高 */
-    font-family: 'Source Code Pro';
-    color: #fd7146e6; /* 设置初始文字颜色为深橙色 */
-    text-shadow: 1px 1px 2px rgba(250, 251, 248, 0.5);
+    position: absolute;
+  top: 30px;        /* 与展示区域上边缘的距离为30px */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 36px;
+  line-height: 30px;
+  color: #fd7146e6;
+  text-shadow: 1px 1px 2px rgba(250, 251, 248, 0.5);
+  margin: 0;
   }
   
   
@@ -1422,9 +1426,9 @@
 
 #weaponDisplay h2 {
   margin: 0;
-  font-size: 32px;
-  height: 30px;
-  line-height: 30px;
+  font-size: 28px;
+  height: 20px;
+  line-height: 20px;
 }
 
 #weaponDisplay img {

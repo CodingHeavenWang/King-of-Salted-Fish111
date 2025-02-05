@@ -125,8 +125,8 @@ const boss = {
   y: 75,                      // 在顶部
   width: 150,
   height: 150,
-  hp: 300000,                   // Boss的血量
-  initialhp: 300000,
+  hp: 500,                   // Boss的血量
+  initialhp: 500,
   isAlive: false,             // Boss是否存活
   bulletSpawnRate: 60,        // Boss发射弹幕的频率
   bulletSpawnCounter: 0,      // Boss弹幕发射计数器
@@ -776,7 +776,7 @@ function startRealBossFight() {
 
   const bossDiv = document.createElement('div');
   bossDiv.className = 'boss';
-  bossDiv.style.backgroundImage = 'url("monster/bigsun.jpg")';
+  bossDiv.style.backgroundImage = 'url("monster/bigsun.png")';
   bossDiv.style.backgroundSize = 'cover';
   gameContainer.appendChild(bossDiv);
   boss.element = bossDiv;
@@ -1332,20 +1332,7 @@ function updateAll() {
     boss3dead();
   }
 
-  //document.addEventListener('keydown', (e) => {
-  //  if ((e.key === 'p' || e.key === 'P') && !boss.isAlive) {
-  //    initBoss3();
-  //  }
-  //}
-  //);
-
-
-  //document.addEventListener('keydown', (e) => {
-  //  if ((e.key === 'o' || e.key === 'O') && !boss.isAlive) {
-  //    initBoss();
-  //  }
-  //}
-  //);
+  
   
 
   // 更新武器掉落
@@ -1816,7 +1803,7 @@ function updateBoss() {
   if (boss.hp <= 0.8 * boss.initialhp && bossPhase === 1) {
     bossPhase = 2;
     console.log("Boss进入第二阶段");
-    boss.element.style.backgroundImage = 'url("monster/secondsun.jpg")'; // 更换Boss外观
+    boss.element.style.backgroundImage = 'url("monster/secondsun.gif")'; // 更换Boss外观
     boss.element.classList.add('boss-phase-transition'); // 添加转阶段动画
     setTimeout(() => {
       boss.element.classList.remove('boss-phase-transition'); // 动画结束后移除类
@@ -1824,7 +1811,7 @@ function updateBoss() {
   } else if (boss.hp <= 0.5 * boss.initialhp && bossPhase === 2) {
     bossPhase = 3;
     console.log("Boss进入第三阶段");
-    boss.element.style.backgroundImage = 'url("monster/thirdsun.jpg")'; // 更换Boss外观
+    boss.element.style.backgroundImage = 'url("monster/thirdsun.png")'; // 更换Boss外观
     boss.element.classList.add('boss-phase-transition'); // 添加转阶段动画
     setTimeout(() => {
       boss.element.classList.remove('boss-phase-transition'); // 动画结束后移除类
@@ -3008,7 +2995,7 @@ function updateBossHP() {
 //更新属性栏
 function updateHeroStats() {
   document.getElementById('heroAttack').textContent = bulletAttack;
-  document.getElementById('heroAttackSpeed').textContent = (60/bulletSpawnRate).toFixed(2)+"times/s";
+  document.getElementById('heroAttackSpeed').textContent = (60/bulletSpawnRate).toFixed(2);
   document.getElementById('heroMoveSpeed').textContent = hero.speed; // 更新移动速度
 }
 
@@ -3162,6 +3149,20 @@ document.addEventListener('keydown', (e) => {
  * 键盘事件监听
  ********************/
 document.addEventListener('keydown', (e) => {
+    if ((e.key === 'p' || e.key === 'P') && !boss.isAlive) {
+      initBoss3();
+    }
+  }
+  );
+
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === 'o' || e.key === 'O') && !boss.isAlive) {
+      initBoss();
+    }
+  }
+  );
+document.addEventListener('keydown', (e) => {
   if ((e.key === '0' )) {
     weapontype = 0;
     updateWeaponDisplay();
@@ -3307,9 +3308,9 @@ function createLevelBubble1() {
   const gameRect = gameContainer.getBoundingClientRect();
   
   // 计算气泡位置（左侧偏移262px + 20px间距）
-  const bubbleX = gameRect.left - 450; 
+  const bubbleX = gameRect.left - 400; 
   // 根据主角的Y坐标（需转换为页面坐标）
-  const bubbleY = gameRect.top + hero.y - 100; 
+  const bubbleY = gameRect.top + hero.y - 150; 
 
   // 设置样式
   level2Bubble.style.cssText = `
@@ -3336,9 +3337,9 @@ function createLevelBubble2() {
   const gameRect = gameContainer.getBoundingClientRect();
   
   // 计算气泡位置（左侧偏移262px + 20px间距）
-  const bubbleX = gameRect.left - 450; 
+  const bubbleX = gameRect.left - 400; 
   // 根据主角的Y坐标（需转换为页面坐标）
-  const bubbleY = gameRect.top + hero.y - 100; 
+  const bubbleY = gameRect.top + hero.y - 150; 
 
   // 设置样式
   level3Bubble.style.cssText = `
