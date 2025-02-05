@@ -140,3 +140,30 @@ button:hover {
   margin-bottom: 10px; /* Space between the image and the button */
 }
 
+.image-container {
+  display: flex; /* 让图片横向排列 */
+  justify-content: center; /* 水平居中 */
+  gap: 10px; /* 图片之间的间距 */
+  margin-top: 20px;
+}
+
+.image-item {
+  text-align: center; /* 让文字居中 */
+}
+
+.image-item img {
+  width: 280px; /* 统一宽度 */
+  height: 150px; /* 统一高度 */
+  object-fit: cover; /* 保持图片填充，同时裁剪超出的部分 */
+  border-radius: 10px; /* 可选：让图片边角更圆润 */
+}
+.fake-textbox {
+  margin-top: 10px;
+  width: 80%;
+  padding: 12px; /* 增大内边距 */
+  text-align: center;
+  background: none;
+  font-size: 1.15rem; /* 原0.95rem改为1.15rem */
+  line-height: 1.5;  /* 新增行高设置 */
+  letter-spacing: 0.5px; /* 添加字间距 */
+}
