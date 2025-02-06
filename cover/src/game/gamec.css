@@ -1219,48 +1219,12 @@
   }
   
   /* 当前武器显示区域 */
-  #weaponDisplay {
-    display: none; /* 初始隐藏 */
-    position: fixed;
-    top: 50%;
-    right: 150px;
-    transform: translateY(-50%);
-    width: 300px;
-    height: 300px;
-    background: url('Others/exhibit.png') no-repeat center/cover;
-    padding: 10px;
-    box-sizing: border-box;
-    position: relative;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    color: rgb(255, 255, 255);
-    z-index: 1000; /* 确保在最上层 */
-  }
   
   body.game-active #weaponDisplay {
     display: flex;
   }
   
-  #weaponDisplay h2 {
-    position: absolute;
-  top: 30px;        /* 与展示区域上边缘的距离为30px */
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 36px;
-  line-height: 30px;
-  color: #fd7146e6;
-  text-shadow: 1px 1px 2px rgba(250, 251, 248, 0.5);
-  margin: 0;
-  }
-  
-  
-  #weaponDisplay img {
-    flex: 1; /* 图片部分占满剩余空间 */
-    max-width: 90%;
-    max-height: 90%;
-    object-fit: contain; /* 保证图片不会超过剩余空间 */
-  }
+ 
   
   #darkOverlay {
     position: fixed;
@@ -1288,7 +1252,7 @@
     z-index: 9999;
     pointer-events: none; /* 禁止点击 */
     opacity: 1;
-    transition: opacity 1s ease-in-out;
+    transition: opacity 1s ease, transform 0.5s ease; /* 添加文字缩放和淡出效果 */
   }
   
   #startMessage:hover {
@@ -1421,21 +1385,25 @@
   display: flex;
   flex-direction: column;
   text-align: center;             /* 内容居中 */
+  align-items: center;
   color: rgb(255, 255, 255);                 /* 文字颜色 */
 }
 
 #weaponDisplay h2 {
-  margin: 0;
-  font-size: 28px;
-  height: 20px;
-  line-height: 20px;
+  order: 1; /* 数值越小显示越靠前 */
+  margin: -50px 0 10px 0; /* 原有样式 */
+  font-size: 25px;
+  font-family: 'Source Code Pro';
+  color: #fd7146e6;
+  text-shadow: 1px 1px 2px rgba(250, 251, 248, 0.5);
 }
 
 #weaponDisplay img {
-  flex: 1; /* 图片部分占满剩余空间 */
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain; /* 保证图片不会超过剩余空间 */
+  order: 2;
+  flex: 1;
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
 }
 
 #darkOverlay {
@@ -1562,41 +1530,4 @@
   background: black;
   z-index: 9999; /* 确保遮罩在最上层 */
   display: none;
-}
-
-.low-hp-message {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 10px;
-  text-align: center;
-  font-size: 18px;
-  z-index: 1000;
-  animation: fadeInOut 1.5s ease-in-out;
-}
-
-.low-hp-message {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 10px;
-  text-align: center;
-  font-size: 18px;
-  z-index: 1000;
-  animation: fadeInOut 1.5s ease-in-out;
-}
-
-@keyframes fadeInOut {
-  0% { opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { opacity: 0; }
 }

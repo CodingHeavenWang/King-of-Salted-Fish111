@@ -133,8 +133,8 @@ const boss = {
   y: 75,                      // 在顶部
   width: 150,
   height: 150,
-  hp: 500,                   // Boss的血量
-  initialhp: 500,
+  hp: 500000,                   // Boss的血量
+  initialhp: 500000,
   isAlive: false,             // Boss是否存活
   bulletSpawnRate: 60,        // Boss发射弹幕的频率
   bulletSpawnCounter: 0,      // Boss弹幕发射计数器
@@ -1851,7 +1851,7 @@ function updateBoss() {
   } else if (boss.hp <= 0.5 * boss.initialhp && bossPhase === 2) {
     bossPhase = 3;
     console.log("Boss进入第三阶段");
-    boss.element.style.backgroundImage = 'url("monster/thirdsun.png")'; // 更换Boss外观
+    boss.element.style.backgroundImage = 'url("monster/thirdsun.gif")'; // 更换Boss外观
     boss.element.classList.add('boss-phase-transition'); // 添加转阶段动画
     setTimeout(() => {
       boss.element.classList.remove('boss-phase-transition'); // 动画结束后移除类
