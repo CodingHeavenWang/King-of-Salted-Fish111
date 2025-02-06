@@ -785,7 +785,63 @@
     background-size: cover;
   }
   
-  
+  /* 添加转阶段动画 */
+@keyframes boss3PhaseTransition {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+
+/* 应用动画到 boss3 */
+.boss3-phase-transition {
+  animation: boss3PhaseTransition 1s ease-in-out;
+}
+
+/* 冲刺动画 */
+@keyframes boss3Charge {
+  0% {
+    transform: translateX(0) translateY(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(100px) translateY(50px); /* 根据冲刺方向调整 */
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(200px) translateY(100px); /* 根据冲刺方向调整 */
+    opacity: 1;
+  }
+}
+
+/* 应用冲刺动画 */
+.boss3-charging {
+  animation: boss3Charge 0.5s linear;
+}
+
+.boss3-trail {
+  position: absolute;
+  width: 40px;
+  height: 50px;
+  background-size: cover;
+  opacity: 0.5;
+  z-index: 999;
+  animation: fadeOut 0.3s ease-out;
+}
+
+@keyframes fadeOut {
+  from { opacity: 0.5; }
+  to { opacity: 0; }
+}
   
   /* Boss3血条样式 */
   #boss3HP {
@@ -1239,21 +1295,38 @@
   }
   
   #startMessage {
-    font-family: 'Times New Roman', Times, serif; /* 如果 Times New Roman 不可用，则使用 Times 或 serif */
-    position: fixed;
-    top: 50%;
+    /* 原有样式保持不变 */
+    font-family: 'Times New Roman', Times, serif;
+    position: absolute;
+    top: 60%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 36px; /* 增大字体 */
-    font-family: 'Arial', sans-serif; /* 设置字体 */
+    transform: translate(-60%, -50%);
+    font-size: 36px;
     font-weight: bold;
-    color: #ffffff; /* 黄色文字 */
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); /* 添加文字阴影 */
+    color: #ffffff;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
     z-index: 9999;
-    pointer-events: none; /* 禁止点击 */
-    opacity: 1;
-    transition: opacity 1s ease, transform 0.5s ease; /* 添加文字缩放和淡出效果 */
-  }
+    pointer-events: none;
+    
+    /* 新增呼吸效果 */
+    opacity: 0.3; /* 初始透明度 */
+    animation: breathingEffect 2s ease-in-out infinite;
+}
+
+@keyframes breathingEffect {
+    0% {
+        opacity: 0.1;
+        transform: translate(-50%, -50%) scale(0.99);
+    }
+    50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.01);
+    }
+    100% {
+        opacity: 0.1;
+        transform: translate(-50%, -50%) scale(0.99);
+    }
+}
   
   #startMessage:hover {
     transform: translate(-50%, -50%) scale(1.1); /* 鼠标悬停时，字体放大 */
