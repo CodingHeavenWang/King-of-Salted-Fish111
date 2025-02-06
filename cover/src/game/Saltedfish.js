@@ -208,8 +208,8 @@ const boss3Shield = {
 };
 
 // 玩家血量
-let playerHP = 500;
-let playerHPinitial=500;
+let playerHP = 300;
+let playerHPinitial=300;
 const playerHPElement = document.createElement('div'); // 显示玩家血量的元素
 // 玩家血量显示
 //playerHPElement.style.position = 'absolute';
@@ -804,6 +804,7 @@ function startRealBossFight() {
 }
 
 function handleDialogueKey(e) {
+  if (e.repeat) return;
   if (e.code === 'Space') {
     e.preventDefault();
     updateDialogue();
@@ -811,6 +812,7 @@ function handleDialogueKey(e) {
 }
 
 function handleDialogueKeyboss3dead(e) {
+  if (e.repeat) return;
   if (e.code === 'Space') {
     e.preventDefault();
     updateDialogueboss3dead();
@@ -1089,6 +1091,7 @@ function startRealBoss3Fight() {
 
 
 function handleDialogueKeyboss3(e) {
+  if (e.repeat) return;
   if (e.code === 'Space') {
     e.preventDefault();
     updateDialogueboss3();
@@ -3360,10 +3363,12 @@ document.documentElement.style.backgroundSize = "cover";
 /********************
  * 监听任意键按下事件
  ********************/
-document.addEventListener('keydown', (event) => {
+document.addEventListener('keydown', function startGameHandler(e) {
   // 判断是否在主菜单界面
+  if (e.repeat) return;
   if (document.getElementById('mainMenu').style.display !== 'none') {
     setTimeout(() => {
+      document.removeEventListener('keydown', startGameHandler);
       startMessage.style.opacity = '0'; // 字幕淡出
       setTimeout(() => {
         startMessage.style.display = 'none'; // 在淡出后隐藏元素
