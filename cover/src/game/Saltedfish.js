@@ -2968,9 +2968,18 @@ function updateFirewalls() {
       bossHPElement.style.display = 'none';
       updateBossHP(); // 更新Boss血条
 
-      // 播放胜利视频
-      playVictoryVideo();
-      showGameOver(); // 显示游戏结束界面
+      endBossFight();
+
+      setTimeout(() => {
+        // 创建并显示遮罩层的渐变效果
+        const overlay = document.getElementById('darkOverlay');
+        overlay.style.backgroundColor = 'rgba(0, 0, 0, 1)'; // 逐渐变暗
+  
+        // 在遮罩层变暗后隐藏主菜单并播放开场动画
+        setTimeout(() => {
+          playEndingAnimation(); // 播放动画
+        }, 1000); // 等待1秒，确保渐变效果完成
+      }, 1000); // 等待1秒，确保字幕淡出
      }
   }
   if (boss3.isAlive) {
