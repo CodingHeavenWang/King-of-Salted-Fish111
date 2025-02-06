@@ -141,6 +141,7 @@ const boss = {
   speed: 1.25,  
   slowRemain: 0,                 // Boss移动速度
   direction: 1             // Boss移动方向：1 表示向右，-1 表示向左
+
 };
 let bossPhase = 1; // 1: 第一阶段, 2: 第二阶段, 3: 第三阶段
 //boss 血量
@@ -222,7 +223,8 @@ const playerHPElement = document.createElement('div'); // 显示玩家血量的�
 
 // Boss弹幕
 const bossBullets = [];
-const bossBulletSpeed = 5; // Boss弹幕速度
+let bossBulletSpeed = 5; // Boss弹幕速度
+const initialBulletSpeed = 5;
 
 // 游戏控制
 let leftPressed = false;
@@ -684,7 +686,7 @@ function applyDoorEffect(effect) {
       hero.speed += effect.value;
       break;
     case 'freq':
-      bulletSpawnRate = Math.max(10, bulletSpawnRate + effect.value);
+      bulletSpawnRate = Math.max(6, bulletSpawnRate + effect.value);
       break;
     case 'weapon':
       if (weapontype == 0)
@@ -892,7 +894,6 @@ function spawnBossBulletSpiral(angle, speed = bossBulletSpeed) {
   const bulletDiv = document.createElement('div');
   bulletDiv.className = 'spiral';
   bulletDiv.style.backgroundSize = 'cover';
-
   const bulletObj = {
     element: bulletDiv,
     x: boss.x + boss.width / 2 - 21, // 从Boss中心发射
@@ -1742,7 +1743,7 @@ function updatePowerups() {
     if (isCollision(hero, p)) {
       if (p.type === 'freq') {
         // 每次 -1 或 -2，保证最小10
-        bulletSpawnRate = Math.max(10, bulletSpawnRate + p.value);
+        bulletSpawnRate = Math.max(6, bulletSpawnRate + p.value);
       } else if (p.type === 'Attack') {
         bulletAttack += p.value;
       }
@@ -1820,9 +1821,11 @@ function updateBoss() {
   if (boss.slowRemain > 0) {
        boss.slowRemain--;
        boss.x += boss.speed * 0.7 * boss.direction;
+       bossBulletSpeed = 0.7*initialBulletSpeed;
        if (boss.slowRemain <= 0) {
         boss.element.classList.remove('frozen');
         boss.bulletSpawnRate = boss.originalBulletSpawnRate;
+        bossBulletSpeed = initialBulletSpeed;
       }
      } 
      else {
