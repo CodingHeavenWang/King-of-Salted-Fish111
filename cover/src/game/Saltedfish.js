@@ -208,8 +208,8 @@ const boss3Shield = {
 };
 
 // 玩家血量
-let playerHP = 10000;
-let playerHPinitial=10000;
+let playerHP = 500;
+let playerHPinitial=500;
 const playerHPElement = document.createElement('div'); // 显示玩家血量的元素
 // 玩家血量显示
 //playerHPElement.style.position = 'absolute';
@@ -3252,20 +3252,6 @@ document.addEventListener('keydown', (e) => {
  * 键盘事件监听
  ********************/
 document.addEventListener('keydown', (e) => {
-    if ((e.key === 'p' || e.key === 'P') && !boss.isAlive) {
-      initBoss3();
-    }
-  }
-  );
-
-
-  document.addEventListener('keydown', (e) => {
-    if ((e.key === 'o' || e.key === 'O') && !boss.isAlive) {
-      initBoss();
-    }
-  }
-  );
-document.addEventListener('keydown', (e) => {
   if ((e.key === '0' )) {
     weapontype = 0;
     updateWeaponDisplay();
@@ -3293,12 +3279,6 @@ document.addEventListener('keydown', (e) => {
   }
 }
 )
-document.addEventListener('keydown', (e) => {
-  if ((e.key === '9')) {
-    weapontype = 3;
-    updateWeaponDisplay();
-  }
-})
 
 document.addEventListener('keydown', (e) => {
   if ((e.key === '5')) {
